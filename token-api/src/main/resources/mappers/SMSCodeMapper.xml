@@ -33,6 +33,7 @@
         <result column="id" property="id" />
         <result column="mobile_num" property="mobileNum" />
         <result column="code" property="code" />
+        <result column="status" property="status" />
         <result column="ali_request_id" property="aliRequestId" />
         <result column="ali_biz_id" property="aliBizId" />
         <result column="ali_code" property="aliCode" />
@@ -46,14 +47,25 @@
         keyProperty：（仅对insert和update游泳）唯一标记一个属性，MyBatis会通过getGeneratedKeys的返回值或者通过insert语句的selectKey子元素设置它的键值，默认为unset。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
         keyColumn：（仅对insert和update有用）通过生成的键值设置表中的列名，这个设置仅对某些数据库（像PostgreSQL）是必须的，当主键列不是表中的第一列时需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
     -->
-    <insert id="insert" parameterType="com.sharex.token.api.entity.SMSCode">
+    <insert id="insert" parameterType="com.sharex.token.api.entity.SMSCode" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO `smscode` (`mobile_num`, `code`, `create_time`)
-        VALUES (#{mobileNum}, #{code}, #{createTime});SELECT @@IDENTITY;
+        VALUES (#{mobileNum}, #{code}, #{createTime});
     </insert>
+    <update id="update" parameterType="java.lang.Integer">
+        UPDATE `smscode` SET `status` = 1
+        WHERE `id` = #{id}
+    </update>
     <select id="selectByMobileNum" parameterType="java.util.Map" resultMap="smsCodeMap">
-        SELECT `id`, `mobile_num`, `code`, `ali_request_id`, `ali_biz_id`, `ali_code`, `ali_message`, `create_time`, `update_time`
+        SELECT `id`, `mobile_num`, `code`, `status`, `ali_request_id`, `ali_biz_id`, `ali_code`, `ali_message`, `create_time`, `update_time`
         FROM `smscode`
         WHERE `mobile_num` = #{mobileNum} AND `create_time` &lt;= #{createTime}
+        ORDER BY `create_time` DESC
+        LIMIT 0, 1;
+    </select>
+    <select id="selectCountByDay" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM `smscode`
+        WHERE `mobile_num` = #{mobileNum} AND `create_time` &gt;= #{dayStartTime} AND `create_time` &lt;= #{dayEndTime}
         ORDER BY `create_time` DESC
         LIMIT 0, 1;
     </select>

@@ -1,8 +1,8 @@
 package com.sharex.token.api.controller;
 
 import com.sharex.token.api.entity.RESTful;
-import com.sharex.token.api.entity.req.PasswordLogin;
-import com.sharex.token.api.entity.req.SMSCodeLogin;
+import com.sharex.token.api.entity.req.LoginPassword;
+import com.sharex.token.api.entity.req.LoginSMSCode;
 import com.sharex.token.api.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,14 +21,15 @@ public class LoginController {
 
     @ApiOperation("短信登陆")
     @RequestMapping(value = "/loginbysmscode", method = RequestMethod.POST)
-    public RESTful loginBySMSCode(@RequestBody SMSCodeLogin smsCodeLogin) {
+    public RESTful loginBySMSCode(@RequestBody LoginSMSCode loginSMSCode) {
 
-        return userService.loginBySMSCode(smsCodeLogin);
+        return userService.loginBySMSCode(loginSMSCode);
     }
 
+    @ApiOperation(("密码登陆"))
     @RequestMapping(value = "/loginbypassword", method = RequestMethod.POST)
-    public RESTful loginByPassword(@RequestBody PasswordLogin passwordLogin) {
+    public RESTful loginByPassword(@RequestBody LoginPassword loginPassword) {
 
-        return userService.loginByPassword(passwordLogin);
+        return userService.loginByPassword(loginPassword);
     }
 }

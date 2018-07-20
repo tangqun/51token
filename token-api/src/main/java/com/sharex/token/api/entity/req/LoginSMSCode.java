@@ -1,6 +1,6 @@
 package com.sharex.token.api.entity.req;
 
-public class SMSCodeLogin {
+public class LoginSMSCode {
 
     private String mobileNum;
     private String smsCode;
