@@ -20,7 +20,7 @@ public class AliSMSUtil {
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
     private static final String accessKeyId = "LTAI8Frn7f4AkYmX";
 
-    private static final String accessKeySecret = "";
+    private static final String accessKeySecret = "bmx4EzUrws34SnUl6JZxroYYnioK3f";
 
     private static Log logger = LogFactory.getLog(AliSMSUtil.class);
 
