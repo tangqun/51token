@@ -1,6 +1,5 @@
 package com.sharex.token.api.currency.okex.stock.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.currency.okex.stock.IStockRestApi;
 import com.sharex.token.api.util.CryptoUtil;
 import com.sharex.token.api.util.HttpUtil;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-
 
 public class StockRestApi implements IStockRestApi {
 

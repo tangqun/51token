@@ -1,6 +1,7 @@
 package com.sharex.token.api.util;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,9 +29,9 @@ public class StringUtil {
             String key = keys.get(i);
             String value = params.get(key);
             if (i == keys.size() - 1) {// 拼接时，不包括最后一个&字符
-                sb.append(key + "=" + value);// URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20"));
+                sb.append(key + "=" + URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20"));
             } else {
-                sb.append(key + "=" + value + "&");// URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20") + "&");
+                sb.append(key + "=" +  URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20") + "&");
             }
         }
         return sb.toString();

@@ -10,6 +10,7 @@ public enum CodeEnum {
 
     // 需要特殊处理code
     TokenInvalid(100000, "请重新登陆"),
+    AccountHasBeenFrozen(100001, "账户被冻结，请联系客服"),
 
     MobileNumCannotBeNull(120000, "手机号不能为空"),
     MobileNumFormatError(120001, "手机号格式错误"),
@@ -20,7 +21,6 @@ public enum CodeEnum {
     SMSCodeHasBeenUsed(120005, "请重新获取短信验证码"),
     SMSCodeNotEqualsInDB(120006, "短信验证码不正确"),
 
-    AccountHasBeenFrozen(120007, "账户被冻结，请联系客服"),
     SMSSendFail(120008, "短信发送失败，请稍后重试"),
     SMSOutOfLimit(120009, "短信条数限制"),
     UserNotInDB(120010, "用户名密码错误"),

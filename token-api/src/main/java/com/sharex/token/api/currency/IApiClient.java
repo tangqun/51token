@@ -1,0 +1,79 @@
+package com.sharex.token.api.currency;
+
+import com.sharex.token.api.entity.RESTful;
+
+public interface IApiClient {
+
+    /**
+     * 聚合行情（单个Symbol）
+     * @param symbol
+     * @return
+     */
+    RESTful ticker(String symbol);
+
+    /**
+     * 市场深度（单个Symbol）
+     * @param symbol
+     * @return
+     */
+//    String depth(String symbol);
+
+    /**
+     * 历史交易记录
+     * @param symbol
+     * @param size 1~200
+     * @return
+     */
+//    String historyTrades(String symbol, Integer size);
+
+    /**
+     * k线
+     * @param symbol
+     * @param type
+     * @param size
+     * @return
+     */
+//    String kline(String symbol, String type, Integer size);
+
+    /*********************** 币币交易 **************************/
+
+    /**
+     * 获取账户信息
+     * @return
+     */
+//    String accounts();
+
+    /**
+     * 下单 - 限价买卖
+     * @param symbol
+     * @param price
+     * @param amount
+     * @param type
+     * @return
+     */
+//    String placeOrder(String symbol, Double price, Double amount, String type);
+
+    /**
+     * 撤销订单
+     * @param symbol
+     * @param orderId
+     * @return
+     */
+//    String cancelOrder(String symbol, String orderId);
+
+    /**
+     * 查询订单
+     * @param symbol
+     * @param orderId
+     * @return
+     */
+//    String queryOrder(String symbol, String orderId);
+
+    /**
+     * 用户历史订单（已成交 & 未成交 ？）
+     * @param symbol
+     * @param status
+     * @return
+     */
+//    String historyOrders(String symbol, Integer status);
+}
