@@ -9,6 +9,8 @@ import com.sharex.token.api.util.AliSMSUtil;
 import com.sharex.token.api.util.RandomUtil;
 import com.sharex.token.api.util.TimeUtil;
 import com.sharex.token.api.util.ValidateUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,6 +21,8 @@ import java.util.Map;
 
 @Service
 public class SMSCodeService {
+
+    private static final Log logger = LogFactory.getLog(SMSCodeService.class);
 
     @Autowired
     private SMSCodeMapper smsCodeMapper;
@@ -69,6 +73,7 @@ public class SMSCodeService {
             }
             return RESTful.Fail(CodeEnum.SMSSendFail);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return RESTful.SystemException();
         }
     }

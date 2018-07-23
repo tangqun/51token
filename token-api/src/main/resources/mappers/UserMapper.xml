@@ -54,7 +54,7 @@
         VALUES (#{mobileNum}, #{password}, #{salt}, #{token}, #{lastLoginTime}, #{createTime});
     </insert>
     <update id="updateToken" parameterType="java.util.Map">
-        UPDATE user`
+        UPDATE `user`
         SET `token` = #{newToken}, `last_login_time` = #{lastLoginTime}
         WHERE `token` = #{oldToken};
     </update>
