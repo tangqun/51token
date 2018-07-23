@@ -1,25 +1,36 @@
 package com.sharex.token.api.util;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.*;
 
 /**
  * Created by TQ on 2017/12/6.
  */
 public class HttpUtil {
     public static String get(String urlString) {
-        String responseBody = "";
+
+//        System.setProperty("http.proxyHost", "us3.telegram-u9unchat.top");
+//        System.setProperty("http.proxyPort", "6191");
+//        System.setProperty("http.proxyPassword", "qianligu02");
+
+        String responseBody = null;
         BufferedReader bufferedReader = null;
         try {
             URL url = new URL(urlString);
+
+            SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+
             // 打开和URL之间的连接
-            URLConnection urlConnection = url.openConnection();
+            URLConnection urlConnection = url.openConnection(proxy);
             // 设置通用的请求属性
 //            urlConnection.setRequestProperty("Accept", "application/json");
 //            urlConnection.setRequestProperty("Connection", "keep-alive");
             urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+
             // 建立实际的连接
             urlConnection.connect();
             // 获取所有响应头字段
@@ -30,10 +41,12 @@ public class HttpUtil {
 //            }
             // 定义BufferedReader输入流来读取URL的响应
             bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            StringBuffer sb = new StringBuffer();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                responseBody += line;
+                sb.append(line);
             }
+            responseBody = sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,17 +67,21 @@ public class HttpUtil {
         OutputStreamWriter outputStreamWriter = null;
 //        DataOutputStream dataOutputStream = null;
         BufferedReader bufferedReader = null;
-        String responseBody = "";
+        String responseBody = null;
         try {
             URL url = new URL(urlString);
+
+            SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+
             // 打开和URL之间的连接
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection(proxy);
             // 设置通用的请求属性
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 //            connection.setRequestProperty("Accept", "application/json");
 //            connection.setRequestProperty("Connection", "keep-alive");
-//            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
             // 发送POST请求必须设置如下两行
             connection.setDoOutput(true);
             connection.setDoInput(true);
@@ -82,10 +99,12 @@ public class HttpUtil {
 //            dataOutputStream.flush();
             // 定义BufferedReader输入流来读取URL的响应
             bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuffer sb = new StringBuffer();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                responseBody += line;
+                sb.append(line);
             }
+            responseBody = sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }

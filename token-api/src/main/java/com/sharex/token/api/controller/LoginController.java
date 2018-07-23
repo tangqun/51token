@@ -20,14 +20,14 @@ public class LoginController {
     private UserService userService;
 
     @ApiOperation("短信登陆")
-    @RequestMapping(value = "/loginbysmscode", method = RequestMethod.POST)
+    @RequestMapping(value = "/loginBySMSCode", method = RequestMethod.POST)
     public RESTful loginBySMSCode(@RequestBody LoginSMSCode loginSMSCode) {
 
         return userService.loginBySMSCode(loginSMSCode);
     }
 
     @ApiOperation(("密码登陆"))
-    @RequestMapping(value = "/loginbypassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/loginByPassword", method = RequestMethod.POST)
     public RESTful loginByPassword(@RequestBody LoginPassword loginPassword) {
 
         return userService.loginByPassword(loginPassword);

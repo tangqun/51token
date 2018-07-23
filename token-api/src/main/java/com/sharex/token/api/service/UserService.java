@@ -152,67 +152,72 @@ public class UserService {
      * @author 唐群
      */
     public RESTful loginByPassword(LoginPassword loginPassword) {
+        try {
 
-        if (StringUtils.isEmpty(loginPassword.getMobileNum())) {
-            // 手机号不能为空
-            return RESTful.Fail(CodeEnum.MobileNumCannotBeNull);
-        }
-
-        if (!ValidateUtil.checkMobile(loginPassword.getMobileNum())) {
-            // 手机号格式错误
-            return RESTful.Fail(CodeEnum.MobileNumFormatError);
-        }
-
-        if (StringUtils.isEmpty(loginPassword.getPassword())) {
-            // 短信码不能为空
-            return RESTful.Fail(CodeEnum.SMSCodeCannotBeNull);
-        }
-
-        if (!ValidateUtil.checkPassword(loginPassword.getPassword())) {
-            // 短信码格式错误
-            return RESTful.Fail(CodeEnum.SMSCodeFormaError);
-        }
-
-        User user = userMapper.selectByMobileNum(loginPassword.getMobileNum());
-        if (user == null) {
-            // 不能提示未注册，提示用户名密码错误
-            return RESTful.Fail(CodeEnum.UserNotInDB);
-        }
-
-        // 密码MD5相等
-        if (CryptoUtil.md5(loginPassword.getPassword()).toLowerCase().equals(user.getPassword())) {
-
-            Date date = new Date();
-
-            String token = UUID.randomUUID().toString();
-
-            // 判断是否冻结
-            if (user.getStatus() != 0) {
-                // 被冻结
-                return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
+            if (StringUtils.isEmpty(loginPassword.getMobileNum())) {
+                // 手机号不能为空
+                return RESTful.Fail(CodeEnum.MobileNumCannotBeNull);
             }
 
-            // 更新token
-            Map<String, Object> tokenMap = new HashMap<>();
-            tokenMap.put("newToken", token);
-            tokenMap.put("lastLoginTime", date);
-            tokenMap.put("oldToken", user.getToken());
-            userMapper.updateToken(tokenMap);
+            if (!ValidateUtil.checkMobile(loginPassword.getMobileNum())) {
+                // 手机号格式错误
+                return RESTful.Fail(CodeEnum.MobileNumFormatError);
+            }
 
-            // resp level 1 data
-            Map<String, Object> map = new HashMap<>();
+            if (StringUtils.isEmpty(loginPassword.getPassword())) {
+                // 短信码不能为空
+                return RESTful.Fail(CodeEnum.SMSCodeCannotBeNull);
+            }
 
-            // resp level 2 data
-            Map<String, Object> map2 = new HashMap<>();
-            map2.put("mobileNum", StringUtil.ReplaceByMosaic(loginPassword.getMobileNum()));
-            map2.put("status", 0);
-            map2.put("token", token);
-            map.put("user", map2);
+            if (!ValidateUtil.checkPassword(loginPassword.getPassword())) {
+                // 短信码格式错误
+                return RESTful.Fail(CodeEnum.SMSCodeFormaError);
+            }
 
-            return RESTful.Success(map);
+            User user = userMapper.selectByMobileNum(loginPassword.getMobileNum());
+            if (user == null) {
+                // 不能提示未注册，提示用户名密码错误
+                return RESTful.Fail(CodeEnum.UserNotInDB);
+            }
+
+            // 密码MD5相等
+            if (CryptoUtil.md5(loginPassword.getPassword()).toLowerCase().equals(user.getPassword())) {
+
+                Date date = new Date();
+
+                String token = UUID.randomUUID().toString();
+
+                // 判断是否冻结
+                if (user.getStatus() != 0) {
+                    // 被冻结
+                    return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
+                }
+
+                // 更新token
+                Map<String, Object> tokenMap = new HashMap<>();
+                tokenMap.put("newToken", token);
+                tokenMap.put("lastLoginTime", date);
+                tokenMap.put("oldToken", user.getToken());
+                userMapper.updateToken(tokenMap);
+
+                // resp level 1 data
+                Map<String, Object> map = new HashMap<>();
+
+                // resp level 2 data
+                Map<String, Object> map2 = new HashMap<>();
+                map2.put("mobileNum", StringUtil.ReplaceByMosaic(loginPassword.getMobileNum()));
+                map2.put("status", 0);
+                map2.put("token", token);
+                map.put("user", map2);
+
+                return RESTful.Success(map);
+            }
+
+            // 用户名密码错误，与用户不存在提示相同
+            return RESTful.Fail(CodeEnum.PasswordNotEqualsInDB);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
         }
-
-        // 用户名密码错误，与用户不存在提示相同
-        return RESTful.Fail(CodeEnum.PasswordNotEqualsInDB);
     }
 }

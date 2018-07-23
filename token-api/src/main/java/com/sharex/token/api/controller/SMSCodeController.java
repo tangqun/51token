@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @Api("短信")
-@RequestMapping("/smscode")
+@RequestMapping("/smsCode")
 @RestController
 public class SMSCodeController {
 

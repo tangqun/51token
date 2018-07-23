@@ -1,18 +1,28 @@
 package com.sharex.token.api.util;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public class CryptoUtil {
 
-    public static String md5(String s) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] bytes = md.digest(s.getBytes("utf-8"));
-            return toHex(bytes);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public static String hmacSha256(String appSecret,  String s) throws NoSuchAlgorithmException, InvalidKeyException {
+        Mac hmacSha256 = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secKey = new SecretKeySpec(appSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        hmacSha256.init(secKey);
+        byte[] hash = hmacSha256.doFinal(s.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(hash);
+    }
+
+    public static String md5(String s) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] bytes = md.digest(s.getBytes("utf-8"));
+        return toHex(bytes);
     }
 
     private static String toHex(byte[] bytes) {
