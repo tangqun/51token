@@ -39,7 +39,7 @@ public class ScheduleService {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Scheduled(cron="0/5 * *  * * ? ")
+    @Scheduled(cron="0/10 * *  * * ? ")
     public void synKline() {
 
         try {
