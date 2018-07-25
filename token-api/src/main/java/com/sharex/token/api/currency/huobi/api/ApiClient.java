@@ -369,7 +369,7 @@ public class ApiClient {
             String resp = null;
             StringBuffer sb = new StringBuffer();
             if ("POST".equals(method)) {
-                resp = HttpUtil.post(API_URL + uri + "?" + toQueryString(params), objectMapper.writeValueAsString(object));
+                resp = HttpUtil.post(API_URL + uri + "?" + toQueryString(params), objectMapper.writeValueAsString(object), "application/json");
             } else {
                 resp = HttpUtil.get(API_URL + uri + "?" + toQueryString(params));
             }

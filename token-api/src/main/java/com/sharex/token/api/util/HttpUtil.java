@@ -1,5 +1,8 @@
 package com.sharex.token.api.util;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +12,16 @@ import java.net.*;
 /**
  * Created by TQ on 2017/12/6.
  */
+@Configuration
 public class HttpUtil {
+
+    private static Integer proxyStatus;
+
+    @Value("${proxyStatus}")
+    public void setProxyStatus(Integer proxyStatus) {
+        this.proxyStatus = proxyStatus;
+    }
+
     public static String get(String urlString) {
 
 //        System.setProperty("http.proxyHost", "us3.telegram-u9unchat.top");
@@ -21,11 +33,16 @@ public class HttpUtil {
         try {
             URL url = new URL(urlString);
 
-            SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+            URLConnection urlConnection;
 
-            // 打开和URL之间的连接
-            URLConnection urlConnection = url.openConnection(proxy);
+            if (proxyStatus == 0) {
+                SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+                urlConnection = url.openConnection(proxy);
+            } else {
+                urlConnection = url.openConnection();
+            }
+
             // 设置通用的请求属性
 //            urlConnection.setRequestProperty("Accept", "application/json");
 //            urlConnection.setRequestProperty("Connection", "keep-alive");
@@ -62,7 +79,7 @@ public class HttpUtil {
         return responseBody;
     }
 
-    public static String post(String urlString, String param) {
+    public static String post(String urlString, String param, String mediaType) {
 //        PrintWriter printWriter = null;
         OutputStreamWriter outputStreamWriter = null;
 //        DataOutputStream dataOutputStream = null;
@@ -71,14 +88,20 @@ public class HttpUtil {
         try {
             URL url = new URL(urlString);
 
-            SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+            HttpURLConnection connection;
 
-            // 打开和URL之间的连接
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection(proxy);
+            if (proxyStatus == 0) {
+                SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+                connection = (HttpURLConnection)url.openConnection(proxy);
+            } else {
+                connection = (HttpURLConnection)url.openConnection();
+            }
+
             // 设置通用的请求属性
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            // "application/x-www-form-urlencoded"
+            connection.setRequestProperty("Content-Type", mediaType);
 //            connection.setRequestProperty("Accept", "application/json");
 //            connection.setRequestProperty("Connection", "keep-alive");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");

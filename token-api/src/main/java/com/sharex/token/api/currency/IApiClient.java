@@ -1,6 +1,8 @@
 package com.sharex.token.api.currency;
 
-import com.sharex.token.api.entity.RESTful;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public interface IApiClient {
 
@@ -9,7 +11,7 @@ public interface IApiClient {
      * @param symbol
      * @return
      */
-    RESTful ticker(String symbol);
+    String ticker(String symbol) throws Exception;
 
     /**
      * 市场深度（单个Symbol）
@@ -33,7 +35,7 @@ public interface IApiClient {
      * @param size
      * @return
      */
-//    String kline(String symbol, String type, Integer size);
+    String kline(String symbol, String type, Integer size) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, Exception;
 
     /*********************** 币币交易 **************************/
 
@@ -41,7 +43,7 @@ public interface IApiClient {
      * 获取账户信息
      * @return
      */
-//    String accounts();
+    String accounts() throws Exception;
 
     /**
      * 下单 - 限价买卖
@@ -51,7 +53,7 @@ public interface IApiClient {
      * @param type
      * @return
      */
-//    String placeOrder(String symbol, Double price, Double amount, String type);
+    String placeOrder(String accountId, String symbol, String price, String amount, String type) throws Exception;
 
     /**
      * 撤销订单
@@ -76,4 +78,11 @@ public interface IApiClient {
      * @return
      */
 //    String historyOrders(String symbol, Integer status);
+
+    /**
+     * 委托
+     * @param symbol
+     * @return
+     */
+    String entrustOrders(String symbol) throws Exception;
 }

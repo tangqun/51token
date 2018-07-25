@@ -39,7 +39,9 @@ public enum CodeEnum {
     RepeatRmAuthOfAsset(120019, "授权已取消，请勿重复提交"),
 
     ExchangeInvalid(120020, "交易所无效"),
-    ExchangeInDBNotConfig(120021, "交易所未配置")
+    ExchangeInDBNotConfig(120021, "交易所未配置"),
+
+    NotExistAuthOfExchange(120022, "该交易所未授权")
     ;
 
     CodeEnum(int code, String msg) {

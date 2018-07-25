@@ -25,7 +25,9 @@ public class AliSMSUtil {
     private static Log logger = LogFactory.getLog(AliSMSUtil.class);
 
     /**
-     *
+     * 【51Token】尊敬的Sharex用户，您的****授权映射成功，如有疑问请咨询51Token客服工作人员！
+     * 使用同一个签名，对同一个手机号码发送短信验证码，1条/分钟，5条/小时，10条/天
+     * 您的操作过于频繁，如需帮助，请联系51Token客服
      * @author 唐群
      * @param mobileNum 手机号
      * @param smsCode 短信验证码

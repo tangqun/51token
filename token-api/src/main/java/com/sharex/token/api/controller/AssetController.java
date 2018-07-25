@@ -1,6 +1,7 @@
 package com.sharex.token.api.controller;
 
 import com.sharex.token.api.entity.RESTful;
+import com.sharex.token.api.entity.req.AssetSyn;
 import com.sharex.token.api.entity.req.AssetAuth;
 import com.sharex.token.api.entity.req.AssetRmAuth;
 import com.sharex.token.api.service.AssetService;
@@ -18,7 +19,7 @@ public class AssetController {
     private AssetService assetService;
 
     // 暂定手动验证token，后期优化 父类验证token问题 / AOP
-    @ApiOperation("资产聚合")
+    @ApiOperation("授权列表")
     @RequestMapping(value = "/getAuthMapping/{token}", method = RequestMethod.GET)
     public RESTful getAuthMapping(@PathVariable String token) {
 
@@ -37,5 +38,19 @@ public class AssetController {
     public RESTful rmAuth(@PathVariable String token, @RequestBody AssetRmAuth assetRmAuth) {
 
         return assetService.rmAuth(token, assetRmAuth);
+    }
+
+    @ApiOperation("远程同步资产")
+    @RequestMapping(value = "/syn/{token}", method = RequestMethod.POST)
+    public RESTful syn(@PathVariable String token, @RequestBody AssetSyn assetSyn) {
+
+        return assetService.syn(token, assetSyn);
+    }
+
+    @ApiOperation("资产聚合")
+    @RequestMapping(value = "/getAsset/{token}", method = RequestMethod.GET)
+    public RESTful getAsset(@PathVariable String token) {
+
+        return assetService.getAsset(token);
     }
 }

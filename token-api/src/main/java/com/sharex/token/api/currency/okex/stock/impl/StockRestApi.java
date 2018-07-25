@@ -130,7 +130,7 @@ public class StockRestApi implements IStockRestApi {
 
 		// 发送post请求
 		String result = HttpUtil.post(API_URL + this.USERINFO_URL,
-				StringUtil.toQueryString(params));
+				StringUtil.toQueryString(params), "application/x-www-form-urlencoded");
 
 		return result;
 	}
@@ -157,7 +157,7 @@ public class StockRestApi implements IStockRestApi {
 		params.put("sign", sign);
 
 		// 发送post请求
-		String result = HttpUtil.post(API_URL + this.TRADE_URL, StringUtil.toQueryString(params));
+		String result = HttpUtil.post(API_URL + this.TRADE_URL, StringUtil.toQueryString(params), "application/x-www-form-urlencoded");
 
 		return result;
 	}
@@ -181,7 +181,7 @@ public class StockRestApi implements IStockRestApi {
 		params.put("sign", sign);
 		
 		// 发送post请求
-		String result = HttpUtil.post(API_URL + this.BATCH_TRADE_URL, StringUtil.toQueryString(params));
+		String result = HttpUtil.post(API_URL + this.BATCH_TRADE_URL, StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
 
 		return result;
 	}
@@ -201,7 +201,7 @@ public class StockRestApi implements IStockRestApi {
 		params.put("sign", sign);
 		
 		// 发送post请求
-		String result = HttpUtil.post(API_URL + this.CANCEL_ORDER_URL, StringUtil.toQueryString(params));
+		String result = HttpUtil.post(API_URL + this.CANCEL_ORDER_URL, StringUtil.toQueryString(params), "application/x-www-form-urlencoded");
 
 		return result;
 	}
@@ -221,7 +221,7 @@ public class StockRestApi implements IStockRestApi {
 		params.put("sign", sign);
 		
 		// 发送post请求
-		String result = HttpUtil.post(API_URL + this.ORDER_INFO_URL, StringUtil.toQueryString(params));
+		String result = HttpUtil.post(API_URL + this.ORDER_INFO_URL, StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
 
 		return result;
 	}
@@ -245,7 +245,7 @@ public class StockRestApi implements IStockRestApi {
 		params.put("sign", sign);
 		
 		// 发送post请求
-		String result = HttpUtil.post(API_URL + this.ORDERS_INFO_URL, StringUtil.toQueryString(params));
+		String result = HttpUtil.post(API_URL + this.ORDERS_INFO_URL, StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
 
 		return result;
 	}
@@ -272,7 +272,7 @@ public class StockRestApi implements IStockRestApi {
 		params.put("sign", sign);
 
 		// 发送post请求
-		String result = HttpUtil.post(API_URL + this.ORDER_HISTORY_URL, StringUtil.toQueryString(params));
+		String result = HttpUtil.post(API_URL + this.ORDER_HISTORY_URL, StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
 
 		return result;
 	}

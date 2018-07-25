@@ -11,11 +11,11 @@ import java.util.Base64;
 
 public class CryptoUtil {
 
-    public static String hmacSha256(String appSecret,  String s) throws NoSuchAlgorithmException, InvalidKeyException {
+    public static String hmacSha256(String apiSecret,  String str) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secKey = new SecretKeySpec(appSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        SecretKeySpec secKey = new SecretKeySpec(apiSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         hmacSha256.init(secKey);
-        byte[] hash = hmacSha256.doFinal(s.getBytes(StandardCharsets.UTF_8));
+        byte[] hash = hmacSha256.doFinal(str.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(hash);
     }
 
