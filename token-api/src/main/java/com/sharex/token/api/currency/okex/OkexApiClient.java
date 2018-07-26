@@ -35,6 +35,11 @@ public class OkexApiClient implements IApiClient {
     }
 
     @Override
+    public String trades(String symbol, Integer size) throws Exception {
+        return null;
+    }
+
+    @Override
     public String ticker(String symbol) throws Exception {
 
         String respBody = HttpUtil.get(API_URL + TICKER_URL + "symbol=" + symbol);

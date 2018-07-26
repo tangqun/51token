@@ -179,7 +179,7 @@ public class AssetService {
                     Map<String, Object> statusMapper = new HashMap<>();
                     statusMapper.put("userId", user.getId());
                     statusMapper.put("exchangeName", assetAuth.getExchangeName());
-                    // 设置失效
+                    // 设置有效
                     statusMapper.put("status", 0);
                     statusMapper.put("updateTime", date);
                     userApiMapper.updateStatus(statusMapper);
@@ -322,9 +322,10 @@ public class AssetService {
                         // huobi_symbol
                         String ticker = hashOperations.get("ticker", userCurrency.getExchangeName() + "_" + userCurrency.getCurrency() + "usdt_lastest").toString();
                         MyKline myKline = objectMapper.readValue(ticker, MyKline.class);
+                        // 现价
                         userCurrencyAssetResp.setPrice(myKline.getClose());
 
-                        //
+                        // 市值
                         Double vol = Double.valueOf(userCurrency.getBalance()) * Double.valueOf(myKline.getClose());
                         userCurrencyAssetResp.setVol(vol.toString());
 

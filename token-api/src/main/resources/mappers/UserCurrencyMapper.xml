@@ -61,4 +61,9 @@
         SELECT * FROM `user_currency`
         WHERE `api_key` = #{apiKey};
     </select>
+    <select id="selectEntity" parameterType="java.util.Map" resultMap="userCurrencyMap">
+        SELECT * FROM `user_currency`
+        WHERE `exchange_name` = #{exchangeName} AND `currency` = #{currency} AND `api_key` = #{apiKey} AND `type` = 'trade'
+        LIMIT 0, 1;
+    </select>
 </mapper>

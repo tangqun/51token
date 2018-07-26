@@ -17,10 +17,31 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
+    @ApiOperation("单币聚合")
+    @RequestMapping(value = "/get/{token}", method = RequestMethod.GET)
+    public RESTful get(String token, String exchangeName, String currency) {
+
+        return currencyService.get(token, exchangeName, currency);
+    }
+
     @ApiOperation("行情")
     @RequestMapping(value = "/getTicker", method = RequestMethod.GET)
     public RESTful getTicker(String exchangeName, String symbol) {
 
         return currencyService.getTicker(exchangeName, symbol);
+    }
+
+    @ApiOperation("k线")
+    @RequestMapping(value = "/getKline", method = RequestMethod.GET)
+    public RESTful getKline(String exchangeName, String symbol, String type) {
+
+        return currencyService.getKline(exchangeName, symbol, type);
+    }
+
+    @ApiOperation("最新成交")
+    @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
+    public RESTful getTrades(String exchangeName, String symbol, String direction) {
+
+        return currencyService.getTrades(exchangeName, symbol, direction);
     }
 }

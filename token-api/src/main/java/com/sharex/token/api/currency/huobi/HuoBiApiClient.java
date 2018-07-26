@@ -28,6 +28,9 @@ public class HuoBiApiClient implements IApiClient {
     private final String apiKey;
     private final String apiSecret;
 
+    // 成交记录
+    private static final String Trades_URL = "/market/history/trade";
+
     // 行情
     private static final String Ticker_URL = "/market/detail/merged";
 
@@ -49,6 +52,29 @@ public class HuoBiApiClient implements IApiClient {
     public HuoBiApiClient(String apiKey, String apiSecret) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
+    }
+
+    /**
+     * 最新成交
+     * @param symbol
+     * @param size
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public String trades(String symbol, Integer size) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("symbol", symbol);
+        if (size > 0) {
+            map.put("size", size.toString());
+        }
+
+        String queryString = toQueryString("GET", API_HOST, Trades_URL, map);
+
+        String respBody = HttpUtil.get(API_URL + Trades_URL + "?" + queryString);
+
+        return respBody;
     }
 
     @Override

@@ -41,7 +41,9 @@ public enum CodeEnum {
     ExchangeInvalid(120020, "交易所无效"),
     ExchangeInDBNotConfig(120021, "交易所未配置"),
 
-    NotExistAuthOfExchange(120022, "该交易所未授权")
+    NotExistAuthOfExchange(120022, "该交易所未授权"),
+
+    AssetNotSyn(120023, "资产未同步")
     ;
 
     CodeEnum(int code, String msg) {

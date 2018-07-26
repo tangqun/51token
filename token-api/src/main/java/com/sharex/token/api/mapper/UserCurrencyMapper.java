@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 @Repository
@@ -13,4 +14,5 @@ public interface UserCurrencyMapper {
     void insert(UserCurrency userCurrency);
     void deleteByApiKey(String apiKey);
     List<UserCurrency> selectByApiKey(String apiKey);
+    UserCurrency selectEntity(Map<String, Object> map);
 }

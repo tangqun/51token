@@ -7,6 +7,13 @@ import java.security.NoSuchAlgorithmException;
 public interface IApiClient {
 
     /**
+     * 最新成交
+     * @return
+     * @throws Exception
+     */
+    String trades(String symbol, Integer size) throws Exception;
+
+    /**
      * 聚合行情（单个Symbol）
      * @param symbol
      * @return

@@ -6,6 +6,8 @@ import com.sharex.token.api.currency.IApiClient;
 import com.sharex.token.api.currency.huobi.HuoBiApiClient;
 import com.sharex.token.api.currency.huobi.resp.ApiResp;
 import com.sharex.token.api.currency.huobi.resp.Kline;
+import com.sharex.token.api.currency.huobi.resp.Trade;
+import com.sharex.token.api.currency.huobi.resp.Trades;
 import com.sharex.token.api.entity.MyKline;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -100,5 +102,58 @@ public class ScheduleService {
         // k线 okex_symbol
 
         // ...
+    }
+
+    /**
+     * 最新成交
+     */
+    @Scheduled(cron="0/10 * * * * ?")
+    public void synTrade() {
+
+        // huobi
+        try {
+
+            String respBody = apiClient.trades("btcusdt", 100);
+
+            // {"status":"ok","ch":"market.btcusdt.trade.detail","ts":1532594863670,"data":[
+            // {"id":13791167722,"ts":1532594861775,"data":[{"amount":0.012200000000000000,"ts":1532594861775,"id":137911677228650540740,"price":8258.820000000000000000,"direction":"buy"}]},
+            // {"id":13791166720,"ts":1532594860908,"data":[{"amount":0.939100000000000000,"ts":1532594860908,"id":137911667208650540740,"price":8258.820000000000000000,"direction":"buy"}]}]}
+            System.out.println(respBody);
+
+            ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+            if ("ok".equals(apiResp.getStatus())) {
+
+                List<Trade> tradeList_buy = new LinkedList<>();
+                List<Trade> tradeList_sell = new LinkedList<>();
+
+                List<Trades> tradesList = objectMapper.convertValue(apiResp.getData(), new TypeReference<List<Trades>>() { });
+                for (Trades trades:tradesList) {
+                    List<Trade> tradeList = trades.getData();
+                    for (Trade trade:tradeList) {
+                        if ("buy".equals(trade.getDirection())) {
+
+                            tradeList_buy.add(trade);
+
+                        } else if ("sell".equals(trade.getDirection())) {
+
+                            tradeList_sell.add(trade);
+
+                        }
+                    }
+                }
+
+                // trades
+                // huobi_symbol_buy
+                // huobi_symbol_sell
+                hashOperations.put("trades", "huobi_btcusdt_buy", objectMapper.writeValueAsString(tradeList_buy));
+                hashOperations.put("trades", "huobi_btcusdt_sell", objectMapper.writeValueAsString(tradeList_sell));
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+
+        // okex
     }
 }
