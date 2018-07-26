@@ -14,11 +14,12 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
 
-//@Component
+@Component
 public class ScheduleService {
 
     private static final Log logger = LogFactory.getLog(ScheduleService.class);
@@ -39,9 +40,10 @@ public class ScheduleService {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Scheduled(cron="0/10 * *  * * ? ")
+    @Scheduled(cron="0/10 * * * * ?")
     public void synKline() {
 
+        // 多线程执行
         try {
             // 要求数据格式转成统一的 包含 字段个数、字段名
             String[] symbols = {"btcusdt", "etcusdt"};

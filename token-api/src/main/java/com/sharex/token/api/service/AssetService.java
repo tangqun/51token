@@ -315,7 +315,7 @@ public class AssetService {
                 }
 
                 // 设置币种个数
-                userExchangeAssetResp.setCurrencyCount(userCurrencyList.size());
+                userExchangeAssetResp.setCurrencyCount(userCurrencyAssetRespList.size());
 
                 // 添加三级数据
                 userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
