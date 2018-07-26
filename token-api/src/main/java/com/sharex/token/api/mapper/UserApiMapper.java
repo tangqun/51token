@@ -13,6 +13,6 @@ public interface UserApiMapper {
 
     void insert(UserApi userApi);
     void updateStatus(Map<String, Object> map);
-    UserApi selectEnabledByType(Map<String, Object> map);
+    UserApi selectByType(Map<String, Object> map);
     List<UserApi> selectEnabledByUserId(Integer userId);
 }

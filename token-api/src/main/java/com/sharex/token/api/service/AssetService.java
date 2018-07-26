@@ -160,29 +160,42 @@ public class AssetService {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
             }
 
+            Date date = new Date();
+
             // 授权时候尝试获取相应的用户信息接口再保存，无效的数据没有意义
             // 同一个人同平台换 ApiKey ApiSecret 重复授权问题
             Map<String, Object> typeMapper = new HashMap<>();
             typeMapper.put("userId", user.getId());
             typeMapper.put("exchangeName", assetAuth.getExchangeName());
-            UserApi userApi = userApiMapper.selectEnabledByType(typeMapper);
+            UserApi userApi = userApiMapper.selectByType(typeMapper);
             if (userApi != null) {
-                // 请勿重复授权
-                return RESTful.Fail(CodeEnum.RepeatAuthOfAsset);
+                // 已授权过，判断状态
+                if (userApi.getStatus() == 0) {
+                    // 请勿重复授权
+                    return RESTful.Fail(CodeEnum.RepeatAuthOfAsset);
+                } else {
+                    // 更新授权
+
+                    Map<String, Object> statusMapper = new HashMap<>();
+                    statusMapper.put("userId", user.getId());
+                    statusMapper.put("exchangeName", assetAuth.getExchangeName());
+                    // 设置失效
+                    statusMapper.put("status", 0);
+                    statusMapper.put("updateTime", date);
+                    userApiMapper.updateStatus(statusMapper);
+                }
+            } else {
+                // 未授权过
+                userApi = new UserApi();
+                userApi.setApiKey(assetAuth.getApiKey());
+                userApi.setApiSecret(assetAuth.getApiSecret());
+                userApi.setExchangeName(assetAuth.getExchangeName());
+                userApi.setUserId(user.getId());
+                userApi.setCreateTime(date);
+                userApiMapper.insert(userApi);
             }
 
-            Date date = new Date();
-
-            userApi = new UserApi();
-            userApi.setApiKey(assetAuth.getApiKey());
-            userApi.setApiSecret(assetAuth.getApiSecret());
-            userApi.setExchangeName(assetAuth.getExchangeName());
-            userApi.setUserId(user.getId());
-            userApi.setCreateTime(date);
-            userApiMapper.insert(userApi);
-
             return RESTful.Success();
-
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
@@ -223,9 +236,12 @@ public class AssetService {
             Map<String, Object> typeMapper = new HashMap<>();
             typeMapper.put("userId", user.getId());
             typeMapper.put("exchangeName", assetRmAuth.getExchangeName());
-            UserApi userApi = userApiMapper.selectEnabledByType(typeMapper);
+            UserApi userApi = userApiMapper.selectByType(typeMapper);
             if (userApi == null) {
                 // 请勿重复取消授权
+                return RESTful.Fail(CodeEnum.RepeatRmAuthOfAsset);
+            }
+            if (userApi.getStatus() != 0) {
                 return RESTful.Fail(CodeEnum.RepeatRmAuthOfAsset);
             }
 
@@ -234,6 +250,8 @@ public class AssetService {
             Map<String, Object> statusMapper = new HashMap<>();
             statusMapper.put("userId", user.getId());
             statusMapper.put("exchangeName", assetRmAuth.getExchangeName());
+            // 设置失效
+            statusMapper.put("status", 1);
             statusMapper.put("updateTime", date);
             userApiMapper.updateStatus(statusMapper);
 
@@ -378,9 +396,12 @@ public class AssetService {
             Map<String, Object> typeMapper = new HashMap<>();
             typeMapper.put("userId", user.getId());
             typeMapper.put("exchangeName", assetSyn.getExchangeName());
-            UserApi userApi = userApiMapper.selectEnabledByType(typeMapper);
+            UserApi userApi = userApiMapper.selectByType(typeMapper);
             if (userApi == null) {
-                // 请勿重复授权
+                // 授权不存在
+                return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
+            }
+            if (userApi.getStatus() != 0) {
                 return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
 

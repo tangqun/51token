@@ -51,13 +51,13 @@
     </insert>
     <update id="updateStatus" parameterType="java.util.Map">
         UPDATE `user_api`
-        SET `status` = 1, `update_time` = #{updateTime}
+        SET `status` = #{status}, `update_time` = #{updateTime}
         WHERE `user_id` = #{userId} AND `exchange_name` = #{exchangeName};
     </update>
-    <select id="selectEnabledByType" parameterType="java.util.Map" resultMap="userApiMap">
+    <select id="selectByType" parameterType="java.util.Map" resultMap="userApiMap">
         SELECT `id`, `api_key`, `api_secret`, `exchange_name`, `status`, `user_id`, `create_time`, `update_time`
         FROM `user_api`
-        WHERE `user_id` = #{userId} AND `exchange_name` = #{exchangeName} AND `status` = 0
+        WHERE `user_id` = #{userId} AND `exchange_name` = #{exchangeName}
         LIMIT 0, 1;
     </select>
     <select id="selectEnabledByUserId" parameterType="java.lang.Integer" resultMap="userApiMap">

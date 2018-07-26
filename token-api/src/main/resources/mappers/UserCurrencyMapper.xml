@@ -53,9 +53,9 @@
         VALUES (#{exchangeName}, #{currency}, #{type}, #{balance}, #{userId}, #{apiKey}, #{apiSecret}, #{accountId}, #{createTime});
     </insert>
     <delete id="deleteByApiKey" parameterType="java.lang.String">
-        delete
-        from `user_currency`
-        where `api_key` = #{apiKey};
+        DELETE
+        FROM `user_currency`
+        WHERE `api_key` = #{apiKey};
     </delete>
     <select id="selectByApiKey" parameterType="java.lang.String" resultMap="userCurrencyMap">
         SELECT * FROM `user_currency`

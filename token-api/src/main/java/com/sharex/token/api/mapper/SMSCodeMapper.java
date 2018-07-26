@@ -12,6 +12,7 @@ public interface SMSCodeMapper {
 
     void insert(SMSCode smsCode);
     void update(Integer id);
+    void delete(String mobileNum);
     SMSCode selectByMobileNum(Map<String, Object> map);
     Integer selectCountByDay(Map<String, Object> map);
 }

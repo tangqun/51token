@@ -55,6 +55,11 @@
         UPDATE `smscode` SET `status` = 1
         WHERE `id` = #{id}
     </update>
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE
+        FROM `smscode`
+        WHERE `mobile_num` = #{mobileNum};
+    </delete>
     <select id="selectByMobileNum" parameterType="java.util.Map" resultMap="smsCodeMap">
         SELECT `id`, `mobile_num`, `code`, `status`, `ali_request_id`, `ali_biz_id`, `ali_code`, `ali_message`, `create_time`, `update_time`
         FROM `smscode`

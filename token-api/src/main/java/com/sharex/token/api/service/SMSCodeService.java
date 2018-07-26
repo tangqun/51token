@@ -3,6 +3,7 @@ package com.sharex.token.api.service;
 import com.sharex.token.api.entity.RESTful;
 import com.sharex.token.api.entity.SMSCode;
 import com.sharex.token.api.entity.enums.CodeEnum;
+import com.sharex.token.api.entity.req.SMSCodeRemove;
 import com.sharex.token.api.entity.req.SMSCodeSend;
 import com.sharex.token.api.mapper.SMSCodeMapper;
 import com.sharex.token.api.util.AliSMSUtil;
@@ -72,6 +73,28 @@ public class SMSCodeService {
                 return RESTful.Success();
             }
             return RESTful.Fail(CodeEnum.SMSSendFail);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    public RESTful remove(SMSCodeRemove smsCodeRemove) {
+        try {
+
+            if (StringUtils.isEmpty(smsCodeRemove.getMobileNum())) {
+                // 手机号不能为空
+                return RESTful.Fail(CodeEnum.MobileNumCannotBeNull);
+            }
+
+            if (!ValidateUtil.checkMobile(smsCodeRemove.getMobileNum())) {
+                // 手机号格式错误
+                return RESTful.Fail(CodeEnum.MobileNumFormatError);
+            }
+
+            smsCodeMapper.delete(smsCodeRemove.getMobileNum());
+
+            return RESTful.Success();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

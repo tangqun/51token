@@ -1,6 +1,7 @@
 package com.sharex.token.api.controller;
 
 import com.sharex.token.api.entity.RESTful;
+import com.sharex.token.api.entity.req.SMSCodeRemove;
 import com.sharex.token.api.entity.req.SMSCodeSend;
 import com.sharex.token.api.service.SMSCodeService;
 import io.swagger.annotations.Api;
@@ -23,5 +24,12 @@ public class SMSCodeController {
     @RequestMapping(value = "/send", method = RequestMethod.POST)
     public RESTful send(@RequestBody SMSCodeSend smsCodeSend) {
         return smsCodeService.send(smsCodeSend);
+    }
+
+    @ApiOperation("清除短信")
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    public RESTful remove(SMSCodeRemove smsCodeRemove) {
+
+        return smsCodeService.remove(smsCodeRemove);
     }
 }
