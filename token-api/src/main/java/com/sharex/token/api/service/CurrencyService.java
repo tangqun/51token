@@ -67,17 +67,17 @@ public class CurrencyService {
             Map<String, Object> userApiMap = new HashMap<>();
             userApiMap.put("userId", user.getId());
             userApiMap.put("exchangeName", exchangeName);
-            UserApi userApi = userApiMapper.selectEnabledByType(userApiMap);
-            if (userApi == null) {
+            UserApi userApi = userApiMapper.selectByType(userApiMap);
+            if (userApi != null && userApi.getStatus() == 0) {
+
+                IApiClient apiClient = ApiFactory.getApiClient(exchangeName, userApi.getApiKey(), userApi.getApiSecret());
+                apiClient.accounts();
+
+                return null;
+            } else {
                 // 未授权或者取消授权
                 return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
-
-            IApiClient apiClient = ApiFactory.getApiClient(exchangeName, userApi.getApiKey(), userApi.getApiSecret());
-            apiClient.accounts();
-
-            return null;
-
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
