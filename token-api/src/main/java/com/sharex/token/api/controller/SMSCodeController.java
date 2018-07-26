@@ -28,7 +28,7 @@ public class SMSCodeController {
 
     @ApiOperation("清除短信")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
-    public RESTful remove(SMSCodeRemove smsCodeRemove) {
+    public RESTful remove(@RequestBody SMSCodeRemove smsCodeRemove) {
 
         return smsCodeService.remove(smsCodeRemove);
     }
