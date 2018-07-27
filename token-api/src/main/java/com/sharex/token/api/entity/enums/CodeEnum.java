@@ -43,7 +43,10 @@ public enum CodeEnum {
 
     NotExistAuthOfExchange(120022, "该交易所未授权"),
 
-    AssetNotSyn(120023, "资产未同步")
+    AssetNotSyn(120023, "资产未同步"),
+
+    FeedbackContentCannotBeNull(120024, "反馈内容不能未空"),
+    FeedbackContentFormatError(120025, "反馈内容格式错误"),
     ;
 
     CodeEnum(int code, String msg) {

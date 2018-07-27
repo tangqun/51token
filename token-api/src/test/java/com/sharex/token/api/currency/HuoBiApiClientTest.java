@@ -6,9 +6,14 @@ import com.sharex.token.api.currency.huobi.HuoBiApiClient;
 import com.sharex.token.api.currency.huobi.resp.Accounts;
 import com.sharex.token.api.currency.huobi.resp.ApiResp;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class HuoBiApiClientTest {
 
     private static final String apiKey_huobi = "d2ccc964-813249e6-595ee6d8-574fb";
@@ -112,6 +117,16 @@ public class HuoBiApiClientTest {
         HuoBiApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
 
         String respBody = apiClient.placeOrder(accountId_huobi.toString(), "btcusdt", "0.1", "0.02", "buy-limit");
+
+        System.out.println(respBody);
+    }
+
+    @Test
+    public void historyOrders() throws Exception {
+
+        HuoBiApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
+
+        String respBody = apiClient.historyOrders("btcusdt", 0);
 
         System.out.println(respBody);
     }

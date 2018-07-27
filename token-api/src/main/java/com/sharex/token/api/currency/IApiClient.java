@@ -84,7 +84,7 @@ public interface IApiClient {
      * @param status
      * @return
      */
-//    String historyOrders(String symbol, Integer status);
+    String historyOrders(String symbol, Integer status) throws Exception;
 
     /**
      * 委托

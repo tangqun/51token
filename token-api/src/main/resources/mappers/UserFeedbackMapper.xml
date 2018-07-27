@@ -20,27 +20,19 @@
     resultOrdered：这个设置仅针对嵌套结果select语句适用。如果为true，就是假设包含了嵌套结果集或是分组了，这样的话当返回一个主结果行的时候，就不会发生对前面结果集引用的情况。这就使得在获取嵌套的结果集时不至于导致内存不够用。默认值为false。
     resultSets：这个设置仅对多结果集的情况适用，它将列出语句执行后返回的结果集并给每个结果集一个名称，名称是逗号分隔的。
  -->
-<mapper namespace="com.sharex.token.api.mapper.UserMapper">
+<mapper namespace="com.sharex.token.api.mapper.UserFeedbackMapper">
     <!--
         id：resultMap的唯一标识符。
         type：resultMap实际返回的类型。
     -->
-    <resultMap id="userMap" type="com.sharex.token.api.entity.User">
+    <resultMap id="userFeedbackMap" type="com.sharex.token.api.entity.UserFeedback">
         <!--
             id：表示数据库的主键，其中，column属性表示数据库表的列名，property表示数据库列映射到返回类型的属性。
             result：表示数据库的普通列，其中，column属性表示数据库表的列名，property表示数据库列映射到返回类型的属性。
         -->
         <result column="id" property="id" />
-        <result column="mobile_num" property="mobileNum" />
-        <result column="password" property="password" />
-        <result column="salt" property="salt" />
-        <result column="status" property="status" />
-        <result column="kline_status" property="klineStatus" />
-        <result column="token" property="token" />
-        <result column="last_login_time" property="lastLoginTime" />
-        <result column="login_err_count" property="loginErrCount" />
-        <result column="frozen_start_time" property="frozenStartTime" />
-        <result column="frozen_end_time" property="frozenEndTime" />
+        <result column="content" property="content" />
+        <result column="user_id" property="userId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
@@ -50,25 +42,8 @@
         keyProperty：（仅对insert和update游泳）唯一标记一个属性，MyBatis会通过getGeneratedKeys的返回值或者通过insert语句的selectKey子元素设置它的键值，默认为unset。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
         keyColumn：（仅对insert和update有用）通过生成的键值设置表中的列名，这个设置仅对某些数据库（像PostgreSQL）是必须的，当主键列不是表中的第一列时需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
     -->
-    <insert id="insert" parameterType="java.util.Map">
-        INSERT INTO `user` (`mobile_num`, `password`, `salt`, `token`, `last_login_time`, `create_time`)
-        VALUES (#{mobileNum}, #{password}, #{salt}, #{token}, #{lastLoginTime}, #{createTime});
+    <insert id="insert" parameterType="com.sharex.token.api.entity.req.Feedback">
+        INSERT INTO `user_feedback` (`content`, `user_id`, `create_time`)
+        VALUES (#{content}, #{userId}, #{createTime});
     </insert>
-    <update id="updateToken" parameterType="java.util.Map">
-        UPDATE `user`
-        SET `token` = #{newToken}, `last_login_time` = #{lastLoginTime}
-        WHERE `token` = #{oldToken};
-    </update>
-    <select id="selectByMobileNum" parameterType="java.lang.String" resultMap="userMap">
-        SELECT `id`, `mobile_num`, `password`, `salt`, `status`, `kline_status`, `token`, `last_login_time`, `login_err_count`, `frozen_start_time`, `frozen_end_time`, `create_time`, `update_time`
-        FROM `user`
-        WHERE `mobile_num` = #{mobileNum}
-        LIMIT 0, 1;
-    </select>
-    <select id="selectByToken" parameterType="java.lang.String" resultMap="userMap">
-        SELECT `id`, `mobile_num`, `password`, `salt`, `status`, `kline_status`, `token`, `last_login_time`, `login_err_count`, `frozen_start_time`, `frozen_end_time`, `create_time`, `update_time`
-        FROM `user`
-        WHERE `token` = #{token}
-        LIMIT 0, 1;
-    </select>
 </mapper>

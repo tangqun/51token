@@ -8,10 +8,11 @@ public class User {
     private String mobileNum;
     private String password;
     private String salt;
-    private int status;
+    private Integer status;
+    private Integer klineStatus;
     private String token;
     private Date lastLoginTime;
-    private int loginErrCount;
+    private Integer loginErrCount;
     private Date frozenStartTime;
     private Date frozenEndTime;
     private Date createTime;
@@ -49,12 +50,20 @@ public class User {
         this.salt = salt;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getKlineStatus() {
+        return klineStatus;
+    }
+
+    public void setKlineStatus(Integer klineStatus) {
+        this.klineStatus = klineStatus;
     }
 
     public String getToken() {
@@ -73,11 +82,11 @@ public class User {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public int getLoginErrCount() {
+    public Integer getLoginErrCount() {
         return loginErrCount;
     }
 
-    public void setLoginErrCount(int loginErrCount) {
+    public void setLoginErrCount(Integer loginErrCount) {
         this.loginErrCount = loginErrCount;
     }
 

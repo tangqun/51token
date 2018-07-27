@@ -106,6 +106,11 @@ public class OkexApiClient implements IApiClient {
     }
 
     @Override
+    public String historyOrders(String symbol, Integer status) throws Exception {
+        return null;
+    }
+
+    @Override
     public String entrustOrders(String symbol) throws Exception {
 
         Map<String, String> params = new HashMap<String, String>();

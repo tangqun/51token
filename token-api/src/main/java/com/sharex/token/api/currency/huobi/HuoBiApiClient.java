@@ -38,8 +38,11 @@ public class HuoBiApiClient implements IApiClient {
     private static final String Accounts_URL = "/v1/account/accounts";
     private static final String AccountsBalance_URL = "/v1/account/accounts/%s/balance";
 
-    // 委托
+    // 委托查询
     private static final String Orders_URL = "/v1/order/orders";
+
+    // 用户历史成交
+    private static final String HistoryOrders_URL = "/v1/order/matchresults";
 
     // 下单
     private static final String PlaceOrder_URL = "/v1/order/orders/place";
@@ -151,6 +154,21 @@ public class HuoBiApiClient implements IApiClient {
         String queryString = toQueryString("POST", API_HOST, PlaceOrder_URL, new HashMap<>());
 
         String respBody = HttpUtil.post(API_URL + PlaceOrder_URL + "?" + queryString, objectMapper.writeValueAsString(map), "application/json");
+
+        return respBody;
+    }
+
+    @Override
+    public String historyOrders(String symbol, Integer status) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("symbol", symbol);
+        // buy-market：市价买, sell-market：市价卖, buy-limit：限价买, sell-limit：限价卖, buy-ioc：IOC买单, sell-ioc：IOC卖单
+        map.put("types", "buy-market,sell-market,buy-limit,sell-limit");
+
+        String queryString = toQueryString("GET", API_HOST, HistoryOrders_URL, map);
+
+        String respBody = HttpUtil.get(API_URL + HistoryOrders_URL + "?" + queryString);
 
         return respBody;
     }
