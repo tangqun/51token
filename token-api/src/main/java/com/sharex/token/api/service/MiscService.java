@@ -2,11 +2,14 @@ package com.sharex.token.api.service;
 
 import com.sharex.token.api.entity.AppEx;
 import com.sharex.token.api.entity.AppVersion;
+import com.sharex.token.api.entity.Quotation;
 import com.sharex.token.api.entity.RESTful;
 import com.sharex.token.api.entity.req.MiscRevAppEx;
 import com.sharex.token.api.entity.resp.AppVersionResp;
+import com.sharex.token.api.entity.resp.QuotationResp;
 import com.sharex.token.api.mapper.AppExMapper;
 import com.sharex.token.api.mapper.AppVersionMapper;
+import com.sharex.token.api.mapper.QuotationMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class MiscService {
 
     @Autowired
     private AppExMapper appExMapper;
+
+    @Autowired
+    private QuotationMapper quotationMapper;
 
     public RESTful revAppEx(MiscRevAppEx miscRevAppEx) {
         try {
@@ -66,6 +72,25 @@ public class MiscService {
             }
 
             return RESTful.Success(appVersionRespList);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    public RESTful getQuotation() {
+        try {
+
+            QuotationResp quotationResp = new QuotationResp();
+
+            Quotation quotation = quotationMapper.selectRandom();
+            if (quotation != null) {
+                quotationResp.setContent(quotation.getContent());
+                quotationResp.setAuthor(quotation.getAuthor());
+            }
+
+            return RESTful.Success(quotationResp);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

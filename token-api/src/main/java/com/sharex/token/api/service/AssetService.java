@@ -72,7 +72,7 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -150,7 +150,7 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -170,7 +170,7 @@ public class AssetService {
             UserApi userApi = userApiMapper.selectByType(typeMapper);
             if (userApi != null) {
                 // 已授权过，判断状态
-                if (userApi.getStatus() == 0) {
+                if (userApi.getStatus().equals(0)) {
                     // 请勿重复授权
                     return RESTful.Fail(CodeEnum.RepeatAuthOfAsset);
                 } else {
@@ -223,7 +223,7 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -241,7 +241,7 @@ public class AssetService {
                 // 请勿重复取消授权
                 return RESTful.Fail(CodeEnum.RepeatRmAuthOfAsset);
             }
-            if (userApi.getStatus() != 0) {
+            if (!userApi.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.RepeatRmAuthOfAsset);
             }
 
@@ -282,7 +282,7 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -384,7 +384,7 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -402,7 +402,7 @@ public class AssetService {
                 // 授权不存在
                 return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
-            if (userApi.getStatus() != 0) {
+            if (!userApi.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
 

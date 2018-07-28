@@ -67,7 +67,7 @@ public class CurrencyService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -82,7 +82,7 @@ public class CurrencyService {
             userApiMap.put("userId", user.getId());
             userApiMap.put("exchangeName", exchangeName);
             UserApi userApi = userApiMapper.selectByType(userApiMap);
-            if (userApi != null && userApi.getStatus() == 0) {
+            if (userApi != null && userApi.getStatus().equals(0)) {
 
                 Map<String, Object> currencyMap = new HashMap<>();
                 currencyMap.put("exchangeName", exchangeName);

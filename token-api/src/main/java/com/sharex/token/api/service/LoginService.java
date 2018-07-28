@@ -76,7 +76,7 @@ public class LoginService {
                 // 验证码不存在
                 return RESTful.Fail(CodeEnum.SMSCodeNotInDB);
             }
-            if (smsCode.getStatus() != 0) {
+            if (!smsCode.getStatus().equals(0)) {
                 // 验证码已被使用
                 return RESTful.Fail(CodeEnum.SMSCodeHasBeenUsed);
             }
@@ -116,7 +116,7 @@ public class LoginService {
                 return RESTful.Success(map);
             } else {
                 // 判断是否冻结
-                if (user.getStatus() != 0) {
+                if (!user.getStatus().equals(0)) {
                     // 被冻结
                     return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
                 }
@@ -190,7 +190,7 @@ public class LoginService {
                 String token = UUID.randomUUID().toString();
 
                 // 判断是否冻结
-                if (user.getStatus() != 0) {
+                if (!user.getStatus().equals(0)) {
                     // 被冻结
                     return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
                 }

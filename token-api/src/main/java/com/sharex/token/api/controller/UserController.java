@@ -2,6 +2,7 @@ package com.sharex.token.api.controller;
 
 import com.sharex.token.api.entity.RESTful;
 import com.sharex.token.api.entity.req.Feedback;
+import com.sharex.token.api.entity.req.SwitchKline;
 import com.sharex.token.api.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,12 @@ public class UserController {
     public RESTful feedback(@PathVariable String token, @RequestBody Feedback feedback) {
 
         return userService.feedback(token, feedback);
+    }
+
+    @ApiOperation("切换kline红绿显示")
+    @RequestMapping(value = "/switchKline", method = RequestMethod.POST)
+    public RESTful switchKline(String token, SwitchKline switchKline) {
+
+        return userService.switchKline(token, switchKline);
     }
 }

@@ -5,6 +5,7 @@ import com.sharex.token.api.entity.User;
 import com.sharex.token.api.entity.UserFeedback;
 import com.sharex.token.api.entity.enums.CodeEnum;
 import com.sharex.token.api.entity.req.Feedback;
+import com.sharex.token.api.entity.req.SwitchKline;
 import com.sharex.token.api.mapper.UserFeedbackMapper;
 import com.sharex.token.api.mapper.UserMapper;
 import com.sharex.token.api.util.ValidateUtil;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -48,7 +51,7 @@ public class UserService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus() != 0) {
+            if (user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -65,5 +68,62 @@ public class UserService {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
         }
+    }
+
+    public RESTful switchKline(String token, SwitchKline switchKline) {
+        try {
+            // 验证token
+            if (StringUtils.isBlank(token)) {
+                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
+            }
+            if (!ValidateUtil.checkToken(token)) {
+                return RESTful.Fail(CodeEnum.TokenFormatError);
+            }
+
+            User user = userMapper.selectByToken(token);
+            if (user == null) {
+                return RESTful.Fail(CodeEnum.TokenInvalid);
+            }
+            if (!user.getStatus().equals(0)) {
+                return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
+            }
+
+            if (switchKline.getKlineStatus().equals(0)) {
+                // 想要修改为 红涨绿跌
+                if (user.getKlineStatus().equals(switchKline.getKlineStatus())) {
+                    // 无须修改
+                    return RESTful.Fail(CodeEnum.KlineStatusEqualsInDB);
+                }
+
+                updateKlineStatus(0, token);
+
+                return RESTful.Success();
+            } else {
+
+                // 想要修改为 绿涨红跌
+                if (!user.getKlineStatus().equals(0)) {
+                    // 无须修改
+                    return RESTful.Fail(CodeEnum.KlineStatusEqualsInDB);
+                }
+
+                updateKlineStatus(1, token);
+
+                return RESTful.Success();
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    private void updateKlineStatus(Integer klineStatus, String token) {
+
+        Date date = new Date();
+        Map<String, Object> map = new HashMap<>();
+        map.put("klineStatus", klineStatus);
+        map.put("updateTime", date);
+        map.put("token", token);
+        userMapper.updateKlineStatus(map);
     }
 }

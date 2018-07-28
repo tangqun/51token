@@ -47,6 +47,8 @@ public enum CodeEnum {
 
     FeedbackContentCannotBeNull(120024, "反馈内容不能未空"),
     FeedbackContentFormatError(120025, "反馈内容格式错误"),
+
+    KlineStatusEqualsInDB(120026, "状态缓存，请刷新后查看k线数据")
     ;
 
     CodeEnum(int code, String msg) {

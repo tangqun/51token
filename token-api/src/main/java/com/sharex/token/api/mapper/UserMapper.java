@@ -14,4 +14,5 @@ public interface UserMapper {
     User selectByMobileNum(String mobileNum);
     void updateToken(Map<String, Object> map);
     User selectByToken(String token);
+    void updateKlineStatus(Map<String, Object> map);
 }

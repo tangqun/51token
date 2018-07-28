@@ -32,4 +32,11 @@ public class MiscController {
 
         return miscService.getAppVersion();
     }
+
+    @ApiOperation("韭菜语录")
+    @RequestMapping(value = "/getQuotation", method = RequestMethod.GET)
+    public RESTful getQuotation() {
+
+        return miscService.getQuotation();
+    }
 }
