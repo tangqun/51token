@@ -27,13 +27,13 @@ public class UserService {
     @Autowired
     private UserFeedbackMapper userFeedbackMapper;
 
-    public RESTful feedback(Feedback feedback) {
+    public RESTful feedback(String token, Feedback feedback) {
         try {
             // 验证token
-            if (StringUtils.isBlank(feedback.getToken())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
-            if (!ValidateUtil.checkToken(feedback.getToken())) {
+            if (!ValidateUtil.checkToken(token)) {
                 return RESTful.Fail(CodeEnum.TokenFormatError);
             }
 
@@ -44,7 +44,7 @@ public class UserService {
                 return RESTful.Fail(CodeEnum.FeedbackContentFormatError);
             }
 
-            User user = userMapper.selectByToken(feedback.getToken());
+            User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }

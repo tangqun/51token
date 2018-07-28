@@ -77,10 +77,22 @@
 		<aliyun-java-sdk-core.version>3.7.1</aliyun-java-sdk-core.version>
 		<aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
 		<json.version>20171018</json.version>
+
+		<thymeleaf.version>2.1.6.RELEASE</thymeleaf.version>
+		<!-- nekohtml替换thymeleaf-layout-dialect -->
+		<thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
+
+		<aspectjweaver.version>1.8.13</aspectjweaver.version>
 	</properties>
 
 	<dependencyManagement> <!--dependencyManagement用于管理依赖版本号 -->
 		<dependencies>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectjweaver.version}</version>
+			</dependency>
+
 			<!-- 阿里云短信服务 -->
 			<dependency>
 				<groupId>org.json</groupId>
@@ -118,6 +130,25 @@
 				<groupId>net.sourceforge.nekohtml</groupId>
 				<artifactId>nekohtml</artifactId>
 				<version>${nekohtml.version}</version>
+			</dependency>
+
+			<!--<dependency>-->
+				<!--<groupId>nz.net.ultraq.thymeleaf</groupId>-->
+				<!--<artifactId>thymeleaf-layout-dialect</artifactId>-->
+				<!--<version>${thymeleaf-layout-dialect.version}</version>-->
+			<!--</dependency>-->
+
+			<!-- thymeleaf -->
+			<dependency>
+				<groupId>org.thymeleaf</groupId>
+				<artifactId>thymeleaf</artifactId>
+				<version>${thymeleaf.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.thymeleaf</groupId>
+				<artifactId>thymeleaf-spring4</artifactId>
+				<version>${thymeleaf.version}</version>
 			</dependency>
 
 			<!-- security -->

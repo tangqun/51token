@@ -56,7 +56,7 @@ public class CurrencyService {
         try {
 
             // 验证token
-            if (StringUtils.isEmpty(token.trim())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
             if (!ValidateUtil.checkToken(token)) {

@@ -61,7 +61,7 @@ public class AssetService {
     public RESTful getAuthMapping(String token) {
         try {
             // 验证token
-            if (StringUtils.isEmpty(token.trim())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
             if (!ValidateUtil.checkToken(token)) {
@@ -131,18 +131,18 @@ public class AssetService {
         try {
 
             // 验证token
-            if (StringUtils.isEmpty(token.trim())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
             if (!ValidateUtil.checkToken(token)) {
                 return RESTful.Fail(CodeEnum.TokenFormatError);
             }
 
-            if (StringUtils.isEmpty(assetAuth.getApiKey().trim())) {
+            if (StringUtils.isBlank(assetAuth.getApiKey())) {
                 return RESTful.Fail(CodeEnum.ApiKeyCannotBeNull);
             }
 
-            if (StringUtils.isEmpty(assetAuth.getApiSecret().trim())) {
+            if (StringUtils.isBlank(assetAuth.getApiSecret())) {
                 return RESTful.Fail(CodeEnum.ApiSecretCannotBeNull);
             }
 
@@ -212,7 +212,7 @@ public class AssetService {
         try {
 
             // 验证token
-            if (StringUtils.isEmpty(token.trim())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
             if (!ValidateUtil.checkToken(token)) {
@@ -271,7 +271,7 @@ public class AssetService {
         try {
 
             // 验证token
-            if (StringUtils.isEmpty(token.trim())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
             if (!ValidateUtil.checkToken(token)) {
@@ -373,7 +373,7 @@ public class AssetService {
         try {
 
             // 验证token
-            if (StringUtils.isEmpty(token.trim())) {
+            if (StringUtils.isBlank(token)) {
                 return RESTful.Fail(CodeEnum.TokenCannotBeNull);
             }
             if (!ValidateUtil.checkToken(token)) {
