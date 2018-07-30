@@ -3,8 +3,11 @@ package com.sharex.token.api.controller;
 import com.sharex.token.api.entity.RESTful;
 import com.sharex.token.api.service.CurrencyService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +21,12 @@ public class CurrencyController {
     private CurrencyService currencyService;
 
     @ApiOperation("单币聚合")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
+    })
     @RequestMapping(value = "/get/{token}", method = RequestMethod.GET)
-    public RESTful get(String token, String exchangeName, String currency) {
+    public RESTful get(@PathVariable String token, String exchangeName, String currency) {
 
         return currencyService.get(token, exchangeName, currency);
     }
