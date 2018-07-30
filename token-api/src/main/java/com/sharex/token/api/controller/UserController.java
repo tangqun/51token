@@ -24,7 +24,7 @@ public class UserController {
 
     @ApiOperation("切换kline红绿显示")
     @RequestMapping(value = "/switchKline", method = RequestMethod.POST)
-    public RESTful switchKline(@RequestHeader String token, SwitchKline switchKline) {
+    public RESTful switchKline(@RequestHeader String token, @RequestBody SwitchKline switchKline) {
 
         return userService.switchKline(token, switchKline);
     }
