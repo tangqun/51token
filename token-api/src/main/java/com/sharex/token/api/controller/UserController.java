@@ -16,15 +16,15 @@ public class UserController {
     private UserService userService;
 
     @ApiOperation("用户反馈")
-    @RequestMapping(value = "/feedback/{token}", method = RequestMethod.POST)
-    public RESTful feedback(@PathVariable String token, @RequestBody Feedback feedback) {
+    @RequestMapping(value = "/feedback", method = RequestMethod.POST)
+    public RESTful feedback(@RequestHeader String token, @RequestBody Feedback feedback) {
 
         return userService.feedback(token, feedback);
     }
 
     @ApiOperation("切换kline红绿显示")
     @RequestMapping(value = "/switchKline", method = RequestMethod.POST)
-    public RESTful switchKline(String token, SwitchKline switchKline) {
+    public RESTful switchKline(@RequestHeader String token, SwitchKline switchKline) {
 
         return userService.switchKline(token, switchKline);
     }

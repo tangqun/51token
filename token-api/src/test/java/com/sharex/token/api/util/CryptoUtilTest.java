@@ -24,8 +24,26 @@ public class CryptoUtilTest {
 
         String url = "https://api.huobipro.com?" + s.toLowerCase();
 
-        String resp = HttpUtil.get(url);
+        String resp = HttpUtil.get(url, null);
 
         System.out.println(resp);
+    }
+
+    @Test
+    public void hmacSha256() throws Exception {
+
+        String str = "symbol=LTCBTC&side=BUY&type=LIMIT&timeInForce=GTC&quantity=1&price=0.1&recvWindow=5000&timestamp=1499827319559";
+
+        String apiSecret = "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j";
+
+
+        // yNtWglrnHW15RHhJ5hcRX0qSD6Ks3KsrBTxLKDi9a3E=
+        // c8db56825ae71d6d79447849e617115f4a920fa2acdcab2b053c4b2838bd6b71
+
+//        String sign = CryptoUtil.hmacSha256(apiSecret, str);
+
+        String sign = CryptoUtil.hmacSha256(apiSecret, str);
+
+        System.out.println(sign);
     }
 }

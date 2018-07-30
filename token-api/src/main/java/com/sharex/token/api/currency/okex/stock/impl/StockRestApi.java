@@ -84,7 +84,7 @@ public class StockRestApi implements IStockRestApi {
 			}
 			param += "symbol=" + symbol;
 		}
-		String result = HttpUtil.get(API_URL + TICKER_URL + param);
+		String result = HttpUtil.get(API_URL + TICKER_URL + param, null);
 	    return result;
 	}
 
@@ -97,7 +97,7 @@ public class StockRestApi implements IStockRestApi {
 			}
 			param += "symbol=" + symbol;
 		}
-		String result = HttpUtil.get(API_URL + this.DEPTH_URL + param);
+		String result = HttpUtil.get(API_URL + this.DEPTH_URL + param, null);
 	    return result;
 	}
 
@@ -116,7 +116,7 @@ public class StockRestApi implements IStockRestApi {
 			}
 			param += "since=" + since;
 		}
-		String result = HttpUtil.get(API_URL + this.TRADES_URL + param);
+		String result = HttpUtil.get(API_URL + this.TRADES_URL + param, null);
 	    return result;
 	}
 

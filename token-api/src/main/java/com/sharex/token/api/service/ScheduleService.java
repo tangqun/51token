@@ -45,6 +45,7 @@ public class ScheduleService {
     @Scheduled(cron="0/10 * * * * ?")
     public void synKline() {
 
+        // huobi
         // 多线程执行
         try {
             // 要求数据格式转成统一的 包含 字段个数、字段名
@@ -97,11 +98,9 @@ public class ScheduleService {
         }
 
 
-        // k线
+        // okex
 
-        // k线 okex_symbol
-
-        // ...
+        // binance
     }
 
     /**
@@ -155,5 +154,7 @@ public class ScheduleService {
 
 
         // okex
+
+        // binance
     }
 }

@@ -7,10 +7,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api("交易所数据接口")
 @RequestMapping("/currency")
@@ -25,8 +22,8 @@ public class CurrencyController {
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
     })
-    @RequestMapping(value = "/get/{token}", method = RequestMethod.GET)
-    public RESTful get(@PathVariable String token, String exchangeName, String currency) {
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    public RESTful get(@RequestHeader String token, String exchangeName, String currency) {
 
         return currencyService.get(token, exchangeName, currency);
     }

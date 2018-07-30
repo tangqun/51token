@@ -14,42 +14,87 @@ public class OkexApiClient implements IApiClient {
     private static final String API_HOST = "www.okex.com";
     private static final String API_URL = "https://" + API_HOST;
 
-    private final String apiKey;
-    private final String apiSecret;
+    private String apiKey;
+    private String apiSecret;
+
+    // 最新成交
+    private static final String Trades_URL = "/api/v1/trades.do";
 
     // 行情
-    private final String TICKER_URL = "/api/v1/ticker.do?";
+    private static final String TICKER_URL = "/api/v1/ticker.do";
 
-    // 用户信息
-    private final String USERINFO_URL = "/api/v1/userinfo.do?";
+    // kline
+    private static final String Kline_URL = "/api/v1/kline.do";
+
+    // 账户
+    private static final String Accounts_URL = "/api/v1/userinfo.do?";
+
+    // 用户历史订单
+    private static final String HistoryOrders_URL = "/api/v1/order_history.do";
+
+    // 用户委托查询（部分平台 委托 与 订单 在一个接口返回）
+    private static final String Orders_URL = "";
 
     // 下单
-    private final String TRADE_URL = "/api/v1/trade.do?";
-
-    // 历史订单
-    private final String ORDER_HISTORY_URL = "/api/v1/order_history.do";
+    private static final String PlaceOrder_URL = "/api/v1/trade.do?";
 
     public OkexApiClient(String apiKey, String apiSecret) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
     }
 
-    @Override
-    public String trades(String symbol, Integer size) throws Exception {
-        return null;
+    public OkexApiClient() {
+
     }
 
+    /**
+     * 600条，需要裁剪数据存入redis
+     * @param symbol
+     * @param size
+     * @return
+     * @throws Exception
+     */
     @Override
-    public String ticker(String symbol) throws Exception {
+    public String trades(String symbol, Integer size) throws Exception {
 
-        String respBody = HttpUtil.get(API_URL + TICKER_URL + "symbol=" + symbol);
+        Map<String, String> map = new HashMap<>();
+        map.put("symbol", symbol);
+
+        String queryString = StringUtil.toQueryString(map);
+
+        String respBody = HttpUtil.get(API_URL + Trades_URL + "?" + queryString, null);
 
         return respBody;
     }
 
     @Override
-    public String kline(String symbol, String type, Integer size) {
-        return null;
+    public String ticker(String symbol) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("symbol", symbol);
+
+        String queryString = StringUtil.toQueryString(map);
+
+        String respBody = HttpUtil.get(API_URL + TICKER_URL + "?" + queryString, null);
+
+        return respBody;
+    }
+
+    @Override
+    public String kline(String symbol, String type, Integer size) throws Exception {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("symbol", symbol);
+        map.put("type", type);
+        if (size > 0) {
+            map.put("size", size.toString());
+        }
+
+        String queryString = StringUtil.toQueryString(map);
+
+        String respBody = HttpUtil.get(API_URL + Kline_URL + "?" + queryString, null);
+
+        return respBody;
     }
 
     @Override
@@ -62,10 +107,35 @@ public class OkexApiClient implements IApiClient {
         params.put("sign", sign);
 
         // 发送post请求
-        String respBody = HttpUtil.post(API_URL + USERINFO_URL,
+        String respBody = HttpUtil.post(API_URL + Accounts_URL,
                 StringUtil.toQueryString(params), "application/x-www-form-urlencoded");
 
         return respBody;
+    }
+
+    @Override
+    public String historyOrders(String symbol, Integer status) throws Exception {
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("api_key", apiKey);
+        params.put("symbol", symbol);
+        params.put("status", status.toString());
+        params.put("current_page", "1");
+        params.put("page_length", "200");
+        String sign = CryptoUtil.md5(StringUtil.toQueryString(params) + "&secret_key=" + apiSecret);
+        params.put("sign", sign);
+
+        // 发送post请求
+        String respBody = HttpUtil.post(API_URL + this.HistoryOrders_URL,
+                StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
+
+        return respBody;
+    }
+
+    @Override
+    public String entrustOrders(String symbol) throws Exception {
+
+        return null;
     }
 
     /**
@@ -99,33 +169,8 @@ public class OkexApiClient implements IApiClient {
         params.put("sign", sign);
 
         // 发送post请求
-        String respBody = HttpUtil.post(API_URL + this.TRADE_URL,
+        String respBody = HttpUtil.post(API_URL + this.PlaceOrder_URL,
                 StringUtil.toQueryString(params), "application/x-www-form-urlencoded");
-
-        return respBody;
-    }
-
-    @Override
-    public String historyOrders(String symbol, Integer status) throws Exception {
-        return null;
-    }
-
-    @Override
-    public String entrustOrders(String symbol) throws Exception {
-
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("api_key", apiKey);
-        if(!StringUtils.isEmpty(symbol)){
-            params.put("symbol", symbol);
-        }
-        params.put("status", "1");
-        params.put("current_page", "1");
-        params.put("page_length", "200");
-        String sign = CryptoUtil.md5(StringUtil.toQueryString(params) + "&secret_key=" + apiSecret);
-        params.put("sign", sign);
-
-        // 发送post请求
-        String respBody = HttpUtil.post(API_URL + this.ORDER_HISTORY_URL, StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
 
         return respBody;
     }

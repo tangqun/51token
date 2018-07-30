@@ -371,7 +371,7 @@ public class ApiClient {
             if ("POST".equals(method)) {
                 resp = HttpUtil.post(API_URL + uri + "?" + toQueryString(params), objectMapper.writeValueAsString(object), "application/json");
             } else {
-                resp = HttpUtil.get(API_URL + uri + "?" + toQueryString(params));
+                resp = HttpUtil.get(API_URL + uri + "?" + toQueryString(params), null);
             }
 
             return objectMapper.readValue(resp, ref);

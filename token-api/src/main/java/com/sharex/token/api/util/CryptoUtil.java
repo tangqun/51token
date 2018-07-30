@@ -11,7 +11,7 @@ import java.util.Base64;
 
 public class CryptoUtil {
 
-    public static String hmacSha256(String apiSecret,  String str) throws NoSuchAlgorithmException, InvalidKeyException {
+    public static String hmacSha256Base64Encoder(String apiSecret,  String str) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha256 = Mac.getInstance("HmacSHA256");
         SecretKeySpec secKey = new SecretKeySpec(apiSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         hmacSha256.init(secKey);
@@ -19,9 +19,23 @@ public class CryptoUtil {
         return Base64.getEncoder().encodeToString(hash);
     }
 
-    public static String md5(String s) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String hmacSha256(String apiSecret,  String str) throws NoSuchAlgorithmException, InvalidKeyException {
+        Mac hmacSha256 = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secKey = new SecretKeySpec(apiSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        hmacSha256.init(secKey);
+        byte[] hash = hmacSha256.doFinal(str.getBytes(StandardCharsets.UTF_8));
+        return toHex(hash);
+    }
+
+    public static String md5(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] bytes = md.digest(s.getBytes("utf-8"));
+        byte[] bytes = md.digest(str.getBytes("utf-8"));
+        return toHex(bytes);
+    }
+
+    public static String sha256(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] bytes = md.digest(str.getBytes("utf-8"));
         return toHex(bytes);
     }
 

@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.*;
+import java.util.Map;
 
 /**
  * Created by TQ on 2017/12/6.
+ * FindBugs & CheckStyle
  */
 @Configuration
 public class HttpUtil {
@@ -22,7 +24,7 @@ public class HttpUtil {
         this.proxyStatus = proxyStatus;
     }
 
-    public static String get(String urlString) {
+    public static String get(String urlString, Map<String, String> headers) {
 
 //        System.setProperty("http.proxyHost", "us3.telegram-u9unchat.top");
 //        System.setProperty("http.proxyPort", "6191");
@@ -35,7 +37,7 @@ public class HttpUtil {
 
             URLConnection urlConnection;
 
-            if (proxyStatus == 0) {
+            if (proxyStatus == null || proxyStatus == 0) {
                 SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
                 urlConnection = url.openConnection(proxy);
@@ -47,6 +49,15 @@ public class HttpUtil {
 //            urlConnection.setRequestProperty("Accept", "application/json");
 //            urlConnection.setRequestProperty("Connection", "keep-alive");
             urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+
+            if (headers != null) {
+
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+
+                    urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
+//                    System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                }
+            }
 
             // 建立实际的连接
             urlConnection.connect();
@@ -90,7 +101,7 @@ public class HttpUtil {
 
             HttpURLConnection connection;
 
-            if (proxyStatus == 0) {
+            if (proxyStatus == null || proxyStatus == 0) {
                 SocketAddress addr = new InetSocketAddress("127.0.0.1", 1080);
                 Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
                 connection = (HttpURLConnection)url.openConnection(proxy);
@@ -149,7 +160,7 @@ public class HttpUtil {
 
     public static void main(String[] args) throws IOException {
         String url = "http://test-account.9h-sports.com/Test/GetSMSCode?mobileNum=15210470906&appId=1";
-        String responseBody = get(url);
+        String responseBody = get(url, null);
         System.out.println(responseBody);
 
 //        String url = "http://106.75.24.252:801/api/Manage/GrantCoins";
