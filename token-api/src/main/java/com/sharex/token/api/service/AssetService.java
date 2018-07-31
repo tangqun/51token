@@ -425,6 +425,9 @@ public class AssetService {
         // 获取用户信息，保存数据库
         IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
         String respBody = apiClient.accounts();
+
+        logger.info(respBody);
+
         ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
         if ("ok".equals(apiResp.getStatus())) {
 
