@@ -20,12 +20,13 @@ public class CurrencyController {
     @ApiOperation("单币聚合")
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "klineType", value = "klineType", required = true)
     })
     @RequestMapping(value = "/get", method = RequestMethod.GET)
-    public RESTful get(@RequestHeader String token, String exchangeName, String currency) {
+    public RESTful get(@RequestHeader String token, String exchangeName, String currency, String klineType) {
 
-        return currencyService.get(token, exchangeName, currency);
+        return currencyService.get(token, exchangeName, currency, klineType);
     }
 
     @ApiOperation("行情")
@@ -43,6 +44,11 @@ public class CurrencyController {
     }
 
     @ApiOperation("最新成交")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "symbol", value = "列表symbol原样传入", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "direction", value = "buy/sell", required = true)
+    })
     @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
     public RESTful getTrades(String exchangeName, String symbol, String direction) {
 

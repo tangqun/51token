@@ -52,7 +52,7 @@ public class CurrencyService {
      * @param currency  currency（币种） 例：btc 与 symbol（符号）例：btcusdt 区别是 有没有法币转换
      * @return
      */
-    public RESTful get(String token, String exchangeName, String currency) {
+    public RESTful get(String token, String exchangeName, String currency, String klineType) {
         try {
 
             // 验证token
@@ -111,7 +111,7 @@ public class CurrencyService {
                 // 一级数据
                 map.put("currency", currencyResp);
 
-                String kline = hashOperations.get("kline", exchangeName + "_" + currency + "usdt_1min").toString();
+                String kline = hashOperations.get("kline", exchangeName + "_" + currency + "usdt_" + klineType).toString();
                 List<MyKline> myKlineList = objectMapper.readValue(kline, new TypeReference<List<MyKline>>() { });
 
                 map.put("kline", myKlineList);
