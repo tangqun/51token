@@ -60,8 +60,8 @@ public class CurrencyController {
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "symbol", value = "列表symbol原样传入", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "direction", value = "buy/sell", required = true)
     })
-    @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
-    public RESTful getTrades(String exchangeName, String symbol, String direction) {
+    @RequestMapping(value = "/getTradesByDir", method = RequestMethod.GET)
+    public RESTful getTradesByDir(String exchangeName, String symbol, String direction) {
 
         return currencyService.getTrades(exchangeName, symbol, direction);
     }
