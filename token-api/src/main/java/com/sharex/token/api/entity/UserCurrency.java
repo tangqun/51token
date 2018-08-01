@@ -9,10 +9,11 @@ public class UserCurrency {
     private String exchangeName;
     // 币种
     private String currency;
-    // trade: 交易余额，frozen: 冻结余额
-    private String type;
+    // trade: 交易余额，frozen: 冻结余额 调整时间：20180801
+//    private String type;
+    private String free;
     // 金额
-    private String balance;
+    private String freezed;
 
     private Integer userId;
     private String apiKey;
@@ -47,20 +48,20 @@ public class UserCurrency {
         this.currency = currency;
     }
 
-    public String getType() {
-        return type;
+    public String getFree() {
+        return free;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setFree(String free) {
+        this.free = free;
     }
 
-    public String getBalance() {
-        return balance;
+    public String getFreezed() {
+        return freezed;
     }
 
-    public void setBalance(String balance) {
-        this.balance = balance;
+    public void setFreezed(String freezed) {
+        this.freezed = freezed;
     }
 
     public Integer getUserId() {

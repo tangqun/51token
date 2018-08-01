@@ -12,6 +12,7 @@ import java.util.Map;
 public interface UserApiMapper {
 
     void insert(UserApi userApi);
+    void update(Map<String, Object> map);
     void updateStatus(Map<String, Object> map);
     UserApi selectByType(Map<String, Object> map);
     List<UserApi> selectEnabledByUserId(Integer userId);

@@ -1,4 +1,4 @@
-package com.sharex.token.api.currency.okex.response;
+package com.sharex.token.api.currency.okex.resp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

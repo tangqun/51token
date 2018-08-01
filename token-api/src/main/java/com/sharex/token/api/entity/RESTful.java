@@ -35,8 +35,16 @@ public class RESTful {
         return Fail(codeEnum, 0, null);
     }
 
+    public static RESTful Fail(CodeEnum codeEnum, String msg) {
+        return Fail(codeEnum, msg);
+    }
+
     private static RESTful Fail(CodeEnum codeEnum, Integer count, Object data) {
-        return new RESTful(codeEnum.getCode(), codeEnum.getMsg(), count, data);
+        return Fail(codeEnum, codeEnum.getMsg(), count, data);
+    }
+
+    private static RESTful Fail(CodeEnum codeEnum, String msg, Integer count, Object data) {
+        return new RESTful(codeEnum.getCode(), msg, count, data);
     }
 
     private RESTful(Integer code, String msg, Integer count, Object data)

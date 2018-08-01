@@ -1,9 +1,11 @@
 package com.sharex.token.api.entity;
 
+import java.math.BigInteger;
+
 public class MyTrade {
     private Double amount;
     private Long ts;
-    private Long id;
+    private BigInteger id;
     private Double price;
     private String direction;
 
@@ -23,11 +25,11 @@ public class MyTrade {
         this.ts = ts;
     }
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

@@ -12,7 +12,7 @@ import java.util.Map;
 public interface UserCurrencyMapper {
 
     void insert(UserCurrency userCurrency);
-    void deleteByApiKey(String apiKey);
+    void delete(Map<String, Object> map);
     List<UserCurrency> selectByApiKey(String apiKey);
     UserCurrency selectEntity(Map<String, Object> map);
 }

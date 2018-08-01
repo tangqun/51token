@@ -33,8 +33,8 @@
         <result column="id" property="id" />
         <result column="exchange_name" property="exchangeName" />
         <result column="currency" property="currency" />
-        <result column="type" property="type" />
-        <result column="balance" property="balance" />
+        <result column="free" property="free" />
+        <result column="freezed" property="freezed" />
         <result column="user_id" property="userId" />
         <result column="api_key" property="apiKey" />
         <result column="api_secret" property="apiSecret" />
@@ -49,13 +49,13 @@
         keyColumn：（仅对insert和update有用）通过生成的键值设置表中的列名，这个设置仅对某些数据库（像PostgreSQL）是必须的，当主键列不是表中的第一列时需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
     -->
     <insert id="insert" parameterType="com.sharex.token.api.entity.UserCurrency">
-        INSERT INTO `user_currency` (`exchange_name`, `currency`, `type`, `balance`, `user_id`, `api_key`, `api_secret`, `account_id`, `create_time`)
-        VALUES (#{exchangeName}, #{currency}, #{type}, #{balance}, #{userId}, #{apiKey}, #{apiSecret}, #{accountId}, #{createTime});
+        INSERT INTO `user_currency` (`exchange_name`, `currency`, `free`, `freezed`, `user_id`, `api_key`, `api_secret`, `account_id`, `create_time`)
+        VALUES (#{exchangeName}, #{currency}, #{free}, #{freezed}, #{userId}, #{apiKey}, #{apiSecret}, #{accountId}, #{createTime});
     </insert>
-    <delete id="deleteByApiKey" parameterType="java.lang.String">
+    <delete id="delete" parameterType="java.util.Map">
         DELETE
         FROM `user_currency`
-        WHERE `api_key` = #{apiKey};
+        WHERE `exchange_name` = #{exchangeName} AND `user_id` = #{userId};
     </delete>
     <select id="selectByApiKey" parameterType="java.lang.String" resultMap="userCurrencyMap">
         SELECT * FROM `user_currency`
@@ -63,7 +63,7 @@
     </select>
     <select id="selectEntity" parameterType="java.util.Map" resultMap="userCurrencyMap">
         SELECT * FROM `user_currency`
-        WHERE `exchange_name` = #{exchangeName} AND `currency` = #{currency} AND `api_key` = #{apiKey} AND `type` = 'trade'
+        WHERE `exchange_name` = #{exchangeName} AND `currency` = #{currency} AND `api_key` = #{apiKey}
         LIMIT 0, 1;
     </select>
 </mapper>

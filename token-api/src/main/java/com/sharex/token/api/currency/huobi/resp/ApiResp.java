@@ -1,14 +1,20 @@
 package com.sharex.token.api.currency.huobi.resp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiResp {
 
     private String status;
     private Object data;
+    @JsonProperty("err-code")
     public String errCode;
+    @JsonProperty("err-msg")
     public String errMsg;
+
+    private String ch;
+    private Long ts;
 
     public String getStatus() {
         return status;
@@ -40,5 +46,21 @@ public class ApiResp {
 
     public void setErrMsg(String errMsg) {
         this.errMsg = errMsg;
+    }
+
+    public String getCh() {
+        return ch;
+    }
+
+    public void setCh(String ch) {
+        this.ch = ch;
+    }
+
+    public Long getTs() {
+        return ts;
+    }
+
+    public void setTs(Long ts) {
+        this.ts = ts;
     }
 }

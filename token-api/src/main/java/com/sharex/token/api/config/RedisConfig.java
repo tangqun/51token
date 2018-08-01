@@ -21,12 +21,12 @@ public class RedisConfig {
      *
      * @return
      */
-    @Bean
-    public RedisTemplate<String, Object> functionDomainRedisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        initDomainRedisTemplate(redisTemplate, redisConnectionFactory);
-        return redisTemplate;
-    }
+//    @Bean
+//    public RedisTemplate<String, String> functionDomainRedisTemplate() {
+//        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+//        initDomainRedisTemplate(redisTemplate, redisConnectionFactory);
+//        return redisTemplate;
+//    }
 
     /**
      * 设置数据存入 redis 的序列化方式
@@ -34,7 +34,7 @@ public class RedisConfig {
      * @param redisTemplate
      * @param factory
      */
-    private void initDomainRedisTemplate(RedisTemplate<String, Object> redisTemplate, RedisConnectionFactory factory) {
+    private void initDomainRedisTemplate(RedisTemplate<String, String> redisTemplate, RedisConnectionFactory factory) {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new JdkSerializationRedisSerializer());
@@ -49,7 +49,7 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
+    public HashOperations<String, String, String> hashOperations(RedisTemplate<String, String> redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
@@ -60,7 +60,7 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    public ValueOperations<String, Object> valueOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ValueOperations<String, String> valueOperations(RedisTemplate<String, String> redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
@@ -71,7 +71,7 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ListOperations<String, String> listOperations(RedisTemplate<String, String> redisTemplate) {
         return redisTemplate.opsForList();
     }
 
@@ -82,7 +82,7 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
+    public SetOperations<String, String> setOperations(RedisTemplate<String, String> redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
@@ -93,7 +93,7 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ZSetOperations<String, String> zSetOperations(RedisTemplate<String, String> redisTemplate) {
         return redisTemplate.opsForZSet();
     }
 }

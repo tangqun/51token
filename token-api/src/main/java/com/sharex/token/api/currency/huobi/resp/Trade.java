@@ -1,5 +1,7 @@
 package com.sharex.token.api.currency.huobi.resp;
 
+import java.math.BigInteger;
+
 public class Trade {
 
     /**
@@ -11,7 +13,7 @@ public class Trade {
      */
     private Double amount;
     private Long ts;
-    private Long id;
+    private BigInteger id;
     private Double price;
     private String direction;
 
@@ -31,11 +33,11 @@ public class Trade {
         this.ts = ts;
     }
 
-    public Long getId() {
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 

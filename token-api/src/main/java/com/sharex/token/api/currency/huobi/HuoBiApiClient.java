@@ -121,9 +121,9 @@ public class HuoBiApiClient implements IApiClient {
 
             List<Accounts> accountsList = objectMapper.convertValue(apiResp.getData(), new TypeReference<List<Accounts>>() { });
             return account(accountsList.get(0).getId());
+        } else {
+            return respBody;
         }
-
-        return null;
     }
 
     private String account(Long accountId) throws Exception {

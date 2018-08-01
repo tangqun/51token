@@ -26,11 +26,11 @@ public class CurrencyResp {
     // 币种
     private String currency;
 
-    // trade: 交易余额，frozen: 冻结余额
-    private String type;
+    // 账户余额
+    private String free;
 
-    // 金额（数量）
-    private String balance;
+    // 冻结余额
+    private String freezed;
 
     // 现价 行情里的 close
     private String price;
@@ -99,20 +99,20 @@ public class CurrencyResp {
         this.currency = currency;
     }
 
-    public String getType() {
-        return type;
+    public String getFree() {
+        return free;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setFree(String free) {
+        this.free = free;
     }
 
-    public String getBalance() {
-        return balance;
+    public String getFreezed() {
+        return freezed;
     }
 
-    public void setBalance(String balance) {
-        this.balance = balance;
+    public void setFreezed(String freezed) {
+        this.freezed = freezed;
     }
 
     public String getPrice() {

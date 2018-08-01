@@ -49,6 +49,11 @@
         INSERT INTO `user_api` (`api_key`, `api_secret`, `exchange_name`, `user_id`, `create_time`)
         VALUES (#{apiKey}, #{apiSecret}, #{exchangeName}, #{userId}, #{createTime});
     </insert>
+    <update id="update" parameterType="java.util.Map">
+        UPDATE `user_api`
+        SET `api_key` = #{apiKey}, `api_secret` = #{apiSecret}, `status` = #{status}, `update_time` = #{updateTime}
+        WHERE `user_id` = #{userId} AND `exchange_name` = #{exchangeName};
+    </update>
     <update id="updateStatus" parameterType="java.util.Map">
         UPDATE `user_api`
         SET `status` = #{status}, `update_time` = #{updateTime}

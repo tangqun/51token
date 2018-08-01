@@ -1,9 +1,6 @@
 package com.sharex.token.api.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharex.token.api.currency.IApiClient;
-import com.sharex.token.api.currency.huobi.HuoBiApiClient;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.entity.enums.CodeEnum;
 import com.sharex.token.api.entity.resp.CurrencyResp;
@@ -16,10 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +38,7 @@ public class CurrencyService {
     private UserCurrencyMapper userCurrencyMapper;
 
     @Autowired
-    private HashOperations<String, String, Object> hashOperations;
+    private RemoteSynService remoteSynService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -94,38 +91,51 @@ public class CurrencyService {
                     return RESTful.Fail(CodeEnum.AssetNotSyn);
                 }
 
+                /**
+                 * {
+                 *   code:
+                 *   msg:
+                 *   data: {
+                 *       currency: { },
+                 *       kline: [],
+                 *       trades: {
+                 *           buy: { },
+                 *           sell: { }
+                 *       }
+                 *   }
+                 * }
+                 */
                 Map<String, Object> map = new HashMap<>();
 
+                // 单币资产
                 CurrencyResp currencyResp = new CurrencyResp();
-                currencyResp.setBalance(userCurrency.getBalance());
 
-                // huobi_symbol
-                String ticker = hashOperations.get("ticker", userCurrency.getExchangeName() + "_" + userCurrency.getCurrency() + "usdt_lastest").toString();
-                MyKline myKline = objectMapper.readValue(ticker, MyKline.class);
+                String symbol = null;
 
-                String price = myKline.getClose();
-
-                Double vol = Double.valueOf(userCurrency.getBalance()) * Double.valueOf(myKline.getClose());
+                switch (userCurrency.getExchangeName()) {
+                    case "huobi": symbol = userCurrency.getCurrency() + "usdt"; break;
+                    case "okex": symbol = userCurrency.getCurrency() + "_usdt"; break;
+                }
+                List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
+                MyKline myKline = myKlineList.get(0);
+                currencyResp.setPrice(myKline.getClose());
+                Double vol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
                 currencyResp.setVol(vol.toString());
-
-                // 一级数据
+                // data: { currency: }
                 map.put("currency", currencyResp);
 
-                String kline = hashOperations.get("kline", exchangeName + "_" + currency + "usdt_" + klineType).toString();
-                List<MyKline> myKlineList = objectMapper.readValue(kline, new TypeReference<List<MyKline>>() { });
 
+                if (!"1min".equals(klineType)) {
+                    myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, klineType);
+                }
                 map.put("kline", myKlineList);
 
                 Map<String, Object> tradesMap = new HashMap<>();
-
-                String trades_buy = hashOperations.get("trades", exchangeName + "_" + currency + "usdt_buy").toString();
-                List<MyTrade> myTradeList_buy = objectMapper.readValue(trades_buy, new TypeReference<List<MyTrade>>() { });
+                MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol); //hashOperations.get("trades", exchangeName + "_" + currency + "usdt_buy").toString();
+                List<MyTrade> myTradeList_buy = myTrades.getBuy().subList(0, 10);
                 tradesMap.put("buy", myTradeList_buy);
-
-                String trades_sell = hashOperations.get("trades", exchangeName + "_" + currency + "usdt_sell").toString();
-                List<MyTrade> myTradeList_sell = objectMapper.readValue(trades_sell, new TypeReference<List<MyTrade>>() { });
+                List<MyTrade> myTradeList_sell = myTrades.getSell().subList(0, 10);
                 tradesMap.put("sell", myTradeList_sell);
-
                 map.put("trades", tradesMap);
 
                 return RESTful.Success(map);
@@ -148,12 +158,8 @@ public class CurrencyService {
      */
     public RESTful getTicker(String exchangeName, String symbol) {
         try {
-
-            // huobi_symbol_lastest
-            String respBody = hashOperations.get("ticker", exchangeName + "_" + symbol + "_lastest").toString();
-
-            MyKline myKline = objectMapper.readValue(respBody, MyKline.class);
-
+            List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, "1min");
+            MyKline myKline = myKlineList.get(0);
             return RESTful.Success(myKline);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -170,14 +176,23 @@ public class CurrencyService {
      */
     public RESTful getKline(String exchangeName, String symbol, String type) {
         try {
-
-            // huobi_symbol_type 例：huobi_btcusdt_1min
-            String respBody = hashOperations.get("kline", exchangeName + "_" + symbol + "_" + type).toString();
-
-            List<MyKline> myKlineList = objectMapper.readValue(respBody, new TypeReference<List<MyKline>>() { });
-
+            List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, type);
             return RESTful.Success(myKlineList);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
 
+    public RESTful getTrades(String exchangeName, String symbol) {
+        try {
+            Map<String, Object> tradesMap = new HashMap<>();
+            MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol);
+            List<MyTrade> myTradeList_buy = myTrades.getBuy().subList(0, 10);
+            tradesMap.put("buy", myTradeList_buy);
+            List<MyTrade> myTradeList_sell = myTrades.getSell().subList(0, 10);
+            tradesMap.put("sell", myTradeList_sell);
+            return RESTful.Success(tradesMap);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
@@ -193,29 +208,24 @@ public class CurrencyService {
      */
     public RESTful getTrades(String exchangeName, String symbol, String direction) {
         try {
+            MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol); //hashOperations.get("trades", exchangeName + "_" + currency + "usdt_buy").toString();
 
-            // huobi_symbol_direction 例：huobi_btcusdt_buy、huobi_btcusdt_sell
-            String respBody = hashOperations.get("trades", exchangeName + "_" + symbol + "_" + direction).toString();
+//            Map<String, Object> tradesMap = new HashMap<>();
+//            List<MyTrade> myTradeList_buy = myTrades.getBuy().subList(0, 10);
+//            tradesMap.put("buy", myTradeList_buy);
+//            List<MyTrade> myTradeList_sell = myTrades.getSell().subList(0, 10);
+//            tradesMap.put("sell", myTradeList_sell);
 
-            List<MyTrade> myTradeList = objectMapper.readValue(respBody, new TypeReference<List<MyTrade>>() { });
-
+            List<MyTrade> myTradeList = new LinkedList<>();
+            if ("buy".equals(direction)) {
+                myTradeList = myTrades.getBuy().subList(0, 10);
+            } else if ("sell".equals(direction)) {
+                myTradeList = myTrades.getSell().subList(0, 10);
+            }
             return RESTful.Success(myTradeList);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
-        }
-    }
-}
-
-class ApiFactory {
-
-    public static IApiClient getApiClient(String exchangeName, String apiKey, String apiSecret) {
-        switch (exchangeName) {
-            case "huobi": return new HuoBiApiClient(apiKey, apiSecret);
-
-//            case "okex": return new
-
-            default: return null;
         }
     }
 }

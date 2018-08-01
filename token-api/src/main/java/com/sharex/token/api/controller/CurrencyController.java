@@ -46,6 +46,17 @@ public class CurrencyController {
     @ApiOperation("最新成交")
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "symbol", value = "列表symbol原样传入", required = true)
+    })
+    @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
+    public RESTful getTrades(String exchangeName, String symbol) {
+
+        return currencyService.getTrades(exchangeName, symbol);
+    }
+
+    @ApiOperation("最新成交单向")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "symbol", value = "列表symbol原样传入", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "direction", value = "buy/sell", required = true)
     })
