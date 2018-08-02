@@ -170,6 +170,7 @@ public class HuoBiApiClient implements IApiClient {
 
         Map<String, String> map = new HashMap<>();
         map.put("account-id", accountId);
+        // 限价单表示下单数量，市价买单时表示买多少钱，市价卖单时表示卖多少币
         map.put("amount", amount);
         map.put("price", price);
         map.put("symbol", symbol);

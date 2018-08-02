@@ -100,7 +100,7 @@ public class HuoBiApiClientTest {
 
         HuoBiApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
 
-        String respBody = apiClient.placeOrder(accountId_huobi.toString(), "btcusdt", "0.1", "0.02", "buy-limit");
+        String respBody = apiClient.placeOrder(accountId_huobi.toString(), "ethbtc", "0.055422", "0.002", "sell-limit");
 
         System.out.println(respBody);
     }

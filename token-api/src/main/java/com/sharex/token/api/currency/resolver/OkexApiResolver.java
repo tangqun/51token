@@ -6,10 +6,7 @@ import com.sharex.token.api.currency.ApiClinetFactory;
 import com.sharex.token.api.currency.IApiClient;
 import com.sharex.token.api.currency.okex.OkexApiClient;
 import com.sharex.token.api.currency.okex.resp.Trade;
-import com.sharex.token.api.entity.MyKline;
-import com.sharex.token.api.entity.MyTrade;
-import com.sharex.token.api.entity.MyTrades;
-import com.sharex.token.api.entity.RemoteSyn;
+import com.sharex.token.api.entity.*;
 import com.sharex.token.api.exception.NetworkException;
 import com.sharex.token.api.exception.TradesSynException;
 import com.sharex.token.api.service.RemoteSynService;
@@ -19,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class OkexApiResolver implements IApiResolver {
 
@@ -135,5 +133,10 @@ public class OkexApiResolver implements IApiResolver {
         }
 
         throw new NetworkException();
+    }
+
+    @Override
+    public Map<String, UserCurrency> accounts(Integer userId) throws Exception {
+        return null;
     }
 }

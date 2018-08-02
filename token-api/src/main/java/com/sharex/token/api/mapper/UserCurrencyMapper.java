@@ -13,6 +13,6 @@ public interface UserCurrencyMapper {
 
     void insert(UserCurrency userCurrency);
     void delete(Map<String, Object> map);
-    List<UserCurrency> selectByApiKey(String apiKey);
+    List<UserCurrency> selectList(Map<String, Object> map);
     UserCurrency selectEntity(Map<String, Object> map);
 }

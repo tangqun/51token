@@ -1,6 +1,7 @@
 package com.sharex.token.api.controller;
 
 import com.sharex.token.api.entity.RESTful;
+import com.sharex.token.api.entity.req.CurrencyPlaceOrder;
 import com.sharex.token.api.service.CurrencyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,6 +28,13 @@ public class CurrencyController {
     public RESTful get(@RequestHeader String token, String exchangeName, String currency, String klineType) {
 
         return currencyService.get(token, exchangeName, currency, klineType);
+    }
+
+    @ApiOperation("下单")
+    @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
+    public RESTful placeOrder(@RequestHeader String token, @RequestBody CurrencyPlaceOrder currencyPlaceOrder) {
+
+        return currencyService.placeOrder(token, currencyPlaceOrder);
     }
 
     @ApiOperation("行情")

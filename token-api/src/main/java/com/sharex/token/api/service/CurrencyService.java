@@ -3,6 +3,7 @@ package com.sharex.token.api.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.entity.enums.CodeEnum;
+import com.sharex.token.api.entity.req.CurrencyPlaceOrder;
 import com.sharex.token.api.entity.resp.CurrencyResp;
 import com.sharex.token.api.mapper.ExchangeMapper;
 import com.sharex.token.api.mapper.UserApiMapper;
@@ -14,6 +15,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,7 +46,7 @@ public class CurrencyService {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * 币种聚合 - 币种详情
+     * 单币聚合 - 币种详情
      * @param token
      * @param exchangeName 交易所 shortName
      * @param currency  currency（币种） 例：btc 与 symbol（符号）例：btcusdt 区别是 有没有法币转换
@@ -84,7 +87,7 @@ public class CurrencyService {
                 Map<String, Object> currencyMap = new HashMap<>();
                 currencyMap.put("exchangeName", exchangeName);
                 currencyMap.put("currency", currency);
-                currencyMap.put("apiKey", userApi.getApiKey());
+                currencyMap.put("userId", user.getId());
                 UserCurrency userCurrency = userCurrencyMapper.selectEntity(currencyMap);
                 if (userCurrency == null) {
                     // 尚未资产映射 或 直接调用该接口
@@ -148,6 +151,11 @@ public class CurrencyService {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
         }
+    }
+
+    public RESTful placeOrder(@RequestHeader String token, @RequestBody CurrencyPlaceOrder currencyPlaceOrder) {
+
+        return null;
     }
 
     /**

@@ -7,14 +7,20 @@ import com.sharex.token.api.currency.resolver.IApiResolver;
 import com.sharex.token.api.entity.MyKline;
 import com.sharex.token.api.entity.MyTrades;
 import com.sharex.token.api.entity.RemoteSyn;
+import com.sharex.token.api.entity.UserCurrency;
+import com.sharex.token.api.mapper.UserCurrencyMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class RemoteSynService {
@@ -23,6 +29,9 @@ public class RemoteSynService {
 
     @Autowired
     private HashOperations<String, String, String> hashOperations;
+
+    @Autowired
+    private UserCurrencyMapper userCurrencyMapper;
 
     @Autowired
     private IApiResolver apiResolver;
@@ -81,5 +90,28 @@ public class RemoteSynService {
         hashOperations.put(exchangeName, "trades_" + symbol, objectMapper.writeValueAsString(remoteSyn));
 
         return remoteSyn.getData();
+    }
+
+    public void synAccounts(String exchangeName, Integer userId, String apiKey, String apiSecret) throws Exception {
+
+        IApiResolver apiResolver = ApiResolverFactory.getInstence2(exchangeName, apiKey, apiSecret);
+
+        Map<String, UserCurrency> map = apiResolver.accounts(userId);
+
+        saveUserAsset(exchangeName, userId, map);
+    }
+
+    @Transactional
+    void saveUserAsset(String exchangeName, Integer userId, Map<String, UserCurrency> map) {
+
+        Map<String, Object> deleteMap = new HashMap<>();
+        deleteMap.put("exchangeName", exchangeName);
+        deleteMap.put("userId", userId);
+        userCurrencyMapper.delete(deleteMap);
+
+        Set<Map.Entry<String, UserCurrency>> entrySet = map.entrySet();
+        for (Map.Entry<String, UserCurrency> entry:entrySet) {
+            userCurrencyMapper.insert(entry.getValue());
+        }
     }
 }

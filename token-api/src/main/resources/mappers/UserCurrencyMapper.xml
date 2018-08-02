@@ -57,13 +57,13 @@
         FROM `user_currency`
         WHERE `exchange_name` = #{exchangeName} AND `user_id` = #{userId};
     </delete>
-    <select id="selectByApiKey" parameterType="java.lang.String" resultMap="userCurrencyMap">
+    <select id="selectList" parameterType="java.util.Map" resultMap="userCurrencyMap">
         SELECT * FROM `user_currency`
-        WHERE `api_key` = #{apiKey};
+        WHERE `exchange_name` = #{exchangeName} AND `user_id` = #{userId};
     </select>
     <select id="selectEntity" parameterType="java.util.Map" resultMap="userCurrencyMap">
         SELECT * FROM `user_currency`
-        WHERE `exchange_name` = #{exchangeName} AND `currency` = #{currency} AND `api_key` = #{apiKey}
+        WHERE `exchange_name` = #{exchangeName} AND `currency` = #{currency} AND `user_id` = #{userId}
         LIMIT 0, 1;
     </select>
 </mapper>

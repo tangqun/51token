@@ -5,14 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.currency.ApiClinetFactory;
 import com.sharex.token.api.currency.IApiClient;
 import com.sharex.token.api.currency.huobi.HuoBiApiClient;
-import com.sharex.token.api.currency.huobi.resp.ApiResp;
-import com.sharex.token.api.currency.huobi.resp.Kline;
-import com.sharex.token.api.currency.huobi.resp.Trade;
-import com.sharex.token.api.currency.huobi.resp.Trades;
-import com.sharex.token.api.entity.MyKline;
-import com.sharex.token.api.entity.MyTrade;
-import com.sharex.token.api.entity.MyTrades;
-import com.sharex.token.api.entity.RemoteSyn;
+import com.sharex.token.api.currency.huobi.resp.*;
+import com.sharex.token.api.entity.*;
 import com.sharex.token.api.exception.KlineSynException;
 import com.sharex.token.api.exception.NetworkException;
 import com.sharex.token.api.exception.TradesSynException;
@@ -22,15 +16,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Configuration
 public class HuoBiApiResolver implements IApiResolver {
 
     private static final Log logger = LogFactory.getLog(RemoteSynService.class);
 
-    private IApiClient apiClient = new HuoBiApiClient();
+    private String apiKey;
+    private String apiSecret;
+    private IApiClient apiClient;
+
+    public HuoBiApiResolver() {
+        this.apiClient = new HuoBiApiClient();
+    }
+
+    public HuoBiApiResolver(String apiKey, String apiSecret) {
+        this.apiKey = apiKey;
+        this.apiSecret = apiSecret;
+        this.apiClient = new HuoBiApiClient(apiKey, apiSecret);
+    }
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -145,6 +150,60 @@ public class HuoBiApiResolver implements IApiResolver {
                 remoteSyn.setData(myTrades);
 
                 return remoteSyn;
+            }
+
+            throw new TradesSynException(apiResp.getErrMsg());
+        }
+
+        throw new NetworkException();
+    }
+
+    public Map<String, UserCurrency> accounts(Integer userId) throws Exception {
+
+        Date date = new Date();
+
+        // 获取用户信息，保存数据库
+        IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
+        String respBody = apiClient.accounts();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(respBody);
+        }
+
+        if (!StringUtils.isBlank(respBody)) {
+            ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+            if ("ok".equals(apiResp.getStatus())) {
+                Map<String, UserCurrency> map = new HashMap<>();
+
+                Account account = objectMapper.convertValue(apiResp.getData(), Account.class);
+                List<Balance> balanceList = objectMapper.convertValue(account.getList(), new TypeReference<List<Balance>>() { });
+                // 非安全
+                for (Balance balance:balanceList) {
+                    if (Double.valueOf(balance.getBalance()) > 0) {
+                        // 根据币种判断 map 是否含有对象
+                        UserCurrency userCurrency = map.get(balance.getCurrency());
+                        if (userCurrency == null) {
+                            userCurrency = new UserCurrency();
+                            userCurrency.setFree("0");
+                            userCurrency.setFreezed("0");
+                        }
+                        userCurrency.setExchangeName("huobi");
+                        userCurrency.setCurrency(balance.getCurrency());
+                        if ("trade".equals(balance.getType())) {
+                            userCurrency.setFree(balance.getBalance());
+                        }else {
+                            // "frozen"
+                            userCurrency.setFreezed(balance.getBalance());
+                        }
+                        userCurrency.setUserId(userId);
+                        userCurrency.setApiKey(apiKey);
+                        userCurrency.setApiSecret(apiSecret);
+                        userCurrency.setAccountId(account.getId().toString());
+                        userCurrency.setCreateTime(date);
+                        map.put(balance.getCurrency(), userCurrency);
+                    }
+                }
+                return map;
             }
 
             throw new TradesSynException(apiResp.getErrMsg());

@@ -11,4 +11,14 @@ public class ApiResolverFactory {
             default: return null;
         }
     }
+
+    public static IApiResolver getInstence2(String exchangeName, String apiKey, String apiSecret) {
+        switch (exchangeName) {
+            case "huobi": return new HuoBiApiResolver(apiKey, apiSecret);
+
+//            case "okex": return new
+
+            default: return null;
+        }
+    }
 }

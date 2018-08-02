@@ -1,12 +1,6 @@
 package com.sharex.token.api.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharex.token.api.currency.IApiClient;
-import com.sharex.token.api.currency.huobi.HuoBiApiClient;
-import com.sharex.token.api.currency.huobi.resp.Account;
-import com.sharex.token.api.currency.huobi.resp.ApiResp;
-import com.sharex.token.api.currency.huobi.resp.Balance;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.entity.enums.CodeEnum;
 import com.sharex.token.api.entity.req.AssetAuth;
@@ -26,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -319,16 +312,19 @@ public class AssetService {
             List<UserApi> userApiList = userApiMapper.selectEnabledByUserId(user.getId());
             for (UserApi userApi:userApiList) {
 
-                // 交易所数据
+                // 单交易所数据
                 UserExchangeAssetResp userExchangeAssetResp = new UserExchangeAssetResp();
 
                 // 设置币种名称
                 userExchangeAssetResp.setName(userApi.getExchangeName());
 
-                // 单币数据集合
+                // 单交易所下的单币数据集合
                 List<UserCurrencyAssetResp> userCurrencyAssetRespList = new ArrayList<>();
 
-                List<UserCurrency> userCurrencyList = userCurrencyMapper.selectByApiKey(userApi.getApiKey());
+                Map<String, Object> userCurrencyMap = new HashMap<>();
+                userCurrencyMap.put("exchangeName", userApi.getExchangeName());
+                userCurrencyMap.put("userId", user.getId());
+                List<UserCurrency> userCurrencyList = userCurrencyMapper.selectList(userCurrencyMap);
                 for (UserCurrency userCurrency:userCurrencyList) {
 
                     // 单币数据
@@ -437,8 +433,10 @@ public class AssetService {
                 return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
 
+            Map<String, UserCurrency> map = null;
+
             switch (assetSyn.getExchangeName()) {
-                case "huobi": synHuoBi("huobi", user.getId(), userApi.getApiKey(), userApi.getApiSecret()); break;
+                case "huobi": remoteSynService.synAccounts("huobi", user.getId(), userApi.getApiKey(), userApi.getApiSecret()); break;
                 default: break;
             }
 
@@ -449,74 +447,74 @@ public class AssetService {
         }
     }
 
-    private RESTful synHuoBi(String exchangeName, Integer userId, String apiKey, String apiSecret) throws Exception {
-
-        Date date = new Date();
-
-        // 获取用户信息，保存数据库
-        IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
-        String respBody = apiClient.accounts();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug(respBody);
-        }
-
-        if (!StringUtils.isBlank(respBody)) {
-            ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
-            if ("ok".equals(apiResp.getStatus())) {
-                Map<String, UserCurrency> map = new HashMap<>();
-
-                Account account = objectMapper.convertValue(apiResp.getData(), Account.class);
-                List<Balance> balanceList = objectMapper.convertValue(account.getList(), new TypeReference<List<Balance>>() { });
-                // 非安全
-                for (Balance balance:balanceList) {
-                    if (Double.valueOf(balance.getBalance()) > 0) {
-                        // 根据币种判断 map 是否含有对象
-                        UserCurrency userCurrency = map.get(balance.getCurrency());
-                        if (userCurrency == null) {
-                            userCurrency = new UserCurrency();
-                            userCurrency.setFree("0");
-                            userCurrency.setFreezed("0");
-                        }
-                        userCurrency.setExchangeName(exchangeName);
-                        userCurrency.setCurrency(balance.getCurrency());
-                        if ("trade".equals(balance.getType())) {
-                            userCurrency.setFree(balance.getBalance());
-                        }else {
-                            // "frozen"
-                            userCurrency.setFreezed(balance.getBalance());
-                        }
-                        userCurrency.setUserId(userId);
-                        userCurrency.setApiKey(apiKey);
-                        userCurrency.setApiSecret(apiSecret);
-                        userCurrency.setAccountId(account.getId().toString());
-                        userCurrency.setCreateTime(date);
-                        map.put(balance.getCurrency(), userCurrency);
-                    }
-                }
-                saveUserAsset(exchangeName, userId, map);
-                return RESTful.Success();
-            }
-
-            // 交易所异常
-            return RESTful.Fail(CodeEnum.ExchangeInternalError, apiResp.errMsg);
-        }
-
-        // 网络异常
-        return RESTful.Fail(CodeEnum.NetworkError);
-    }
-
-    @Transactional
-    void saveUserAsset(String exchangeName, Integer userId, Map<String, UserCurrency> map) {
-
-        Map<String, Object> deleteMap = new HashMap<>();
-        deleteMap.put("exchangeName", exchangeName);
-        deleteMap.put("userId", userId);
-        userCurrencyMapper.delete(deleteMap);
-
-        Set<Map.Entry<String, UserCurrency>> entrySet = map.entrySet();
-        for (Map.Entry<String, UserCurrency> entry:entrySet) {
-            userCurrencyMapper.insert(entry.getValue());
-        }
-    }
+//    private RESTful synHuoBi(String exchangeName, Integer userId, String apiKey, String apiSecret) throws Exception {
+//
+//        Date date = new Date();
+//
+//        // 获取用户信息，保存数据库
+//        IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
+//        String respBody = apiClient.accounts();
+//
+//        if (logger.isDebugEnabled()) {
+//            logger.debug(respBody);
+//        }
+//
+//        if (!StringUtils.isBlank(respBody)) {
+//            ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+//            if ("ok".equals(apiResp.getStatus())) {
+//                Map<String, UserCurrency> map = new HashMap<>();
+//
+//                Account account = objectMapper.convertValue(apiResp.getData(), Account.class);
+//                List<Balance> balanceList = objectMapper.convertValue(account.getList(), new TypeReference<List<Balance>>() { });
+//                // 非安全
+//                for (Balance balance:balanceList) {
+//                    if (Double.valueOf(balance.getBalance()) > 0) {
+//                        // 根据币种判断 map 是否含有对象
+//                        UserCurrency userCurrency = map.get(balance.getCurrency());
+//                        if (userCurrency == null) {
+//                            userCurrency = new UserCurrency();
+//                            userCurrency.setFree("0");
+//                            userCurrency.setFreezed("0");
+//                        }
+//                        userCurrency.setExchangeName(exchangeName);
+//                        userCurrency.setCurrency(balance.getCurrency());
+//                        if ("trade".equals(balance.getType())) {
+//                            userCurrency.setFree(balance.getBalance());
+//                        }else {
+//                            // "frozen"
+//                            userCurrency.setFreezed(balance.getBalance());
+//                        }
+//                        userCurrency.setUserId(userId);
+//                        userCurrency.setApiKey(apiKey);
+//                        userCurrency.setApiSecret(apiSecret);
+//                        userCurrency.setAccountId(account.getId().toString());
+//                        userCurrency.setCreateTime(date);
+//                        map.put(balance.getCurrency(), userCurrency);
+//                    }
+//                }
+//                saveUserAsset(exchangeName, userId, map);
+//                return RESTful.Success();
+//            }
+//
+//            // 交易所异常
+//            return RESTful.Fail(CodeEnum.ExchangeInternalError, apiResp.errMsg);
+//        }
+//
+//        // 网络异常
+//        return RESTful.Fail(CodeEnum.NetworkError);
+//    }
+//
+//    @Transactional
+//    void saveUserAsset(String exchangeName, Integer userId, Map<String, UserCurrency> map) {
+//
+//        Map<String, Object> deleteMap = new HashMap<>();
+//        deleteMap.put("exchangeName", exchangeName);
+//        deleteMap.put("userId", userId);
+//        userCurrencyMapper.delete(deleteMap);
+//
+//        Set<Map.Entry<String, UserCurrency>> entrySet = map.entrySet();
+//        for (Map.Entry<String, UserCurrency> entry:entrySet) {
+//            userCurrencyMapper.insert(entry.getValue());
+//        }
+//    }
 }
