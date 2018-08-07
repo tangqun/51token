@@ -20,9 +20,6 @@ public class CurrencyResp {
     // 今日收益率
     private String profitRate;
 
-    // 交易所名称
-    private String exchangeName;
-
     // 币种
     private String currency;
 
@@ -81,14 +78,6 @@ public class CurrencyResp {
 
     public void setProfitRate(String profitRate) {
         this.profitRate = profitRate;
-    }
-
-    public String getExchangeName() {
-        return exchangeName;
-    }
-
-    public void setExchangeName(String exchangeName) {
-        this.exchangeName = exchangeName;
     }
 
     public String getCurrency() {
