@@ -14,6 +14,7 @@ import com.sharex.token.api.mapper.ExchangeMapper;
 import com.sharex.token.api.mapper.UserApiMapper;
 import com.sharex.token.api.mapper.UserCurrencyMapper;
 import com.sharex.token.api.mapper.UserMapper;
+import com.sharex.token.api.util.SymbolUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -313,15 +314,7 @@ public class AssetService {
                     userCurrencyAssetResp.setFree(userCurrency.getFree());
                     userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
 
-                    String symbol = null;
-
-                    // 不同交易所 symbol 不一样， type 不一样，对标币种写死 usdt
-
-                    switch (userCurrency.getExchangeName()) {
-
-                        case "huobi": symbol = userCurrency.getCurrency() + "usdt"; break;
-                        case "okex": symbol = userCurrency.getCurrency() + "_usdt"; break;
-                    }
+                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                     // 获取币种最新市值
                     // huobi
@@ -344,10 +337,6 @@ public class AssetService {
 
                         //
                         exchangeCost += Double.valueOf(userCurrency.getFree());
-
-                        userCurrencyAssetResp.setProfit("0");
-
-                        userCurrencyAssetResp.setProfitRate("0");
 
                     }else {
                         List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
@@ -467,19 +456,7 @@ public class AssetService {
                     userCurrencyAssetResp.setFree(userCurrency.getFree());
                     userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
 
-                    String symbol = null;
-
-                    // 不同交易所 symbol 不一样， type 不一样，对标币种写死 usdt
-
-                    switch (userCurrency.getExchangeName()) {
-
-                        case "huobi":
-                            symbol = userCurrency.getCurrency() + "usdt";
-                            break;
-                        case "okex":
-                            symbol = userCurrency.getCurrency() + "_usdt";
-                            break;
-                    }
+                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                     // 获取币种最新市值
                     // huobi
