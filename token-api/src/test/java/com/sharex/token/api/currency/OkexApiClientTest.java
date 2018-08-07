@@ -41,9 +41,19 @@ public class OkexApiClientTest {
     @Test
     public void accounts() throws Exception {
 
-        IApiClient apiClient = new OkexApiClient(apiKey_okex, apiSecret_okex);
+        IApiClient apiClient = new OkexApiClient();
 
-        String respBody = apiClient.accounts();
+        String respBody = apiClient.accounts(apiKey_okex, apiSecret_okex);
+
+        System.out.println(respBody);
+    }
+
+    @Test
+    public void openOrders() throws Exception {
+
+        OkexApiClient okexApiClient = new OkexApiClient();
+
+        String respBody = okexApiClient.openOrders(apiKey_okex, apiSecret_okex, null, "eth_usdt", 0, 100);
 
         System.out.println(respBody);
     }
@@ -51,9 +61,9 @@ public class OkexApiClientTest {
     @Test
     public void historyOrders() throws Exception {
 
-        IApiClient apiClient = new OkexApiClient(apiKey_okex, apiSecret_okex);
+        IApiClient apiClient = new OkexApiClient();
 
-        String respBody = apiClient.historyOrders("btc_usdt", 1);
+        String respBody = apiClient.historyOrders(apiKey_okex, apiSecret_okex, null,"eth_usdt", 1, 100);
 
         System.out.println(respBody);
     }
@@ -61,9 +71,9 @@ public class OkexApiClientTest {
     @Test
     public void placeOrder() throws Exception {
 
-        IApiClient apiClient = new OkexApiClient(apiKey_okex, apiSecret_okex);
+        IApiClient apiClient = new OkexApiClient();
 
-        String respBody = apiClient.placeOrder(null, "ltc_btc", "1000", null, "buy_market");
+        String respBody = apiClient.placeOrder(apiKey_okex, apiSecret_okex, null, "eth_usdt", "422.9", "0.001", "sell");
 
         System.out.println(respBody);
     }

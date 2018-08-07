@@ -2,8 +2,6 @@ package com.sharex.token.api.currency.resolver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharex.token.api.currency.ApiClinetFactory;
-import com.sharex.token.api.currency.IApiClient;
 import com.sharex.token.api.currency.okex.OkexApiClient;
 import com.sharex.token.api.currency.okex.resp.Trade;
 import com.sharex.token.api.entity.*;
@@ -13,16 +11,22 @@ import com.sharex.token.api.service.RemoteSynService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class OkexApiResolver implements IApiResolver {
 
     private static final Log logger = LogFactory.getLog(RemoteSynService.class);
 
-    private IApiClient apiClient = new OkexApiClient();
+//    private IApiClient apiClient = new OkexApiClient();
+
+    @Autowired
+    private OkexApiClient okexApiClient;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -30,10 +34,10 @@ public class OkexApiResolver implements IApiResolver {
     public RemoteSyn getKline(String symbol, String type) throws Exception {
 
         //
-        IApiClient apiClient = ApiClinetFactory.getInstence("okex");
+//        IApiClient apiClient = ApiClinetFactory.getInstence("okex");
 
         // 同步redis，判断时间戳时间 --> 150条
-        String respBody = apiClient.kline(symbol, type, 150);
+        String respBody = okexApiClient.kline(symbol, type, 150);
 
         if (logger.isDebugEnabled()) {
             logger.debug(respBody);
@@ -80,9 +84,9 @@ public class OkexApiResolver implements IApiResolver {
     @Override
     public RemoteSyn getTrades(String symbol) throws Exception {
 
-        IApiClient apiClient = ApiClinetFactory.getInstence("okex");
+//        IApiClient apiClient = ApiClinetFactory.getInstence("okex");
 
-        String respBody = apiClient.trades(symbol, 100);
+        String respBody = okexApiClient.trades(symbol, 100);
 
         if (logger.isDebugEnabled()) {
             logger.debug(respBody);
@@ -136,7 +140,22 @@ public class OkexApiResolver implements IApiResolver {
     }
 
     @Override
-    public Map<String, UserCurrency> accounts(Integer userId) throws Exception {
+    public Map<String, UserCurrency> accounts(String apiKey, String apiSecret, Integer userId) throws Exception {
+        return null;
+    }
+
+    @Override
+    public RemotePost<String> placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {
+        return null;
+    }
+
+    @Override
+    public RemoteSyn getOpenOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
+        return null;
+    }
+
+    @Override
+    public RemoteSyn getHistoryOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
         return null;
     }
 }

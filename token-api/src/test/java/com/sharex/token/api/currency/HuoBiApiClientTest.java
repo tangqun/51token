@@ -53,9 +53,9 @@ public class HuoBiApiClientTest {
     @Test
     public void accounts() throws Exception {
 
-        IApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
+        IApiClient apiClient = new HuoBiApiClient();
 
-        String respBody = apiClient.accounts();
+        String respBody = apiClient.accounts(apiKey_huobi, apiSecret_huobi);
 
         System.out.println(respBody);
 
@@ -75,11 +75,68 @@ public class HuoBiApiClientTest {
     }
 
     @Test
+    public void openOrders() throws Exception {
+
+        //{
+        //    "status": "ok",
+        //    "data": [{
+        //        "filled-amount": "0.0",
+        //        "filled-fees": "0.0",
+        //        "filled-cash-amount": "0.0",
+        //        "source": "api",
+        //        "symbol": "ethbtc",
+        //        "created-at": 1533177025265,
+        //        "account-id": 4344135,
+        //        "price": "0.055422000000000000",
+        //        "amount": "0.002000000000000000",
+        //        "id": 9115046775,
+        //        "state": "submitted",
+        //        "type": "sell-limit"
+        //    }, {
+        //        "filled-amount": "0.0",
+        //        "filled-fees": "0.0",
+        //        "filled-cash-amount": "0.0",
+        //        "source": "api",
+        //        "symbol": "ethbtc",
+        //        "created-at": 1533175288206,
+        //        "account-id": 4344135,
+        //        "price": "0.055422000000000000",
+        //        "amount": "0.002000000000000000",
+        //        "id": 9113710630,
+        //        "state": "submitted",
+        //        "type": "sell-limit"
+        //    }]
+        //}
+
+        HuoBiApiClient apiClient = new HuoBiApiClient();
+
+        String respBody = apiClient.openOrders(apiKey_huobi, apiSecret_huobi, accountId_huobi.toString(), "ethusdt", 0, 100);
+
+        System.out.println(respBody);
+    }
+
+    @Test
     public void historyOrders() throws Exception {
 
-        HuoBiApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
+        //{
+        //    "status": "ok",
+        //    "data": [{
+        //        "id": 2212623913,
+        //        "order-id": 9113357808,
+        //        "match-id": 14535182528,
+        //        "symbol": "ethbtc",
+        //        "type": "sell-limit",
+        //        "source": "web",
+        //        "price": "0.055316000000000000",
+        //        "filled-amount": "0.002000000000000000",
+        //        "filled-fees": "0.000000221264000000",
+        //        "filled-points": "0.0",
+        //        "created-at": 1533174853058
+        //    }]
+        //}
+        HuoBiApiClient apiClient = new HuoBiApiClient();
 
-        String respBody = apiClient.historyOrders("btcusdt", 0);
+        String respBody = apiClient.historyOrders(apiKey_huobi, apiSecret_huobi, accountId_huobi.toString(),"ethusdt", 0, 100);
 
         System.out.println(respBody);
     }
@@ -87,9 +144,9 @@ public class HuoBiApiClientTest {
     @Test
     public void entrustOrders() throws Exception {
 
-        HuoBiApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
+        HuoBiApiClient apiClient = new HuoBiApiClient();
 
-        String respBody = apiClient.entrustOrders("btcusdt");
+        String respBody = apiClient.entrustOrders(apiKey_huobi, apiSecret_huobi, "ethusdt");
 
         System.out.println(respBody);
     }
@@ -98,9 +155,9 @@ public class HuoBiApiClientTest {
     public void placeOrder() throws Exception {
 
 
-        HuoBiApiClient apiClient = new HuoBiApiClient(apiKey_huobi, apiSecret_huobi);
+        HuoBiApiClient apiClient = new HuoBiApiClient();
 
-        String respBody = apiClient.placeOrder(accountId_huobi.toString(), "ethbtc", "0.055422", "0.002", "sell-limit");
+        String respBody = apiClient.placeOrder(apiKey_huobi, apiSecret_huobi, accountId_huobi.toString(), "ethusdt", "422.9", "0.001", "sell-limit");
 
         System.out.println(respBody);
     }

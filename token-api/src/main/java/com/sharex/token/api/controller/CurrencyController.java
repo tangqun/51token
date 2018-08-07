@@ -2,17 +2,25 @@ package com.sharex.token.api.controller;
 
 import com.sharex.token.api.entity.RESTful;
 import com.sharex.token.api.entity.req.CurrencyPlaceOrder;
+import com.sharex.token.api.entity.req.CurrencySynOrders;
+import com.sharex.token.api.entity.req.ExchangeCurrencyCostEdit;
 import com.sharex.token.api.service.CurrencyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 @Api("交易所数据接口")
 @RequestMapping("/currency")
 @RestController
+@Validated
 public class CurrencyController {
 
     @Autowired
@@ -25,16 +33,50 @@ public class CurrencyController {
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "klineType", value = "klineType", required = true)
     })
     @RequestMapping(value = "/get", method = RequestMethod.GET)
-    public RESTful get(@RequestHeader String token, String exchangeName, String currency, String klineType) {
+    public RESTful get(
+            @RequestHeader String token, String exchangeName, String currency, String klineType) {
 
         return currencyService.get(token, exchangeName, currency, klineType);
     }
 
-    @ApiOperation("下单")
-    @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
-    public RESTful placeOrder(@RequestHeader String token, @RequestBody CurrencyPlaceOrder currencyPlaceOrder) {
+    @ApiOperation("同步委托订单")
+    @RequestMapping(value = "/synOpenOrders", method = RequestMethod.POST)
+    public RESTful synOpenOrders(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token,
+            @Valid
+            @RequestBody CurrencySynOrders currencySynOrders) {
 
-        return currencyService.placeOrder(token, currencyPlaceOrder);
+        return currencyService.synOpenOrders(token, currencySynOrders);
+    }
+
+    @ApiOperation("同步成交订单")
+    @RequestMapping(value = "/synHistoryOrders", method = RequestMethod.POST)
+    public RESTful synHistoryOrders(@RequestHeader String token, @RequestBody CurrencySynOrders currencySynOrders) {
+
+        return currencyService.synHistoryOrders(token, currencySynOrders);
+    }
+
+    @ApiOperation("编辑交易所单币成本")
+    @RequestMapping(value = "/editExchangeCurrencyCost", method = RequestMethod.POST)
+    public RESTful editExchangeCurrencyCost(@RequestHeader String token, @RequestBody ExchangeCurrencyCostEdit exchangeCurrencyCostEdit) {
+
+        return currencyService.editExchangeCurrencyCost(token, exchangeCurrencyCostEdit);
+    }
+
+    @ApiOperation("买单")
+    @RequestMapping(value = "/buy", method = RequestMethod.POST)
+    public RESTful buy(@RequestHeader String token, @RequestBody CurrencyPlaceOrder currencyPlaceOrder) {
+
+        return currencyService.placeOrder(token, currencyPlaceOrder, "buy");
+    }
+
+    @ApiOperation("卖单")
+    @RequestMapping(value = "/sell", method = RequestMethod.POST)
+    public RESTful sell(@RequestHeader String token, @RequestBody CurrencyPlaceOrder currencyPlaceOrder) {
+
+        return currencyService.placeOrder(token, currencyPlaceOrder, "sell");
     }
 
     @ApiOperation("行情")

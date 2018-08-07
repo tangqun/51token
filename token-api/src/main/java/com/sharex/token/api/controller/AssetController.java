@@ -6,6 +6,8 @@ import com.sharex.token.api.entity.req.AssetAuth;
 import com.sharex.token.api.entity.req.AssetRmAuth;
 import com.sharex.token.api.service.AssetService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +54,15 @@ public class AssetController {
     public RESTful getAsset(@RequestHeader String token) {
 
         return assetService.getAsset(token);
+    }
+
+    @ApiOperation("交易所资产聚合")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true)
+    })
+    @RequestMapping(value = "/getExchangeAsset", method = RequestMethod.GET)
+    public RESTful getExchangeAsset(@RequestHeader String token, String exchangeName) {
+
+        return assetService.getExchangeAsset(token, exchangeName);
     }
 }

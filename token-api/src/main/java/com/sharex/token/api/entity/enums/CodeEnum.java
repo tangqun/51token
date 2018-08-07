@@ -51,7 +51,16 @@ public enum CodeEnum {
     KlineStatusEqualsInDB(120026, "状态缓存，请刷新后查看k线数据"),
 
     ExchangeInternalError(120027, "交易所内部异常"),
-    NetworkError(120028, "网络异常")
+    NetworkError(120028, "网络异常"),
+
+    MsgIdCannotBeNull(120029, "消息id不能为空"),
+    MsgIdFormatError(120030, "消息id格式错误"),
+
+    RepeatSubmitOrder(120031, "订单已提交，请勿重复提交"),
+    AssetInExchangeNotExistAnyCurrency(120032, "该交易所下无任务数字币资产"),
+    AssetInExchangeNotExistThisCurrency(120033, "用户该交易所下不包含相应的数字币资产"),
+
+    ParameterError(120034, "参数错误")
     ;
 
     CodeEnum(int code, String msg) {

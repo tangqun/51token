@@ -5,11 +5,19 @@ import java.util.regex.Pattern;
 
 public class ValidateUtil {
 
+    public static boolean checkMsgId(String msgId) {
+        return checkUUID(msgId);
+    }
+
     public static boolean checkToken(String token) {
+        return checkUUID(token);
+    }
+
+    public static boolean checkUUID(String uuid) {
         boolean flag = false;
         try{
             Pattern regex = Pattern.compile("^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$");
-            Matcher matcher = regex.matcher(token);
+            Matcher matcher = regex.matcher(uuid);
             flag = matcher.matches();
         }catch(Exception e){
             flag = false;

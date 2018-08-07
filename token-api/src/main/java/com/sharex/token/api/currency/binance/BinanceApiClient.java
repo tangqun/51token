@@ -32,8 +32,8 @@ public class BinanceApiClient implements IApiClient {
     private static final DateTimeFormatter DT_FORMAT = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss");
     private static final ZoneId ZONE_GMT = ZoneId.of("Z");
 
-    private String apiKey;
-    private String apiSecret;
+//    private String apiKey;
+//    private String apiSecret;
 
     // 最新成交
     private static final String Trades_URL = "/api/v1/trades";
@@ -58,10 +58,10 @@ public class BinanceApiClient implements IApiClient {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public BinanceApiClient(String apiKey, String apiSecret) {
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-    }
+//    public BinanceApiClient(String apiKey, String apiSecret) {
+//        this.apiKey = apiKey;
+//        this.apiSecret = apiSecret;
+//    }
 
     public BinanceApiClient() {
 
@@ -148,7 +148,7 @@ public class BinanceApiClient implements IApiClient {
     }
 
     @Override
-    public String accounts() throws Exception {
+    public String accounts(String apiKey, String apiSecret) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("timestamp", String.valueOf(System.currentTimeMillis()));
@@ -167,7 +167,12 @@ public class BinanceApiClient implements IApiClient {
     }
 
     @Override
-    public String historyOrders(String symbol, Integer status) throws Exception {
+    public String openOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String historyOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("symbol", symbol);
@@ -189,12 +194,12 @@ public class BinanceApiClient implements IApiClient {
     }
 
     @Override
-    public String entrustOrders(String symbol) throws Exception {
+    public String entrustOrders(String apiKey, String apiSecret, String symbol) throws Exception {
         return null;
     }
 
     @Override
-    public String placeOrder(String accountId, String symbol, String price, String amount, String type) throws Exception {
+    public String placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {
         return null;
     }
 }

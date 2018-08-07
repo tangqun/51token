@@ -20,12 +20,12 @@
     resultOrdered：这个设置仅针对嵌套结果select语句适用。如果为true，就是假设包含了嵌套结果集或是分组了，这样的话当返回一个主结果行的时候，就不会发生对前面结果集引用的情况。这就使得在获取嵌套的结果集时不至于导致内存不够用。默认值为false。
     resultSets：这个设置仅对多结果集的情况适用，它将列出语句执行后返回的结果集并给每个结果集一个名称，名称是逗号分隔的。
  -->
-<mapper namespace="com.sharex.token.api.mapper.UserCurrencyMapper">
+<mapper namespace="com.sharex.token.api.mapper.UserCurrencyCostMapper">
     <!--
         id：resultMap的唯一标识符。
         type：resultMap实际返回的类型。
     -->
-    <resultMap id="userCurrencyMap" type="com.sharex.token.api.entity.UserCurrency">
+    <resultMap id="userCurrencyCostMap" type="com.sharex.token.api.entity.UserCurrencyCost">
         <!--
             id：表示数据库的主键，其中，column属性表示数据库表的列名，property表示数据库列映射到返回类型的属性。
             result：表示数据库的普通列，其中，column属性表示数据库表的列名，property表示数据库列映射到返回类型的属性。
@@ -33,13 +33,10 @@
         <result column="id" property="id" />
         <result column="exchange_name" property="exchangeName" />
         <result column="currency" property="currency" />
-        <result column="free" property="free" />
-        <result column="freezed" property="freezed" />
+        <result column="amount" property="amount" />
         <result column="cost" property="cost" />
+        <result column="type" property="type" />
         <result column="user_id" property="userId" />
-        <result column="api_key" property="apiKey" />
-        <result column="api_secret" property="apiSecret" />
-        <result column="account_id" property="accountId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
@@ -49,22 +46,15 @@
         keyProperty：（仅对insert和update游泳）唯一标记一个属性，MyBatis会通过getGeneratedKeys的返回值或者通过insert语句的selectKey子元素设置它的键值，默认为unset。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
         keyColumn：（仅对insert和update有用）通过生成的键值设置表中的列名，这个设置仅对某些数据库（像PostgreSQL）是必须的，当主键列不是表中的第一列时需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
     -->
-    <insert id="insert" parameterType="com.sharex.token.api.entity.UserCurrency">
-        INSERT INTO `user_currency` (`exchange_name`, `currency`, `free`, `freezed`, `cost`, `user_id`, `api_key`, `api_secret`, `account_id`, `create_time`)
-        VALUES (#{exchangeName}, #{currency}, #{free}, #{freezed}, #{cost}, #{userId}, #{apiKey}, #{apiSecret}, #{accountId}, #{createTime});
+    <insert id="insert" parameterType="com.sharex.token.api.entity.UserCurrencyCost">
+        INSERT INTO `user_currency_cost` (`exchange_name`, `currency`, `amount`, `cost`, `type`, `user_id`, `create_time`)
+        VALUES (#{exchangeName}, #{currency}, #{amount}, #{cost}, #{type}, #{userId}, #{createTime});
     </insert>
-    <delete id="delete" parameterType="java.util.Map">
-        DELETE
-        FROM `user_currency`
-        WHERE `exchange_name` = #{exchangeName} AND `user_id` = #{userId};
-    </delete>
-    <select id="selectList" parameterType="java.util.Map" resultMap="userCurrencyMap">
-        SELECT * FROM `user_currency`
-        WHERE `exchange_name` = #{exchangeName} AND `user_id` = #{userId};
-    </select>
-    <select id="selectEntity" parameterType="java.util.Map" resultMap="userCurrencyMap">
-        SELECT * FROM `user_currency`
+    <select id="selectEntity" parameterType="java.util.Map" resultMap="userCurrencyCostMap">
+        SELECT `id`, `exchange_name`, `currency`, `amount`, `cost`, `type`, `user_id`, `create_time`, `update_time`
+        FROM `user_currency_cost`
         WHERE `exchange_name` = #{exchangeName} AND `currency` = #{currency} AND `user_id` = #{userId}
+        ORDER BY `create_time` DESC
         LIMIT 0, 1;
     </select>
 </mapper>

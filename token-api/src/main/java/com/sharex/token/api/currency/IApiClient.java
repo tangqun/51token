@@ -42,22 +42,31 @@ public interface IApiClient {
      * 获取账户信息
      * @return
      */
-    String accounts() throws Exception;
+    String accounts(String apiKey, String apiSecret) throws Exception;
 
     /**
-     * 用户历史订单（已成交 & 未成交 ？）
+     * 未成交订单
+     * @param accountId
+     * @param symbol
+     * @return
+     * @throws Exception
+     */
+    String openOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception;
+
+    /**
+     * 用户历史成交（已成交 & 未成交 ？）
      * @param symbol
      * @param status
      * @return
      */
-    String historyOrders(String symbol, Integer status) throws Exception;
+    String historyOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception;
 
     /**
      * 委托
      * @param symbol
      * @return
      */
-    String entrustOrders(String symbol) throws Exception;
+    String entrustOrders(String apiKey, String apiSecret, String symbol) throws Exception;
 
     /**
      * 下单 - 限价买卖
@@ -67,7 +76,7 @@ public interface IApiClient {
      * @param type
      * @return
      */
-    String placeOrder(String accountId, String symbol, String price, String amount, String type) throws Exception;
+    String placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception;
 
     /**
      * 撤销订单

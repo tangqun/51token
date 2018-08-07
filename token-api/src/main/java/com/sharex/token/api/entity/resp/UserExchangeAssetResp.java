@@ -11,9 +11,6 @@ public class UserExchangeAssetResp {
     // 今日收益
     private String profit;
 
-    // 累计收益
-    private String cumulativeProfit;
-
     private List<UserCurrencyAssetResp> userCurrencyAssetRespList;
 
     public String getName() {
@@ -38,14 +35,6 @@ public class UserExchangeAssetResp {
 
     public void setProfit(String profit) {
         this.profit = profit;
-    }
-
-    public String getCumulativeProfit() {
-        return cumulativeProfit;
-    }
-
-    public void setCumulativeProfit(String cumulativeProfit) {
-        this.cumulativeProfit = cumulativeProfit;
     }
 
     public List<UserCurrencyAssetResp> getUserCurrencyAssetRespList() {

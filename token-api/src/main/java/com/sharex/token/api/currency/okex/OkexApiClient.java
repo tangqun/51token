@@ -5,17 +5,19 @@ import com.sharex.token.api.util.CryptoUtil;
 import com.sharex.token.api.util.HttpUtil;
 import com.sharex.token.api.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class OkexApiClient implements IApiClient {
 
     private static final String API_HOST = "www.okex.com";
     private static final String API_URL = "https://" + API_HOST;
 
-    private String apiKey;
-    private String apiSecret;
+//    private String apiKey;
+//    private String apiSecret;
 
     // 最新成交
     private static final String Trades_URL = "/api/v1/trades.do";
@@ -38,10 +40,10 @@ public class OkexApiClient implements IApiClient {
     // 下单
     private static final String PlaceOrder_URL = "/api/v1/trade.do?";
 
-    public OkexApiClient(String apiKey, String apiSecret) {
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-    }
+//    public OkexApiClient(String apiKey, String apiSecret) {
+//        this.apiKey = apiKey;
+//        this.apiSecret = apiSecret;
+//    }
 
     public OkexApiClient() {
 
@@ -98,7 +100,7 @@ public class OkexApiClient implements IApiClient {
     }
 
     @Override
-    public String accounts() throws Exception {
+    public String accounts(String apiKey, String apiSecret) throws Exception {
 
         // 构造参数签名
         Map<String, String> params = new HashMap<String, String>();
@@ -114,14 +116,14 @@ public class OkexApiClient implements IApiClient {
     }
 
     @Override
-    public String historyOrders(String symbol, Integer status) throws Exception {
+    public String openOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("api_key", apiKey);
         params.put("symbol", symbol);
         params.put("status", status.toString());
         params.put("current_page", "1");
-        params.put("page_length", "200");
+        params.put("page_length", "100");
         String sign = CryptoUtil.md5(StringUtil.toQueryString(params) + "&secret_key=" + apiSecret);
         params.put("sign", sign);
 
@@ -133,7 +135,26 @@ public class OkexApiClient implements IApiClient {
     }
 
     @Override
-    public String entrustOrders(String symbol) throws Exception {
+    public String historyOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("api_key", apiKey);
+        params.put("symbol", symbol);
+        params.put("status", status.toString());
+        params.put("current_page", "1");
+        params.put("page_length", "100");
+        String sign = CryptoUtil.md5(StringUtil.toQueryString(params) + "&secret_key=" + apiSecret);
+        params.put("sign", sign);
+
+        // 发送post请求
+        String respBody = HttpUtil.post(API_URL + this.HistoryOrders_URL,
+                StringUtil.toQueryString(params),"application/x-www-form-urlencoded");
+
+        return respBody;
+    }
+
+    @Override
+    public String entrustOrders(String apiKey, String apiSecret, String symbol) throws Exception {
 
         return null;
     }
@@ -149,7 +170,7 @@ public class OkexApiClient implements IApiClient {
      * @throws Exception
      */
     @Override
-    public String placeOrder(String accountId, String symbol, String price, String amount, String type) throws Exception {
+    public String placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {
         // 构造参数签名
         Map<String, String> params = new HashMap<String, String>();
         params.put("api_key", apiKey);

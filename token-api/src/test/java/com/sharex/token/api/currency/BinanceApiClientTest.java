@@ -44,9 +44,9 @@ public class BinanceApiClientTest {
     @Test
     public void accounts() throws Exception {
 
-        IApiClient apiClient = new BinanceApiClient(apiKey, apiSecret);
+        IApiClient apiClient = new BinanceApiClient();
 
-        String respBody = apiClient.accounts();
+        String respBody = apiClient.accounts(apiKey, apiSecret);
 
         System.out.println(respBody);
     }
@@ -54,9 +54,9 @@ public class BinanceApiClientTest {
     @Test
     public void historyOrders() throws Exception {
 
-        IApiClient apiClient = new BinanceApiClient(apiKey, apiSecret);
+        IApiClient apiClient = new BinanceApiClient();
 
-        String respBody = apiClient.historyOrders("BTCUSDT", null);
+        String respBody = apiClient.historyOrders(apiKey, apiSecret, null,"BTCUSDT", 0, 100);
 
         System.out.println(respBody);
     }

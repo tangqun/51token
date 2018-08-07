@@ -15,6 +15,9 @@ public class UserCurrency {
     // 金额
     private String freezed;
 
+    // 授权时价格 usdt
+    private String cost;
+
     private Integer userId;
     private String apiKey;
     private String apiSecret;
@@ -62,6 +65,14 @@ public class UserCurrency {
 
     public void setFreezed(String freezed) {
         this.freezed = freezed;
+    }
+
+    public String getCost() {
+        return cost;
+    }
+
+    public void setCost(String cost) {
+        this.cost = cost;
     }
 
     public Integer getUserId() {
