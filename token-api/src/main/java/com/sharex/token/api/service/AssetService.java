@@ -372,7 +372,7 @@ public class AssetService {
                     userCurrencyAssetRespList.add(userCurrencyAssetResp);
                 }
 
-                // 设置币种个数
+                // 设置单交易所币种个数
                 userExchangeAssetResp.setCurrencyCount(userCurrencyAssetRespList.size());
 
                 profit += exchangeProfit;
@@ -380,10 +380,13 @@ public class AssetService {
                 cumulativeProfit += exchangeCumulativeProfit;
                 cost += exchangeCost;
 
-                // 设置今日收益
+                // 设置单交易所今日收益
                 userExchangeAssetResp.setProfit(exchangeProfit.toString());
 
-                // 设置单币数据集合
+                // 设置单交易所累计收益
+                userExchangeAssetResp.setCumulativeProfit(exchangeCumulativeProfit.toString());
+
+                // 设置单交易所数字币数据集合
                 userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
 
                 userExchangeAssetRespList.add(userExchangeAssetResp);

@@ -5,11 +5,15 @@ import java.util.List;
 public class UserExchangeAssetResp {
 
     private String name;
-    // 币种
+
+    // 单交易所币种个数
     private Integer currencyCount;
 
-    // 今日收益
+    // 单交易所今日收益
     private String profit;
+
+    // 单交易所累计收益
+    private String cumulativeProfit;
 
     private List<UserCurrencyAssetResp> userCurrencyAssetRespList;
 
@@ -43,5 +47,13 @@ public class UserExchangeAssetResp {
 
     public void setUserCurrencyAssetRespList(List<UserCurrencyAssetResp> userCurrencyAssetRespList) {
         this.userCurrencyAssetRespList = userCurrencyAssetRespList;
+    }
+
+    public String getCumulativeProfit() {
+        return cumulativeProfit;
+    }
+
+    public void setCumulativeProfit(String cumulativeProfit) {
+        this.cumulativeProfit = cumulativeProfit;
     }
 }
