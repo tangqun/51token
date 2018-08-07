@@ -608,14 +608,6 @@ public class AssetService {
     public RESTful syn(String token, AssetSyn assetSyn) {
         try {
 
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);

@@ -47,7 +47,7 @@ public class ApiInterceptor {
         String exchangeName = getExchangeName(className);
 
         String callsStr = hashOperations.get(exchangeName, "api_calls_" + methodName + ts.toString());
-        Long calls = 100L;
+        Long calls = 0L;
         if (null != callsStr) {
             calls = Long.valueOf(callsStr);
         }

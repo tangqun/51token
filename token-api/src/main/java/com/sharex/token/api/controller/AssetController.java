@@ -9,12 +9,18 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 @Api("资产")
 @RequestMapping("/asset")
 @RestController
+@Validated
 public class AssetController {
 
     @Autowired
@@ -44,7 +50,12 @@ public class AssetController {
 
     @ApiOperation("远程同步资产")
     @RequestMapping(value = "/syn", method = RequestMethod.POST)
-    public RESTful syn(@RequestHeader String token, @RequestBody AssetSyn assetSyn) {
+    public RESTful syn(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token,
+            @Valid
+            @RequestBody AssetSyn assetSyn) {
 
         return assetService.syn(token, assetSyn);
     }
