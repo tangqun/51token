@@ -57,29 +57,22 @@ public class CurrencyService {
     public RESTful get(String token, String exchangeName, String currency, String klineType) {
         try {
 
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
+            // token valid?
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
+            // user status? 正常/冻结 0：正常 1：冻结
             if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
-
-            // exchangeName in db?
+            // exchange in db?
             Exchange exchange = exchangeMapper.selectEnabledByShortName(exchangeName);
             if (exchange == null) {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
             }
 
-            // 通过 token 获取 userId 从而获取对用的 apiKey， apiSecret 进而获取用户信息
+            // user status? 正常/冻结 0：正常 1：冻结
             Map<String, Object> userApiMap = new HashMap<>();
             userApiMap.put("userId", user.getId());
             userApiMap.put("exchangeName", exchangeName);
@@ -93,7 +86,7 @@ public class CurrencyService {
                 UserCurrency userCurrency = userCurrencyMapper.selectEntity(currencyMap);
                 if (userCurrency == null) {
                     // 尚未资产映射 或 直接调用该接口
-                    return RESTful.Fail(CodeEnum.AssetNotSyn);
+                    return RESTful.Fail(CodeEnum.AssetInExchangeNotExistAnyCurrency);
                 }
 
                 /**
@@ -112,29 +105,48 @@ public class CurrencyService {
                  */
                 Map<String, Object> map = new HashMap<>();
 
+                String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+
                 // 单币资产
                 CurrencyResp currencyResp = new CurrencyResp();
-
-                String symbol = null;
-
-                switch (userCurrency.getExchangeName()) {
-                    case "huobi": symbol = userCurrency.getCurrency() + "usdt"; break;
-                    case "okex": symbol = userCurrency.getCurrency() + "_usdt"; break;
-                }
                 List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
                 MyKline myKline = myKlineList.get(0);
                 currencyResp.setPrice(myKline.getClose());
+
+                // 现价
+                currencyResp.setPrice(myKline.getClose());
+
+                // 市值
                 Double vol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
                 currencyResp.setVol(vol.toString());
+
+                // 成本
+                currencyResp.setCost(userCurrency.getCost());
+
+                // 当日收益
+                Double profit = (Double.valueOf(myKline.getClose()) - Double.valueOf(myKline.getOpen())) * Double.valueOf(userCurrency.getFree());
+                currencyResp.setProfit(profit.toString());
+
+                Double currencyProfitRate = (profit / Double.valueOf(myKline.getClose())) * 100;
+
+                currencyResp.setProfitRate(currencyProfitRate.toString());
+
+                currencyResp.setFree(userCurrency.getFree());
+
+                currencyResp.setFreezed(userCurrency.getFreezed());
+
+                currencyResp.setCurrency(userCurrency.getCurrency());
+
                 // data: { currency: }
                 map.put("currency", currencyResp);
 
-
+                // k线
                 if (!"1min".equals(klineType)) {
                     myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, klineType);
                 }
                 map.put("kline", myKlineList);
 
+                // 买盘/卖盘
                 Map<String, Object> tradesMap = new HashMap<>();
                 MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol); //hashOperations.get("trades", exchangeName + "_" + currency + "usdt_buy").toString();
                 List<MyTrade> myTradeList_buy = myTrades.getBuy().subList(0, 10);
@@ -145,10 +157,10 @@ public class CurrencyService {
 
                 return RESTful.Success(map);
 
-            } else {
-                // 未授权或者取消授权
-                return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
+
+            // 未授权或者取消授权
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
