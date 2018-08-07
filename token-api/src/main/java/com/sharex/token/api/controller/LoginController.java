@@ -7,13 +7,17 @@ import com.sharex.token.api.service.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Api("登陆")
 @RestController
+@Validated
 public class LoginController {
 
     @Autowired
@@ -21,7 +25,9 @@ public class LoginController {
 
     @ApiOperation("短信登陆")
     @RequestMapping(value = "/loginBySMSCode", method = RequestMethod.POST)
-    public RESTful loginBySMSCode(@RequestBody LoginSMSCode loginSMSCode) {
+    public RESTful loginBySMSCode(
+            @Valid
+            @RequestBody LoginSMSCode loginSMSCode) {
 
         return loginService.loginBySMSCode(loginSMSCode);
     }

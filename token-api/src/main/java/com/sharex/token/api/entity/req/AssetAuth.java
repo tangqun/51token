@@ -1,9 +1,14 @@
 package com.sharex.token.api.entity.req;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 public class AssetAuth {
 
+    @NotBlank(message = "apiKey不能为空")
     private String apiKey;
+    @NotBlank(message = "apiSecret不能为空")
     private String apiSecret;
+    @NotBlank(message = "交易所必填")
     private String exchangeName;
 
     public String getApiKey() {

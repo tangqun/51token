@@ -3,10 +3,7 @@ package com.sharex.token.api.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.entity.enums.CodeEnum;
-import com.sharex.token.api.entity.req.CurrencyCostEdit;
-import com.sharex.token.api.entity.req.CurrencyPlaceOrder;
-import com.sharex.token.api.entity.req.CurrencySynOrders;
-import com.sharex.token.api.entity.req.ExchangeCurrencyCostEdit;
+import com.sharex.token.api.entity.req.*;
 import com.sharex.token.api.entity.resp.CurrencyResp;
 import com.sharex.token.api.exception.ParameterErrorException;
 import com.sharex.token.api.mapper.*;
@@ -158,7 +155,69 @@ public class CurrencyService {
         }
     }
 
-    public RESTful synOpenOrders(String token, CurrencySynOrders currencySynOrders) {
+    public RESTful synExchangeOpenOrders(String token, ExchangeOpenOrdersSyn exchangeOpenOrdersSyn) {
+        try {
+
+            // token valid?
+            User user = userMapper.selectByToken(token);
+            if (user == null) {
+                return RESTful.Fail(CodeEnum.TokenInvalid);
+            }
+            // user status? 正常/冻结 0：正常 1：冻结
+            if (0 != user.getStatus()) {
+                return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
+            }
+            // exchange in db?
+            Exchange exchange = exchangeMapper.selectEnabledByShortName(exchangeOpenOrdersSyn.getExchangeName());
+            if (exchange == null) {
+                return RESTful.Fail(CodeEnum.ExchangeInvalid);
+            }
+
+            // user_exchange in db && user_exchange status?
+            Map<String, Object> userApiMap = new HashMap<>();
+            userApiMap.put("userId", user.getId());
+            userApiMap.put("exchangeName", exchangeOpenOrdersSyn.getExchangeName());
+            UserApi userApi = userApiMapper.selectByType(userApiMap);
+            if (userApi != null && 0 == userApi.getStatus()) {
+
+                // user_currency
+                Map<String, Object> currencyMap = new HashMap<>();
+                currencyMap.put("exchangeName", exchangeOpenOrdersSyn.getExchangeName());
+                currencyMap.put("userId", user.getId());
+                List<UserCurrency> userCurrencyList = userCurrencyMapper.selectList(currencyMap);
+                if (userCurrencyList == null) {
+                    // 用户在该交易所不存在任何资产，或者同步资产失败
+                    return RESTful.Fail(CodeEnum.AssetInExchangeNotExistAnyCurrency);
+                }
+
+                for (UserCurrency userCurrency:userCurrencyList) {
+
+                    if (!"usdt".equals(userCurrency.getCurrency())) {
+
+                        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+
+                        remoteSynService.synOpenOrders(
+                                userApi.getApiKey(),
+                                userApi.getApiSecret(),
+                                userCurrency.getAccountId(),
+                                user.getId(),
+                                exchangeOpenOrdersSyn.getExchangeName(),
+                                symbol);
+                    }
+                }
+
+                return RESTful.Success();
+            }
+
+            // 授权不存在 or 取消了授权
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    public RESTful synCurrencyOpenOrders(String token, CurrencySynOrders currencySynOrders) {
         try {
 
             // token valid?
@@ -194,10 +253,18 @@ public class CurrencyService {
                     return RESTful.Fail(CodeEnum.AssetInExchangeNotExistThisCurrency);
                 }
 
-                String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                if (!"usdt".equals(userCurrency.getCurrency())) {
 
-                remoteSynService.synOpenOrders(currencySynOrders.getExchangeName(), user.getId(),
-                        userApi.getApiKey(), userApi.getApiSecret(), userCurrency.getAccountId(), symbol);
+                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+
+                    remoteSynService.synOpenOrders(
+                            userApi.getApiKey(),
+                            userApi.getApiSecret(),
+                            userCurrency.getAccountId(),
+                            user.getId(),
+                            currencySynOrders.getExchangeName(),
+                            symbol);
+                }
 
                 return RESTful.Success();
             }
@@ -210,37 +277,93 @@ public class CurrencyService {
         }
     }
 
-    public RESTful synHistoryOrders(String token, CurrencySynOrders currencySynOrders) {
+    public RESTful synExchangeHistoryOrders(String token, ExchangeHistoryOrdersSyn exchangeHistoryOrdersSyn) {
         try {
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
 
+            // token valid?
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
+            // user status? 正常/冻结 0：正常 1：冻结
             if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
+            // exchange in db?
+            Exchange exchange = exchangeMapper.selectEnabledByShortName(exchangeHistoryOrdersSyn.getExchangeName());
+            if (exchange == null) {
+                return RESTful.Fail(CodeEnum.ExchangeInvalid);
+            }
 
-            // exchangeName in db?
+            // user_exchange in db && user_exchange status?
+            Map<String, Object> userApiMap = new HashMap<>();
+            userApiMap.put("userId", user.getId());
+            userApiMap.put("exchangeName", exchangeHistoryOrdersSyn.getExchangeName());
+            UserApi userApi = userApiMapper.selectByType(userApiMap);
+            if (userApi != null && userApi.getStatus().equals(0)) {
+
+                // user_currency
+                Map<String, Object> currencyMap = new HashMap<>();
+                currencyMap.put("exchangeName", exchangeHistoryOrdersSyn.getExchangeName());
+                currencyMap.put("userId", user.getId());
+                List<UserCurrency> userCurrencyList = userCurrencyMapper.selectList(currencyMap);
+                if (userCurrencyList == null) {
+                    // 用户在该交易所不存在任何资产，或者同步资产失败
+                    return RESTful.Fail(CodeEnum.AssetInExchangeNotExistAnyCurrency);
+                }
+
+                for (UserCurrency userCurrency:userCurrencyList) {
+
+                    if (!"usdt".equals(userCurrency.getCurrency())) {
+                        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+
+                        remoteSynService.synHistoryOrders(
+                                userApi.getApiKey(),
+                                userApi.getApiSecret(),
+                                userCurrency.getAccountId(),
+                                user.getId(),
+                                exchangeHistoryOrdersSyn.getExchangeName(),
+                                symbol);
+                    }
+                }
+
+                return RESTful.Success();
+            }
+
+            // 授权不存在 or 取消了授权
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    public RESTful synCurrencyHistoryOrders(String token, CurrencySynOrders currencySynOrders) {
+        try {
+
+            // token valid?
+            User user = userMapper.selectByToken(token);
+            if (user == null) {
+                return RESTful.Fail(CodeEnum.TokenInvalid);
+            }
+            // user status? 正常/冻结 0：正常 1：冻结
+            if (!user.getStatus().equals(0)) {
+                return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
+            }
+            // exchange in db?
             Exchange exchange = exchangeMapper.selectEnabledByShortName(currencySynOrders.getExchangeName());
             if (exchange == null) {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
             }
 
-            // 通过 token 获取 userId 从而获取对用的 apiKey， apiSecret 进而获取用户信息
+            // user_exchange in db && user_exchange status?
             Map<String, Object> userApiMap = new HashMap<>();
             userApiMap.put("userId", user.getId());
             userApiMap.put("exchangeName", currencySynOrders.getExchangeName());
             UserApi userApi = userApiMapper.selectByType(userApiMap);
             if (userApi != null && userApi.getStatus().equals(0)) {
 
+                // user_currency
                 Map<String, Object> currencyMap = new HashMap<>();
                 currencyMap.put("exchangeName", currencySynOrders.getExchangeName());
                 currencyMap.put("currency", currencySynOrders.getCurrency());
@@ -248,20 +371,27 @@ public class CurrencyService {
                 UserCurrency userCurrency = userCurrencyMapper.selectEntity(currencyMap);
                 if (userCurrency == null) {
                     // 尚未资产映射 或 直接调用该接口
-                    return RESTful.Fail(CodeEnum.AssetNotSyn);
+                    return RESTful.Fail(CodeEnum.AssetInExchangeNotExistThisCurrency);
                 }
 
-                String symbol = "";
-                switch (userCurrency.getExchangeName()) {
-                    case "huobi": symbol = userCurrency.getCurrency() + "usdt"; break;
-                    case "okex": symbol = userCurrency.getCurrency() + "_usdt"; break;
+                if (!"usdt".equals(userCurrency.getCurrency())) {
+
+                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+
+                    remoteSynService.synHistoryOrders(
+                            userApi.getApiKey(),
+                            userApi.getApiSecret(),
+                            userCurrency.getAccountId(),
+                            user.getId(),
+                            currencySynOrders.getExchangeName(),
+                            symbol);
                 }
 
-                remoteSynService.synHistoryOrders(currencySynOrders.getExchangeName(), user.getId(),
-                        userApi.getApiKey(), userApi.getApiSecret(), userCurrency.getAccountId(), symbol);
+                return RESTful.Success();
             }
 
-            return RESTful.Success();
+            // 授权不存在 or 取消了授权
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
@@ -467,6 +597,98 @@ public class CurrencyService {
 
                 // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志），删除msg_id
                 orderMsgMapper.delete(currencyPlaceOrder.getMsgId());
+
+                return RESTful.Success();
+            } else {
+                // 未授权或者取消授权
+                return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return RESTful.SystemException();
+        }
+    }
+
+    @Transactional
+    public RESTful cancelOrder(String token, CurrencyCancelOrder currencyCancelOrder) {
+        try {
+
+            if (StringUtils.isBlank(currencyCancelOrder.getMsgId())) {
+                return RESTful.Fail(CodeEnum.MsgIdCannotBeNull);
+            }
+            if (!ValidateUtil.checkMsgId(currencyCancelOrder.getMsgId())) {
+                return RESTful.Fail(CodeEnum.MsgIdFormatError);
+            }
+
+            User user = userMapper.selectByToken(token);
+            if (user == null) {
+                return RESTful.Fail(CodeEnum.TokenInvalid);
+            }
+            if (!user.getStatus().equals(0)) {
+                return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
+            }
+
+            // exchangeName in db?
+            Exchange exchange = exchangeMapper.selectEnabledByShortName(currencyCancelOrder.getExchangeName());
+            if (exchange == null) {
+                return RESTful.Fail(CodeEnum.ExchangeInvalid);
+            }
+
+            Map<String, Object> userApiMap = new HashMap<>();
+            userApiMap.put("userId", user.getId());
+            userApiMap.put("exchangeName", currencyCancelOrder.getExchangeName());
+            UserApi userApi = userApiMapper.selectByType(userApiMap);
+            if (userApi != null && userApi.getStatus().equals(0)) {
+
+                Map<String, Object> currencyMap = new HashMap<>();
+                currencyMap.put("exchangeName", currencyCancelOrder.getExchangeName());
+                currencyMap.put("currency", currencyCancelOrder.getCurrency());
+                currencyMap.put("userId", user.getId());
+                UserCurrency userCurrency = userCurrencyMapper.selectEntity(currencyMap);
+                if (userCurrency == null) {
+                    // 尚未资产映射 或 直接调用该接口
+                    return RESTful.Fail(CodeEnum.AssetNotSyn);
+                }
+
+                // 判断币种余额是否足够
+
+                Date date = new Date();
+
+                Integer msgIdCount = orderMsgMapper.selectCount(currencyCancelOrder.getMsgId());
+                if (msgIdCount > 0) {
+                    return RESTful.Fail(CodeEnum.RepeatSubmitOrder);
+                }
+
+                // insert msg_id
+                OrderMsg orderMsg = new OrderMsg();
+                orderMsg.setMsgId(currencyCancelOrder.getMsgId());
+                orderMsg.setCreateTime(date);
+                orderMsgMapper.insert(orderMsg);
+
+                // 提交交易所（创建委托交易 -- 限价交易），返回 订单编号
+                String symbol = null;
+
+                switch (currencyCancelOrder.getExchangeName()) {
+                    case "huobi":
+                        symbol = currencyCancelOrder.getCurrency() + "usdt";
+                        break;
+                    case "okex":
+                        symbol = currencyCancelOrder.getCurrency() + "_usdt";
+                        break;
+                }
+
+                RemotePost<String> remotePost = remoteSynService.cancelOrder(currencyCancelOrder.getExchangeName(), user.getId(),
+                        userApi.getApiKey(), userApi.getApiSecret(),
+                        symbol, currencyCancelOrder.getOrderId());
+
+                if ("ok".equals(remotePost.getStatus())) {
+
+                    // 订单记录数据库
+                }
+
+                // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志），删除msg_id
+                orderMsgMapper.delete(currencyCancelOrder.getMsgId());
 
                 return RESTful.Success();
             } else {

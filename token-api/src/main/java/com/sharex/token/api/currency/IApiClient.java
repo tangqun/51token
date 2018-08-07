@@ -84,7 +84,7 @@ public interface IApiClient {
      * @param orderId
      * @return
      */
-//    String cancelOrder(String symbol, String orderId);
+    String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception;
 
     /**
      * 查询订单

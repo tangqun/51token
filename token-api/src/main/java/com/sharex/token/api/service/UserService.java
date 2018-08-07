@@ -8,8 +8,6 @@ import com.sharex.token.api.entity.req.Feedback;
 import com.sharex.token.api.entity.req.SwitchKline;
 import com.sharex.token.api.mapper.UserFeedbackMapper;
 import com.sharex.token.api.mapper.UserMapper;
-import com.sharex.token.api.util.ValidateUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +30,6 @@ public class UserService {
 
     public RESTful feedback(String token, Feedback feedback) {
         try {
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
-            if (StringUtils.isBlank(feedback.getContent())) {
-                return RESTful.Fail(CodeEnum.FeedbackContentCannotBeNull);
-            }
-            if (feedback.getContent().length() > 200) {
-                return RESTful.Fail(CodeEnum.FeedbackContentFormatError);
-            }
 
             User user = userMapper.selectByToken(token);
             if (user == null) {
@@ -72,13 +56,6 @@ public class UserService {
 
     public RESTful switchKline(String token, SwitchKline switchKline) {
         try {
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
 
             User user = userMapper.selectByToken(token);
             if (user == null) {

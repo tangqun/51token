@@ -195,4 +195,9 @@ public class OkexApiClient implements IApiClient {
 
         return respBody;
     }
+
+    @Override
+    public String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+        return null;
+    }
 }

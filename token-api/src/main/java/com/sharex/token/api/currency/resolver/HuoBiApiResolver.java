@@ -2,8 +2,6 @@ package com.sharex.token.api.currency.resolver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharex.token.api.currency.ApiClinetFactory;
-import com.sharex.token.api.currency.IApiClient;
 import com.sharex.token.api.currency.huobi.HuoBiApiClient;
 import com.sharex.token.api.currency.huobi.resp.*;
 import com.sharex.token.api.entity.*;
@@ -16,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -227,6 +224,33 @@ public class HuoBiApiResolver implements IApiResolver {
         Date date = new Date();
 
         String respBody = huoBiApiClient.placeOrder(apiKey, apiSecret, accountId, symbol, price, amount, type);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(respBody);
+        }
+
+        if (!StringUtils.isBlank(respBody)) {
+            ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+            if ("ok".equals(apiResp.getStatus())) {
+
+                RemotePost<String> remotePost = new RemotePost<>();
+                remotePost.setStatus(apiResp.getStatus());
+                remotePost.setData(apiResp.getData().toString());
+
+                return remotePost;
+            }
+
+            throw new PlaceOrderPostException(apiResp.getErrMsg());
+        }
+
+        throw new NetworkException();
+    }
+
+    public RemotePost<String> cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+
+        Date date = new Date();
+
+        String respBody = huoBiApiClient.cancelOrder(apiKey, apiSecret, symbol, orderId);
 
         if (logger.isDebugEnabled()) {
             logger.debug(respBody);

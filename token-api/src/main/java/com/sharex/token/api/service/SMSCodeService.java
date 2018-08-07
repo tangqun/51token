@@ -9,12 +9,10 @@ import com.sharex.token.api.mapper.SMSCodeMapper;
 import com.sharex.token.api.util.AliSMSUtil;
 import com.sharex.token.api.util.RandomUtil;
 import com.sharex.token.api.util.TimeUtil;
-import com.sharex.token.api.util.ValidateUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -37,16 +35,6 @@ public class SMSCodeService {
     public RESTful send(SMSCodeSend smsCodeSend) {
 
         try {
-
-            if (StringUtils.isEmpty(smsCodeSend.getMobileNum())) {
-                // 手机号不能为空
-                return RESTful.Fail(CodeEnum.MobileNumCannotBeNull);
-            }
-
-            if (!ValidateUtil.checkMobile(smsCodeSend.getMobileNum())) {
-                // 手机号格式错误
-                return RESTful.Fail(CodeEnum.MobileNumFormatError);
-            }
 
             Date date = new Date();
             Date dayStartTime = new Date(date.getYear(), date.getMonth(), date.getDate(), 0, 0, 0);
@@ -81,16 +69,6 @@ public class SMSCodeService {
 
     public RESTful remove(SMSCodeRemove smsCodeRemove) {
         try {
-
-            if (StringUtils.isEmpty(smsCodeRemove.getMobileNum())) {
-                // 手机号不能为空
-                return RESTful.Fail(CodeEnum.MobileNumCannotBeNull);
-            }
-
-            if (!ValidateUtil.checkMobile(smsCodeRemove.getMobileNum())) {
-                // 手机号格式错误
-                return RESTful.Fail(CodeEnum.MobileNumFormatError);
-            }
 
             smsCodeMapper.delete(smsCodeRemove.getMobileNum());
 

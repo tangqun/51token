@@ -150,6 +150,11 @@ public class OkexApiResolver implements IApiResolver {
     }
 
     @Override
+    public RemotePost<String> cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+        return null;
+    }
+
+    @Override
     public RemoteSyn getOpenOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
         return null;
     }

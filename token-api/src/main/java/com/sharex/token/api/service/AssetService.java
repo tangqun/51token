@@ -14,8 +14,6 @@ import com.sharex.token.api.mapper.ExchangeMapper;
 import com.sharex.token.api.mapper.UserApiMapper;
 import com.sharex.token.api.mapper.UserCurrencyMapper;
 import com.sharex.token.api.mapper.UserMapper;
-import com.sharex.token.api.util.ValidateUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +50,6 @@ public class AssetService {
      */
     public RESTful getAuthMapping(String token) {
         try {
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
 
             User user = userMapper.selectByToken(token);
             if (user == null) {
@@ -73,15 +64,23 @@ public class AssetService {
                 return RESTful.Fail(CodeEnum.ExchangeInDBNotConfig);
             }
 
-            // 一级
+            /**
+             * {
+             *   code:
+             *   msg:
+             *   data: {
+             *     exchange: [{}, {}, {}]
+             *   }
+             * }
+             */
+
+            // data
             Map<String, Object> map = new HashMap<>();
 
-            // 二级
+            // exchange
             List<ExchangeResp> exchangeRespList = new ArrayList<>();
 
-
             List<UserApi> userApiList = userApiMapper.selectEnabledByUserId(user.getId());
-
             for (Exchange exchange:exchangeList) {
 
                 ExchangeResp exchangeResp = new ExchangeResp();
@@ -122,22 +121,6 @@ public class AssetService {
     public RESTful auth(String token, AssetAuth assetAuth) {
         try {
 
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
-            if (StringUtils.isBlank(assetAuth.getApiKey())) {
-                return RESTful.Fail(CodeEnum.ApiKeyCannotBeNull);
-            }
-
-            if (StringUtils.isBlank(assetAuth.getApiSecret())) {
-                return RESTful.Fail(CodeEnum.ApiSecretCannotBeNull);
-            }
-
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
@@ -152,6 +135,7 @@ public class AssetService {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
             }
 
+            // 当前时间
             Date date = new Date();
 
             // 授权时候尝试获取相应的用户信息接口再保存，无效的数据没有意义
@@ -205,14 +189,6 @@ public class AssetService {
     public RESTful rmAuth(String token, AssetRmAuth assetRmAuth) {
         try {
 
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
@@ -263,14 +239,6 @@ public class AssetService {
      */
     public RESTful getAsset(String token) {
         try {
-
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
 
             User user = userMapper.selectByToken(token);
             if (user == null) {
@@ -456,14 +424,6 @@ public class AssetService {
 
     public RESTful getExchangeAsset(String token, String exchangeName) {
         try {
-
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
 
             User user = userMapper.selectByToken(token);
             if (user == null) {

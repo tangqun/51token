@@ -165,7 +165,7 @@ public class RemoteSynService {
         saveUserAsset(exchangeName, userId, map);
     }
 
-    public void synOpenOrders(String exchangeName, Integer userId, String apiKey, String apiSecret, String accountId, String symbol) throws Exception {
+    public void synOpenOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
 
         // huobi
         //   openOrders_btcusdt_userId
@@ -189,7 +189,7 @@ public class RemoteSynService {
         hashOperations.put(exchangeName, "openOrders_" + symbol + "_" + userId, objectMapper.writeValueAsString(remoteSyn));
     }
 
-    public void synHistoryOrders(String exchangeName, Integer userId, String apiKey, String apiSecret, String accountId, String symbol) throws Exception {
+    public void synHistoryOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
 
         String redisBody = hashOperations.get(exchangeName,  "historyOrders_" + symbol + "_" + userId);
 
@@ -215,6 +215,13 @@ public class RemoteSynService {
         IApiResolver apiResolver = getApiResolver(exchangeName);
 
         return apiResolver.placeOrder(apiKey, apiSecret, accountId, symbol, price, amount, type);
+    }
+
+    public RemotePost<String> cancelOrder(String exchangeName, Integer userId, String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+
+        IApiResolver apiResolver = getApiResolver(exchangeName);
+
+        return apiResolver.cancelOrder(apiKey, apiSecret, symbol, orderId);
     }
 
     @Transactional

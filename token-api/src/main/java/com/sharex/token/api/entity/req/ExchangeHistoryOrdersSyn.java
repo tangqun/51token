@@ -2,7 +2,7 @@ package com.sharex.token.api.entity.req;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-public class AssetRmAuth {
+public class ExchangeHistoryOrdersSyn {
 
     @NotBlank(message = "交易所必填")
     private String exchangeName;

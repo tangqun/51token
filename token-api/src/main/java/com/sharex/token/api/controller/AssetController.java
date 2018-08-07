@@ -26,24 +26,36 @@ public class AssetController {
     @Autowired
     private AssetService assetService;
 
-    // 暂定手动验证token，后期优化 父类验证token问题 / AOP
     @ApiOperation("授权列表")
     @RequestMapping(value = "/getAuthMapping", method = RequestMethod.GET)
-    public RESTful getAuthMapping(@RequestHeader String token) {
+    public RESTful getAuthMapping(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token) {
 
         return assetService.getAuthMapping(token);
     }
 
     @ApiOperation("授权")
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
-    public RESTful auth(@RequestHeader String token, @RequestBody AssetAuth assetAuth) {
+    public RESTful auth(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token,
+            @Valid
+            @RequestBody AssetAuth assetAuth) {
 
         return assetService.auth(token, assetAuth);
     }
 
     @ApiOperation("取消授权")
     @RequestMapping(value = "/rmAuth", method = RequestMethod.POST)
-    public RESTful rmAuth(@RequestHeader String token, @RequestBody AssetRmAuth assetRmAuth) {
+    public RESTful rmAuth(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token,
+            @Valid
+            @RequestBody AssetRmAuth assetRmAuth) {
 
         return assetService.rmAuth(token, assetRmAuth);
     }
@@ -62,7 +74,10 @@ public class AssetController {
 
     @ApiOperation("资产聚合")
     @RequestMapping(value = "/getAsset", method = RequestMethod.GET)
-    public RESTful getAsset(@RequestHeader String token) {
+    public RESTful getAsset(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token) {
 
         return assetService.getAsset(token);
     }
@@ -72,7 +87,10 @@ public class AssetController {
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true)
     })
     @RequestMapping(value = "/getExchangeAsset", method = RequestMethod.GET)
-    public RESTful getExchangeAsset(@RequestHeader String token, String exchangeName) {
+    public RESTful getExchangeAsset(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token, String exchangeName) {
 
         return assetService.getExchangeAsset(token, exchangeName);
     }

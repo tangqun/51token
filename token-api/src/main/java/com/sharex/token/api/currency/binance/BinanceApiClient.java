@@ -202,4 +202,9 @@ public class BinanceApiClient implements IApiClient {
     public String placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {
         return null;
     }
+
+    @Override
+    public String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+        return null;
+    }
 }

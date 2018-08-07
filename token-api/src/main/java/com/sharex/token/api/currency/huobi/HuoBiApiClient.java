@@ -56,6 +56,8 @@ public class HuoBiApiClient implements IApiClient {
     // 下单
     private static final String PlaceOrder_URL = "/v1/order/orders/place";
 
+    private static final String CancelOrder_URL = "/v1/order/orders/%s/submitcancel";
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
 //    public HuoBiApiClient(String apiKey, String apiSecret) {
@@ -196,6 +198,17 @@ public class HuoBiApiClient implements IApiClient {
         String queryString = toQueryString(apiKey, apiSecret, "POST", API_HOST, PlaceOrder_URL, new HashMap<>());
 
         String respBody = HttpUtil.post(API_URL + PlaceOrder_URL + "?" + queryString, objectMapper.writeValueAsString(map), "application/json");
+
+        return respBody;
+    }
+
+    @Override
+    public String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+
+        String uri = String.format(CancelOrder_URL, orderId);
+        String queryString = toQueryString(apiKey, apiSecret, "POST", API_HOST, uri, new HashMap<>());
+
+        String respBody = HttpUtil.post(API_URL + uri + "?" + queryString, null, "application/json");
 
         return respBody;
     }

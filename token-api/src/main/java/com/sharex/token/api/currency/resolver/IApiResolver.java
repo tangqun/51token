@@ -16,6 +16,8 @@ public interface IApiResolver {
 
     RemotePost<String> placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception;
 
+    RemotePost<String> cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception;
+
     RemoteSyn getOpenOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception;
 
     RemoteSyn getHistoryOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception;

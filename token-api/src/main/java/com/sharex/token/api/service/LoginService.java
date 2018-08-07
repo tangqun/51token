@@ -41,28 +41,7 @@ public class LoginService {
      * @author 唐群
      */
     public RESTful loginBySMSCode(LoginSMSCode loginSMSCode) {
-
         try {
-
-            if (StringUtils.isEmpty(loginSMSCode.getMobileNum())) {
-                // 手机号不能为空
-                return RESTful.Fail(CodeEnum.MobileNumCannotBeNull);
-            }
-
-            if (!ValidateUtil.checkMobile(loginSMSCode.getMobileNum())) {
-                // 手机号格式错误
-                return RESTful.Fail(CodeEnum.MobileNumFormatError);
-            }
-
-            if (StringUtils.isEmpty(loginSMSCode.getSmsCode())) {
-                // 短信码不能为空
-                return RESTful.Fail(CodeEnum.SMSCodeCannotBeNull);
-            }
-
-            if (!ValidateUtil.checkSMSCode(loginSMSCode.getSmsCode())) {
-                // 短信码格式错误
-                return RESTful.Fail(CodeEnum.SMSCodeFormaError);
-            }
 
             // 当前时间
             Date date = new Date();

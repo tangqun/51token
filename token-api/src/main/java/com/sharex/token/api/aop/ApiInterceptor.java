@@ -46,7 +46,9 @@ public class ApiInterceptor {
 
         String exchangeName = getExchangeName(className);
 
-        String callsStr = hashOperations.get(exchangeName, "api_calls_" + methodName + ts.toString());
+        String redisKey = "api_calls_" + methodName + "_" + ts.toString();
+
+        String callsStr = hashOperations.get(exchangeName, redisKey);
         Long calls = 0L;
         if (null != callsStr) {
             calls = Long.valueOf(callsStr);
@@ -57,7 +59,7 @@ public class ApiInterceptor {
             throw new OverfrequencyException();
         }
 
-        hashOperations.increment(exchangeName, "api_calls_" + methodName + ts.toString(), calls);
+        hashOperations.increment(exchangeName, redisKey, calls);
 
 
         Object result = joinPoint.proceed();
