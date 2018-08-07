@@ -35,6 +35,8 @@
         <result column="name" property="name" />
         <result column="short_name" property="shortName" />
         <result column="status" property="status" />
+        <result column="auth_tutorial_url" property="authTutorialUrl" />
+        <result column="official_url" property="officialUrl" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
@@ -45,12 +47,12 @@
         keyColumn：（仅对insert和update有用）通过生成的键值设置表中的列名，这个设置仅对某些数据库（像PostgreSQL）是必须的，当主键列不是表中的第一列时需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
     -->
     <select id="selectEnabled" resultMap="exchangeMap">
-        SELECT `id`, `logo`, `name`, `short_name`, `status`, `create_time`, `update_time`
+        SELECT `id`, `logo`, `name`, `short_name`, `status`, `auth_tutorial_url`, `official_url`, `create_time`, `update_time`
         FROM `exchange`
         WHERE `status` = 0;
     </select>
     <select id="selectEnabledByShortName" parameterType="java.lang.String" resultMap="exchangeMap">
-        SELECT `id`, `logo`, `name`, `short_name`, `status`, `create_time`, `update_time`
+        SELECT `id`, `logo`, `name`, `short_name`, `status`, `auth_tutorial_url`, `official_url`, `create_time`, `update_time`
         FROM `exchange`
         WHERE `short_name` = #{shortName} AND `status` = 0;
     </select>

@@ -88,6 +88,8 @@ public class AssetService {
                 exchangeResp.setLogo(exchange.getLogo());
                 exchangeResp.setName(exchange.getName());
                 exchangeResp.setShortName(exchange.getShortName());
+                exchangeResp.setAuthTutorialUrl(exchange.getAuthTutorialUrl());
+                exchangeResp.setOfficialUrl(exchange.getOfficialUrl());
 
                 if (userApiList != null) {
                         // 集合数据合并，生成新数据输出

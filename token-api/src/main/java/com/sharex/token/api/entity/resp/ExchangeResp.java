@@ -7,6 +7,8 @@ public class ExchangeResp {
     private String shortName;
     private String desc;
     private Integer authStatus;
+    private String authTutorialUrl;
+    private String officialUrl;
 
     public String getLogo() {
         return logo;
@@ -46,5 +48,21 @@ public class ExchangeResp {
 
     public void setAuthStatus(Integer authStatus) {
         this.authStatus = authStatus;
+    }
+
+    public String getAuthTutorialUrl() {
+        return authTutorialUrl;
+    }
+
+    public void setAuthTutorialUrl(String authTutorialUrl) {
+        this.authTutorialUrl = authTutorialUrl;
+    }
+
+    public String getOfficialUrl() {
+        return officialUrl;
+    }
+
+    public void setOfficialUrl(String officialUrl) {
+        this.officialUrl = officialUrl;
     }
 }

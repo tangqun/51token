@@ -165,7 +165,7 @@ public class RemoteSynService {
         saveUserAsset(exchangeName, userId, map);
     }
 
-    public void synOpenOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
+    public List<MyOpenOrders> synOpenOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
 
         // huobi
         //   openOrders_btcusdt_userId
@@ -178,18 +178,20 @@ public class RemoteSynService {
             // redis 数据有效，直接返回
             if (System.currentTimeMillis() - remoteSyn_redis.getTs() <= 5000) {
 
-                return;
+                return remoteSyn_redis.getData();
             }
         }
 
         IApiResolver apiResolver = getApiResolver(exchangeName);
 
-        RemoteSyn<MyOpenOrders> remoteSyn = apiResolver.getOpenOrders(apiKey, apiSecret, accountId, symbol, 0, 100);
+        RemoteSyn<List<MyOpenOrders>> remoteSyn = apiResolver.getOpenOrders(apiKey, apiSecret, accountId, symbol, 0, 100);
 
         hashOperations.put(exchangeName, "openOrders_" + symbol + "_" + userId, objectMapper.writeValueAsString(remoteSyn));
+
+        return remoteSyn.getData();
     }
 
-    public void synHistoryOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
+    public List<MyHistoryOrders> synHistoryOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
 
         String redisBody = hashOperations.get(exchangeName,  "historyOrders_" + symbol + "_" + userId);
 
@@ -199,15 +201,17 @@ public class RemoteSynService {
             // redis 数据有效，直接返回
             if (System.currentTimeMillis() - remoteSyn_redis.getTs() <= 5000) {
 
-                return;
+                return remoteSyn_redis.getData();
             }
         }
 
         IApiResolver apiResolver = getApiResolver(exchangeName);
 
-        RemoteSyn<MyHistoryOrders> remoteSyn = apiResolver.getHistoryOrders(apiKey, apiSecret, accountId, symbol, 0, 100);
+        RemoteSyn<List<MyHistoryOrders>> remoteSyn = apiResolver.getHistoryOrders(apiKey, apiSecret, accountId, symbol, 0, 100);
 
         hashOperations.put(exchangeName, "historyOrders_" + symbol + "_" + userId, objectMapper.writeValueAsString(remoteSyn));
+
+        return remoteSyn.getData();
     }
 
     public RemotePost<String> placeOrder(String exchangeName, Integer userId, String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {

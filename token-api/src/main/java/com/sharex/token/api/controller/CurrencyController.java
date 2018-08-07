@@ -123,9 +123,40 @@ public class CurrencyController {
 
     @ApiOperation("撤销委托")
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
-    public RESTful cancel(@RequestHeader String token, @RequestBody CurrencyCancelOrder currencyCancelOrder) {
+    public RESTful cancel(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token, @RequestBody CurrencyCancelOrder currencyCancelOrder) {
 
         return currencyService.cancelOrder(token, currencyCancelOrder);
+    }
+
+    @ApiOperation("获取历史委托")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
+    })
+    @RequestMapping(value = "/getOpenOrders", method = RequestMethod.GET)
+    public RESTful getOpenOrders(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token, String exchangeName, String currency) {
+
+        return currencyService.getOpenOrders(token, exchangeName, currency);
+    }
+
+    @ApiOperation("获取历史成交")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
+    })
+    @RequestMapping(value = "/getHistoryOrders", method = RequestMethod.GET)
+    public RESTful getHistoryOrders(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token, String exchangeName, String currency) {
+
+        return currencyService.getHistoryOrders(token, exchangeName, currency);
     }
 
     @ApiOperation("行情")

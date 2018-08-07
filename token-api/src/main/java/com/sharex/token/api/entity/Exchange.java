@@ -9,6 +9,8 @@ public class Exchange {
     private String name;
     private String shortName;
     private Integer status;
+    private String authTutorialUrl;
+    private String officialUrl;
     private Date createTime;
     private Date updateTime;
 
@@ -50,6 +52,22 @@ public class Exchange {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getAuthTutorialUrl() {
+        return authTutorialUrl;
+    }
+
+    public void setAuthTutorialUrl(String authTutorialUrl) {
+        this.authTutorialUrl = authTutorialUrl;
+    }
+
+    public String getOfficialUrl() {
+        return officialUrl;
+    }
+
+    public void setOfficialUrl(String officialUrl) {
+        this.officialUrl = officialUrl;
     }
 
     public Date getCreateTime() {
