@@ -427,13 +427,12 @@ public class AssetService {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
-            // 单交易所数据集合
-            List<UserExchangeAssetResp> userExchangeAssetRespList = new ArrayList<>();
-
             // 账号下授权的交易所集合
-            List<UserApi> userApiList = userApiMapper.selectEnabledByUserId(user.getId());
-            for (UserApi userApi:userApiList) {
-
+            Map<String, Object> userExchangeMap = new HashMap<>();
+            userExchangeMap.put("exchangeName", exchangeName);
+            userExchangeMap.put("userId", user.getId());
+            UserApi userApi = userApiMapper.selectEnabledEntity(userExchangeMap);
+            if (userApi != null && 0 == userApi.getStatus()) {
                 // 单交易所数据
                 UserExchangeAssetResp userExchangeAssetResp = new UserExchangeAssetResp();
 
@@ -502,7 +501,9 @@ public class AssetService {
                         exchangeVol += currencyVol;
 
                         // 成本
-                        userCurrencyAssetResp.setCost(userCurrency.getCost());
+                        Double cost = Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
+                        userCurrencyAssetResp.setCost(cost.toString());
+                        // 累计收益 = (最新价 - 成本价) * 数量
                         Double currencyCumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
 
                         exchangeCost += Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
@@ -523,19 +524,19 @@ public class AssetService {
                     userCurrencyAssetRespList.add(userCurrencyAssetResp);
                 }
 
-                // 设置币种个数
-                userExchangeAssetResp.setCurrencyCount(userCurrencyAssetRespList.size());
+                // 总市值
+                userExchangeAssetResp.setVol(exchangeVol.toString());
 
-                // 设置今日收益
-                userExchangeAssetResp.setProfit(exchangeProfit.toString());
+                // 总成本
+                userExchangeAssetResp.setCost(exchangeCost.toString());
 
-                // 设置单币数据集合
-                userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
+                // 累计收益
+                userExchangeAssetResp.setCumulativeProfit(exchangeCumulativeProfit.toString());
 
-                userExchangeAssetRespList.add(userExchangeAssetResp);
+                return RESTful.Success(userExchangeAssetResp);
             }
 
-            return RESTful.Success(userExchangeAssetRespList);
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

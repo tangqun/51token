@@ -35,7 +35,7 @@ public class HuoBiApiClient implements IApiClient {
     // 最新成交
     private static final String Trades_URL = "/market/history/trade";
 
-    // 行情
+    // 行情--替换kline--1min数据第一条
     private static final String Ticker_URL = "/market/detail/merged";
 
     // kline

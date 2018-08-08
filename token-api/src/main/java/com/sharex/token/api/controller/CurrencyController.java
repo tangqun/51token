@@ -172,4 +172,26 @@ public class CurrencyController {
 
         return currencyService.getHistoryOrders(token, exchangeName, currency);
     }
+
+    @ApiOperation("测试接口--买卖盘无用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
+    })
+    @RequestMapping(value = "/testGetTrades", method = RequestMethod.GET)
+    public RESTful testGetTrades(String exchangeName, String currency) {
+
+        return currencyService.testGetTrades(exchangeName, currency);
+    }
+
+    @ApiOperation("测试接口--k线")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "klineType", value = "k线类型", required = true),
+    })
+    public RESTful testGetKline(String exchangeName, String currency, String klineType) {
+
+        return currencyService.testGetKline(exchangeName, currency, klineType);
+    }
 }

@@ -8,8 +8,6 @@ import com.sharex.token.api.entity.resp.CurrencyResp;
 import com.sharex.token.api.exception.ParameterErrorException;
 import com.sharex.token.api.mapper.*;
 import com.sharex.token.api.util.SymbolUtil;
-import com.sharex.token.api.util.ValidateUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +118,7 @@ public class CurrencyService {
                 Double vol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
                 currencyResp.setVol(vol.toString());
 
-                // 成本
+                // 成本--取数据库成本
                 Double cost = Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
                 currencyResp.setCost(cost.toString());
 
@@ -228,11 +226,11 @@ public class CurrencyService {
                  */
                 Map<String, Object> map = new HashMap<>();
 
-                String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                String symbol = SymbolUtil.getSymbol(exchangeName, userCurrency.getCurrency());
 
                 // 单币资产
                 CurrencyResp currencyResp = new CurrencyResp();
-                List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
+                List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, "1min");
                 MyKline myKline = myKlineList.get(0);
                 currencyResp.setPrice(myKline.getClose());
 
@@ -575,14 +573,6 @@ public class CurrencyService {
                 }
             }
 
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
@@ -631,6 +621,7 @@ public class CurrencyService {
                             userCurrencyCost.setAmount(userCurrency.getFree());
                             userCurrencyCost.setCost(currencyCostEdit.getCost().toString());
                             userCurrencyCost.setType(currencyCostEdit.getType());
+                            userCurrencyCost.setUserId(user.getId());
                             userCurrencyCost.setCreateTime(date);
                             userCurrencyCostList.add(userCurrencyCost);
                         }
@@ -933,6 +924,46 @@ public class CurrencyService {
 
             // 授权不存在 or 取消了授权
             return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    public RESTful testGetTrades(String exchangeName, String currency) {
+        try {
+
+            Map<String, Object> map = new HashMap<>();
+
+            String symbol = SymbolUtil.getSymbol(exchangeName, currency);
+            // 买盘/卖盘
+            Map<String, Object> tradesMap = new HashMap<>();
+            MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol);
+            List<MyTrade> myTradeList_buy = myTrades.getBuy().subList(0, 5);
+            tradesMap.put("buy", myTradeList_buy);
+            List<MyTrade> myTradeList_sell = myTrades.getSell().subList(0, 5);
+            tradesMap.put("sell", myTradeList_sell);
+            map.put("trades", tradesMap);
+
+            return RESTful.Success(map);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.SystemException();
+        }
+    }
+
+    public RESTful testGetKline(String exchangeName, String currency, String klineType) {
+        try {
+
+            Map<String, Object> map = new HashMap<>();
+
+            String symbol = SymbolUtil.getSymbol(exchangeName, currency);
+
+            List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, klineType);
+
+            map.put("kline", myKlineList);
+
+            return RESTful.Success(map);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

@@ -16,4 +16,5 @@ public interface UserApiMapper {
     void updateStatus(Map<String, Object> map);
     UserApi selectByType(Map<String, Object> map);
     List<UserApi> selectEnabledByUserId(Integer userId);
+    UserApi selectEnabledEntity(Map<String, Object> map);
 }

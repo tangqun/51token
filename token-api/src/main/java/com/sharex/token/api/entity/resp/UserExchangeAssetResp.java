@@ -9,6 +9,12 @@ public class UserExchangeAssetResp {
     // 单交易所币种个数
     private Integer currencyCount;
 
+    // 市值--新增20180808
+    private String vol;
+
+    // 成本--新增20180808
+    private String cost;
+
     // 单交易所今日收益
     private String profit;
 
@@ -31,6 +37,22 @@ public class UserExchangeAssetResp {
 
     public void setCurrencyCount(Integer currencyCount) {
         this.currencyCount = currencyCount;
+    }
+
+    public String getVol() {
+        return vol;
+    }
+
+    public void setVol(String vol) {
+        this.vol = vol;
+    }
+
+    public String getCost() {
+        return cost;
+    }
+
+    public void setCost(String cost) {
+        this.cost = cost;
     }
 
     public String getProfit() {

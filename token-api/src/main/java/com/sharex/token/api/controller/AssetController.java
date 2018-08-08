@@ -90,7 +90,9 @@ public class AssetController {
     public RESTful getExchangeAsset(
             @NotBlank(message = "token不能为空")
             @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
-            @RequestHeader String token, String exchangeName) {
+            @RequestHeader String token,
+            @NotBlank(message = "交易所必填")
+            String exchangeName) {
 
         return assetService.getExchangeAsset(token, exchangeName);
     }

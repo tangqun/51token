@@ -70,4 +70,9 @@
         FROM `user_api`
         WHERE `user_id` = #{userId} AND `status` = 0;
     </select>
+    <select id="selectEnabledEntity" parameterType="java.util.Map" resultMap="userApiMap">
+        SELECT `id`, `api_key`, `api_secret`, `exchange_name`, `status`, `user_id`, `create_time`, `update_time`
+        FROM `user_api`
+        WHERE `user_id` = #{userId} AND `exchange_name` = #{exchangeName} AND `status` = 0;
+    </select>
 </mapper>

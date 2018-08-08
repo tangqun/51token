@@ -22,7 +22,7 @@ public class OkexApiClient implements IApiClient {
     // 最新成交
     private static final String Trades_URL = "/api/v1/trades.do";
 
-    // 行情
+    // 行情--替换kline--1min数据第一条
     private static final String TICKER_URL = "/api/v1/ticker.do";
 
     // kline

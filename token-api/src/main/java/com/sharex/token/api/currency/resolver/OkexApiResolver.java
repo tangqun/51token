@@ -33,9 +33,6 @@ public class OkexApiResolver implements IApiResolver {
     @Override
     public RemoteSyn getKline(String symbol, String type) throws Exception {
 
-        //
-//        IApiClient apiClient = ApiClinetFactory.getInstence("okex");
-
         // 同步redis，判断时间戳时间 --> 150条
         String respBody = okexApiClient.kline(symbol, type, 150);
 
@@ -84,8 +81,6 @@ public class OkexApiResolver implements IApiResolver {
     @Override
     public RemoteSyn getTrades(String symbol) throws Exception {
 
-//        IApiClient apiClient = ApiClinetFactory.getInstence("okex");
-
         String respBody = okexApiClient.trades(symbol, 100);
 
         if (logger.isDebugEnabled()) {
@@ -103,10 +98,9 @@ public class OkexApiResolver implements IApiResolver {
             List<MyTrade> tradeList_buy = new LinkedList<>();
             List<MyTrade> tradeList_sell = new LinkedList<>();
 
-            List<Trade> tradeList = objectMapper.readValue(respBody, new TypeReference<List<Trade>>() {
-            });
+            List<Trade> tradeList = objectMapper.readValue(respBody, new TypeReference<List<Trade>>() { });
             Integer count = tradeList.size();
-            for (int i = count - 1; i > 0; i--) {
+            for (int i = 0; i < 100; i++) {
                 Trade trade = tradeList.get(i);
                 if ("buy".equals(trade.getType())) {
                     MyTrade myTrade = new MyTrade();
