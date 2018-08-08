@@ -1,8 +1,15 @@
 package com.sharex.token.api.entity.req;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.Pattern;
+
 public class CurrencyPlaceOrder {
 
+    @NotBlank(message = "msgId不能为空")
+    @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "msgId格式错误")
     private String msgId;
+
     private String exchangeName;
     // 币种
     private String currency;

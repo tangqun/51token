@@ -530,30 +530,16 @@ public class CurrencyService {
     public RESTful placeOrder(String token, CurrencyPlaceOrder currencyPlaceOrder, String type) {
         try {
 
-            // 验证token
-            if (StringUtils.isBlank(token)) {
-                return RESTful.Fail(CodeEnum.TokenCannotBeNull);
-            }
-            if (!ValidateUtil.checkToken(token)) {
-                return RESTful.Fail(CodeEnum.TokenFormatError);
-            }
-
-            if (StringUtils.isBlank(currencyPlaceOrder.getMsgId())) {
-                return RESTful.Fail(CodeEnum.MsgIdCannotBeNull);
-            }
-            if (!ValidateUtil.checkMsgId(currencyPlaceOrder.getMsgId())) {
-                return RESTful.Fail(CodeEnum.MsgIdFormatError);
-            }
-
+            // token valid?
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
+            // user status? 正常/冻结 0：正常 1：冻结
             if (!user.getStatus().equals(0)) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
-
-            // exchangeName in db?
+            // exchange in db?
             Exchange exchange = exchangeMapper.selectEnabledByShortName(currencyPlaceOrder.getExchangeName());
             if (exchange == null) {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
@@ -572,13 +558,15 @@ public class CurrencyService {
                 UserCurrency userCurrency = userCurrencyMapper.selectEntity(currencyMap);
                 if (userCurrency == null) {
                     // 尚未资产映射 或 直接调用该接口
-                    return RESTful.Fail(CodeEnum.AssetNotSyn);
+                    return RESTful.Fail(CodeEnum.AssetInExchangeNotExistThisCurrency);
                 }
 
                 // 判断币种余额是否足够
 
+                // 当前时间
                 Date date = new Date();
 
+                // repeat submit
                 Integer msgIdCount = orderMsgMapper.selectCount(currencyPlaceOrder.getMsgId());
                 if (msgIdCount > 0) {
                     return RESTful.Fail(CodeEnum.RepeatSubmitOrder);
@@ -606,23 +594,30 @@ public class CurrencyService {
                         break;
                 }
 
-                RemotePost<String> remotePost = remoteSynService.placeOrder(currencyPlaceOrder.getExchangeName(), user.getId(),
-                        userApi.getApiKey(), userApi.getApiSecret(), userCurrency.getAccountId(),
+                RemotePost<String> remotePost = remoteSynService.placeOrder(
+                        userApi.getApiKey(),
+                        userApi.getApiSecret(),
+                        userCurrency.getAccountId(),
+                        user.getId(),
+                        currencyPlaceOrder.getExchangeName(),
                         symbol, currencyPlaceOrder.getPrice().toString(), currencyPlaceOrder.getAmount().toString(), type);
-
-                if ("ok".equals(remotePost.getStatus())) {
-
-                    // 订单记录数据库
-                }
 
                 // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志），删除msg_id
                 orderMsgMapper.delete(currencyPlaceOrder.getMsgId());
 
+//                if ("ok".equals(remotePost.getStatus())) {
+//
+//                    // 订单记录数据库
+//
+//                }
+
+                // 只有ok状态，非ok直接抛出异常，回滚数据库
+
                 return RESTful.Success();
-            } else {
-                // 未授权或者取消授权
-                return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
             }
+
+            // 未授权或者取消授权
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

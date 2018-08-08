@@ -6,12 +6,13 @@ import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
+import org.springframework.stereotype.Component;
 
 /**
  * 请求参数切入日志
  */
-//@Aspect // 定义一个切面类
-//@Component // 加入spring容器管理
+@Aspect // 定义一个切面类
+@Component // 加入spring容器管理
 public class LogInterceptor {
 
     private static final Log logger = LogFactory.getLog(LogInterceptor.class);
