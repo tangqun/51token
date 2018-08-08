@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.currency.huobi.HuoBiApiClient;
 import com.sharex.token.api.currency.huobi.resp.*;
 import com.sharex.token.api.entity.*;
-import com.sharex.token.api.exception.KlineSynException;
-import com.sharex.token.api.exception.NetworkException;
-import com.sharex.token.api.exception.PlaceOrderPostException;
-import com.sharex.token.api.exception.TradesSynException;
+import com.sharex.token.api.exception.*;
 import com.sharex.token.api.service.RemoteSynService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -267,7 +264,7 @@ public class HuoBiApiResolver implements IApiResolver {
                 return remotePost;
             }
 
-            throw new PlaceOrderPostException(apiResp.getErrMsg());
+            throw new CancelOrderPostException(apiResp.getErrMsg());
         }
 
         throw new NetworkException();

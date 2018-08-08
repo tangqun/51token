@@ -121,7 +121,8 @@ public class CurrencyService {
                 currencyResp.setVol(vol.toString());
 
                 // 成本
-                currencyResp.setCost(userCurrency.getCost());
+                Double cost = Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
+                currencyResp.setCost(cost.toString());
 
                 // 累计收益
                 Double cumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
@@ -243,7 +244,8 @@ public class CurrencyService {
                 currencyResp.setVol(vol.toString());
 
                 // 成本
-                currencyResp.setCost(userCurrency.getCost());
+                Double cost = Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
+                currencyResp.setCost(cost.toString());
 
                 // 累计收益
                 Double cumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
