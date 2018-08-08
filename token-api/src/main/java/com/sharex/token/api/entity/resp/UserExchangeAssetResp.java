@@ -6,20 +6,17 @@ public class UserExchangeAssetResp {
 
     private String name;
 
-    // 单交易所币种个数
-    private Integer currencyCount;
-
     // 市值--新增20180808
     private String vol;
-
-    // 成本--新增20180808
-    private String cost;
 
     // 单交易所今日收益
     private String profit;
 
     // 单交易所累计收益
     private String cumulativeProfit;
+
+    // 成本--新增20180808
+    private String cost;
 
     private List<UserCurrencyAssetResp> userCurrencyAssetRespList;
 
@@ -31,28 +28,12 @@ public class UserExchangeAssetResp {
         this.name = name;
     }
 
-    public Integer getCurrencyCount() {
-        return currencyCount;
-    }
-
-    public void setCurrencyCount(Integer currencyCount) {
-        this.currencyCount = currencyCount;
-    }
-
     public String getVol() {
         return vol;
     }
 
     public void setVol(String vol) {
         this.vol = vol;
-    }
-
-    public String getCost() {
-        return cost;
-    }
-
-    public void setCost(String cost) {
-        this.cost = cost;
     }
 
     public String getProfit() {
@@ -77,5 +58,13 @@ public class UserExchangeAssetResp {
 
     public void setCumulativeProfit(String cumulativeProfit) {
         this.cumulativeProfit = cumulativeProfit;
+    }
+
+    public String getCost() {
+        return cost;
+    }
+
+    public void setCost(String cost) {
+        this.cost = cost;
     }
 }

@@ -18,7 +18,6 @@ public class AssetResp {
 
     private List<UserExchangeAssetResp> userExchangeAssetRespList;
 
-
     public String getVol() {
         return vol;
     }
