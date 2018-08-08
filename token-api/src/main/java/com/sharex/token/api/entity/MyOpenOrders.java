@@ -15,7 +15,6 @@ public class MyOpenOrders {
     private Integer myState;
     private String stateDisplay;
     private String type;
-    private Integer myType;
     private String typeDisplay;
 
     public String getSource() {
@@ -104,14 +103,6 @@ public class MyOpenOrders {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public Integer getMyType() {
-        return myType;
-    }
-
-    public void setMyType(Integer myType) {
-        this.myType = myType;
     }
 
     public String getTypeDisplay() {

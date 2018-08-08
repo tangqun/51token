@@ -327,25 +327,22 @@ public class HuoBiApiResolver implements IApiResolver {
                         myOpenOrders.setStateDisplay(stateDisplay);
 
                         myOpenOrders.setType(openOrders.getType());
-                        Integer myType = 0;
                         String typeDisplay = "";
                         switch (openOrders.getType()) {
                             case "buy-market":
-                                typeDisplay = "市价买";
+                                typeDisplay = "买入";
                                 break;
                             case "sell-market":
-                                typeDisplay = "市价卖";
-                                myType = 1;
+                                typeDisplay = "卖出";
                                 break;
                             case "buy-limit":
-                                typeDisplay = "限价买";
+                                typeDisplay = "买入";
                                 break;
                             case "sell-limit":
-                                typeDisplay = "限价卖";
+                                typeDisplay = "卖出";
                                 break;
                         }
                         myOpenOrders.setTypeDisplay(typeDisplay);
-                        myOpenOrders.setMyType(myType);
 
                         myOpenOrdersList.add(myOpenOrders);
                     }
@@ -401,16 +398,16 @@ public class HuoBiApiResolver implements IApiResolver {
                         String typeDisplay = "";
                         switch (historyOrders.getType()) {
                             case "buy-market":
-                                typeDisplay = "市价买";
+                                typeDisplay = "买入";
                                 break;
                             case "sell-market":
-                                typeDisplay = "市价卖";
+                                typeDisplay = "卖出";
                                 break;
                             case "buy-limit":
-                                typeDisplay = "限价买";
+                                typeDisplay = "买入";
                                 break;
                             case "sell-limit":
-                                typeDisplay = "限价卖";
+                                typeDisplay = "卖出";
                                 break;
                         }
                         myHistoryOrders.setTypeDisplay(typeDisplay);

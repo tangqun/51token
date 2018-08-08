@@ -85,6 +85,25 @@ public class OkexApiClient implements IApiClient {
     @Override
     public String kline(String symbol, String type, Integer size) throws Exception {
 
+        //[
+        //    [
+        //        1417449600000,
+        //        2339.11,
+        //        2383.15,
+        //        2322,
+        //        2369.85,
+        //        83850.06
+        //    ],
+        //    [
+        //        1417536000000,
+        //        2370.16,
+        //        2380,
+        //        2352,
+        //        2367.37,
+        //        17259.83
+        //    ]
+        //]
+
         Map<String, String> map = new HashMap<>();
         map.put("symbol", symbol);
         map.put("type", type);
