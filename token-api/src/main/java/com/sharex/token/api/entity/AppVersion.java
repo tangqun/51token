@@ -8,6 +8,7 @@ public class AppVersion {
     private String platformName;
     private String version;
     private Integer status;
+    private String downloadUrl;
     private Date createTime;
     private Date updateTime;
 
@@ -41,6 +42,14 @@ public class AppVersion {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
     }
 
     public Date getCreateTime() {

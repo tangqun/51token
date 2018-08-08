@@ -4,6 +4,7 @@ public class AppVersionResp {
 
     private String platformName;
     private String version;
+    private String downloadUrl;
 
     public String getPlatformName() {
         return platformName;
@@ -19,5 +20,13 @@ public class AppVersionResp {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
     }
 }
