@@ -794,17 +794,6 @@ public class CurrencyService {
 
                 Date date = new Date();
 
-                Integer msgIdCount = orderMsgMapper.selectCount(currencyCancelOrder.getMsgId());
-                if (msgIdCount > 0) {
-                    return RESTful.Fail(CodeEnum.RepeatSubmitOrder);
-                }
-
-                // insert msg_id
-                OrderMsg orderMsg = new OrderMsg();
-                orderMsg.setMsgId(currencyCancelOrder.getMsgId());
-                orderMsg.setCreateTime(date);
-                orderMsgMapper.insert(orderMsg);
-
                 // 提交交易所（创建委托交易 -- 限价交易），返回 订单编号
                 String symbol = SymbolUtil.getSymbol(currencyCancelOrder.getExchangeName(), currencyCancelOrder.getCurrency());
 
@@ -815,8 +804,7 @@ public class CurrencyService {
                         currencyCancelOrder.getExchangeName(),
                         symbol, currencyCancelOrder.getOrderId());
 
-                // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志），删除msg_id
-                orderMsgMapper.delete(currencyCancelOrder.getMsgId());
+                // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志）
 
 //                if ("ok".equals(remotePost.getStatus())) {
 //
