@@ -39,6 +39,20 @@ public class CurrencyController {
         return currencyService.get(token, exchangeName, currency, klineType);
     }
 
+    @ApiOperation("买入--页面数据")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
+    })
+    @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
+    public RESTful getTrades(
+            @NotBlank(message = "token不能为空")
+            @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
+            @RequestHeader String token, String exchangeName, String currency) {
+
+        return currencyService.getTrades(token, exchangeName, currency);
+    }
+
     @ApiOperation("同步委托订单--交易所")
     @RequestMapping(value = "/synExchangeOpenOrders", method = RequestMethod.POST)
     public RESTful synExchangeOpenOrders(
@@ -171,17 +185,6 @@ public class CurrencyController {
     public RESTful getKline(String exchangeName, String symbol, String type) {
 
         return currencyService.getKline(exchangeName, symbol, type);
-    }
-
-    @ApiOperation("最新成交")
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "symbol", value = "列表symbol原样传入", required = true)
-    })
-    @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
-    public RESTful getTrades(String exchangeName, String symbol) {
-
-        return currencyService.getTrades(exchangeName, symbol);
     }
 
     @ApiOperation("最新成交单向")
