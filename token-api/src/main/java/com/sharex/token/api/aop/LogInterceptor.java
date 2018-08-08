@@ -1,5 +1,6 @@
 package com.sharex.token.api.aop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,7 @@ public class LogInterceptor {
                 StringBuffer sb = new StringBuffer();
 
                 Signature signature = joinPoint.getSignature();
-                sb.append("方法名: " + signature.getDeclaringTypeName() + "\r\n");
+                sb.append("方法名: " + signature.getName() + "\r\n");
                 sb.append("参数: " + "\r\n");
 
                 Object[] args = joinPoint.getArgs();
@@ -70,12 +71,12 @@ public class LogInterceptor {
     }
 
     // @AfterReturning 不配置 pointcut 报异常: Must set property 'expression' before attempting to match
-    @AfterReturning("myPointcut()")
-    public void afterReturning(JoinPoint joinPoint) {
+    @AfterReturning(value = "myPointcut()", returning = "result")
+    public void afterReturning(JoinPoint joinPoint, Object result) throws JsonProcessingException {
 
         if (logger.isInfoEnabled()) {
 
-            logger.info("afterReturning: " + joinPoint);
+            logger.info("afterReturning: " + joinPoint + ", result: " + objectMapper.writeValueAsString(result));
         }
     }
 

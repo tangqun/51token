@@ -10,10 +10,7 @@ import com.sharex.token.api.entity.resp.AssetResp;
 import com.sharex.token.api.entity.resp.ExchangeResp;
 import com.sharex.token.api.entity.resp.UserCurrencyAssetResp;
 import com.sharex.token.api.entity.resp.UserExchangeAssetResp;
-import com.sharex.token.api.mapper.ExchangeMapper;
-import com.sharex.token.api.mapper.UserApiMapper;
-import com.sharex.token.api.mapper.UserCurrencyMapper;
-import com.sharex.token.api.mapper.UserMapper;
+import com.sharex.token.api.mapper.*;
 import com.sharex.token.api.util.SymbolUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +35,9 @@ public class AssetService {
 
     @Autowired
     private UserCurrencyMapper userCurrencyMapper;
+
+    @Autowired
+    private UserCurrencyCostMapper userCurrencyCostMapper;
 
     @Autowired
     private RemoteSynService remoteSynService;
@@ -484,10 +484,6 @@ public class AssetService {
                         //
                         exchangeCost += Double.valueOf(userCurrency.getFree());
 
-                        userCurrencyAssetResp.setProfit("0");
-
-                        userCurrencyAssetResp.setProfitRate("0");
-
                     } else {
                         List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
                         MyKline myKline = myKlineList.get(0);
@@ -532,6 +528,8 @@ public class AssetService {
 
                 // 累计收益
                 userExchangeAssetResp.setCumulativeProfit(exchangeCumulativeProfit.toString());
+
+                userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
 
                 return RESTful.Success(userExchangeAssetResp);
             }
