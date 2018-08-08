@@ -120,17 +120,20 @@ public class HttpUtil {
             connection.setDoOutput(true);
             connection.setDoInput(true);
             // 获取URLConnection对象对应的输出流
+            if (null != param) {
 //            printWriter = new PrintWriter(connection.getOutputStream());
-            outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+                outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
 //            dataOutputStream = new DataOutputStream(connection.getOutputStream());
-            // 发送请求参数
+                // 发送请求参数
 //            printWriter.print(param);
-            outputStreamWriter.write(param);
+                outputStreamWriter.write(param);
 //            dataOutputStream.writeBytes(param);
-            // flush输出流的缓冲
+                // flush输出流的缓冲
 //            printWriter.flush();
-            outputStreamWriter.flush();
+                outputStreamWriter.flush();
 //            dataOutputStream.flush();
+            }
+
             // 定义BufferedReader输入流来读取URL的响应
             bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuffer sb = new StringBuffer();

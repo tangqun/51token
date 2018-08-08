@@ -221,7 +221,7 @@ public class RemoteSynService {
         return apiResolver.placeOrder(apiKey, apiSecret, accountId, symbol, price, amount, type);
     }
 
-    public RemotePost<String> cancelOrder(String exchangeName, Integer userId, String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+    public RemotePost<String> cancelOrder(String apiKey, String apiSecret, Integer userId, String exchangeName, String symbol, String orderId) throws Exception {
 
         IApiResolver apiResolver = getApiResolver(exchangeName);
 

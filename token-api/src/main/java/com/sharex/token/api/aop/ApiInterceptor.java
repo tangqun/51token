@@ -95,5 +95,6 @@ public class ApiInterceptor {
         limitMap.put("huobi_historyOrders", 10L);
         limitMap.put("huobi_entrustOrders", 10L);
         limitMap.put("huobi_placeOrder", 10L);
+        limitMap.put("huobi_cancelOrder", 10L);
     }
 }

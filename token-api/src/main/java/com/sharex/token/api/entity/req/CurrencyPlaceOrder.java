@@ -10,8 +10,10 @@ public class CurrencyPlaceOrder {
     @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "msgId格式错误")
     private String msgId;
 
+    @NotBlank(message = "交易所必填")
     private String exchangeName;
     // 币种
+    @NotBlank(message = "币种必填")
     private String currency;
     // 单价
     private Double price;

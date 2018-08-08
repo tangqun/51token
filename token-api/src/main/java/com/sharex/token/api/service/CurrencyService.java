@@ -175,6 +175,7 @@ public class CurrencyService {
         }
     }
 
+    // 买/卖--页面数据
     public RESTful getTrades(String token, String exchangeName, String currency) {
         try {
 
@@ -552,6 +553,7 @@ public class CurrencyService {
         }
     }
 
+    //
     public RESTful editExchangeCurrencyCost(String token, ExchangeCurrencyCostEdit exchangeCurrencyCostEdit) {
         try {
 
@@ -653,13 +655,7 @@ public class CurrencyService {
         }
     }
 
-    /**
-     *
-     * @param token
-     * @param currencyPlaceOrder
-     * @param type buy/sell
-     * @return
-     */
+    // 下单
     @Transactional
     public RESTful placeOrder(String token, CurrencyPlaceOrder currencyPlaceOrder, String type) {
         try {
@@ -759,26 +755,20 @@ public class CurrencyService {
         }
     }
 
+    // 撤单
     @Transactional
     public RESTful cancelOrder(String token, CurrencyCancelOrder currencyCancelOrder) {
         try {
-
-            if (StringUtils.isBlank(currencyCancelOrder.getMsgId())) {
-                return RESTful.Fail(CodeEnum.MsgIdCannotBeNull);
-            }
-            if (!ValidateUtil.checkMsgId(currencyCancelOrder.getMsgId())) {
-                return RESTful.Fail(CodeEnum.MsgIdFormatError);
-            }
-
+            // token valid?
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (!user.getStatus().equals(0)) {
+            // user status? 正常/冻结 0：正常 1：冻结
+            if (0 != user.getStatus()) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
-
-            // exchangeName in db?
+            // exchange in db?
             Exchange exchange = exchangeMapper.selectEnabledByShortName(currencyCancelOrder.getExchangeName());
             if (exchange == null) {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
@@ -788,7 +778,7 @@ public class CurrencyService {
             userApiMap.put("userId", user.getId());
             userApiMap.put("exchangeName", currencyCancelOrder.getExchangeName());
             UserApi userApi = userApiMapper.selectByType(userApiMap);
-            if (userApi != null && userApi.getStatus().equals(0)) {
+            if (userApi != null && 0 == userApi.getStatus()) {
 
                 Map<String, Object> currencyMap = new HashMap<>();
                 currencyMap.put("exchangeName", currencyCancelOrder.getExchangeName());
@@ -816,28 +806,22 @@ public class CurrencyService {
                 orderMsgMapper.insert(orderMsg);
 
                 // 提交交易所（创建委托交易 -- 限价交易），返回 订单编号
-                String symbol = null;
+                String symbol = SymbolUtil.getSymbol(currencyCancelOrder.getExchangeName(), currencyCancelOrder.getCurrency());
 
-                switch (currencyCancelOrder.getExchangeName()) {
-                    case "huobi":
-                        symbol = currencyCancelOrder.getCurrency() + "usdt";
-                        break;
-                    case "okex":
-                        symbol = currencyCancelOrder.getCurrency() + "_usdt";
-                        break;
-                }
-
-                RemotePost<String> remotePost = remoteSynService.cancelOrder(currencyCancelOrder.getExchangeName(), user.getId(),
-                        userApi.getApiKey(), userApi.getApiSecret(),
+                RemotePost<String> remotePost = remoteSynService.cancelOrder(
+                        userApi.getApiKey(),
+                        userApi.getApiSecret(),
+                        user.getId(),
+                        currencyCancelOrder.getExchangeName(),
                         symbol, currencyCancelOrder.getOrderId());
-
-                if ("ok".equals(remotePost.getStatus())) {
-
-                    // 订单记录数据库
-                }
 
                 // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志），删除msg_id
                 orderMsgMapper.delete(currencyCancelOrder.getMsgId());
+
+//                if ("ok".equals(remotePost.getStatus())) {
+//
+//                    // 订单记录数据库
+//                }
 
                 return RESTful.Success();
             } else {
@@ -959,55 +943,6 @@ public class CurrencyService {
 
             // 授权不存在 or 取消了授权
             return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return RESTful.SystemException();
-        }
-    }
-
-    /**
-     * 获取行情
-     * @param exchangeName 交易所 shortName
-     * @param symbol 币种 火币 btcusdt okex btc_usdt
-     * @return
-     */
-    public RESTful getTicker(String exchangeName, String symbol) {
-        try {
-            List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, "1min");
-            MyKline myKline = myKlineList.get(0);
-            return RESTful.Success(myKline);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return RESTful.SystemException();
-        }
-    }
-
-    /**
-     * k线接口
-     * @param exchangeName
-     * @param symbol
-     * @param type
-     * @return
-     */
-    public RESTful getKline(String exchangeName, String symbol, String type) {
-        try {
-            List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, type);
-            return RESTful.Success(myKlineList);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            return RESTful.SystemException();
-        }
-    }
-
-    public RESTful getTrades(String exchangeName, String symbol) {
-        try {
-            Map<String, Object> tradesMap = new HashMap<>();
-            MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol);
-            List<MyTrade> myTradeList_buy = myTrades.getBuy().subList(0, 10);
-            tradesMap.put("buy", myTradeList_buy);
-            List<MyTrade> myTradeList_sell = myTrades.getSell().subList(0, 10);
-            tradesMap.put("sell", myTradeList_sell);
-            return RESTful.Success(tradesMap);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

@@ -39,7 +39,7 @@ public class CurrencyController {
         return currencyService.get(token, exchangeName, currency, klineType);
     }
 
-    @ApiOperation("买入--页面数据")
+    @ApiOperation("买/卖--页面数据")
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "currency", value = "币种", required = true)
@@ -171,31 +171,5 @@ public class CurrencyController {
             @RequestHeader String token, String exchangeName, String currency) {
 
         return currencyService.getHistoryOrders(token, exchangeName, currency);
-    }
-
-    @ApiOperation("行情")
-    @RequestMapping(value = "/getTicker", method = RequestMethod.GET)
-    public RESTful getTicker(String exchangeName, String symbol) {
-
-        return currencyService.getTicker(exchangeName, symbol);
-    }
-
-    @ApiOperation("k线")
-    @RequestMapping(value = "/getKline", method = RequestMethod.GET)
-    public RESTful getKline(String exchangeName, String symbol, String type) {
-
-        return currencyService.getKline(exchangeName, symbol, type);
-    }
-
-    @ApiOperation("最新成交单向")
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "exchangeName", value = "交易所", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "symbol", value = "列表symbol原样传入", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "String", name = "direction", value = "buy/sell", required = true)
-    })
-    @RequestMapping(value = "/getTradesByDir", method = RequestMethod.GET)
-    public RESTful getTradesByDir(String exchangeName, String symbol, String direction) {
-
-        return currencyService.getTrades(exchangeName, symbol, direction);
     }
 }

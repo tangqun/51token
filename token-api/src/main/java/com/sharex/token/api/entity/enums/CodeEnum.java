@@ -5,7 +5,7 @@ package com.sharex.token.api.entity.enums;
  * 除了不能继承，基本上可以将enum 看做一个常规的类
  */
 public enum CodeEnum {
-    SystemException(-1, "系统异常"),
+    SystemException(-1, "未知错误"),
     Success(0, "成功"),
 
     // 需要特殊处理code
