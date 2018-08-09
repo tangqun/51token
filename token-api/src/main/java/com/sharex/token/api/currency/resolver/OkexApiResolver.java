@@ -140,6 +140,18 @@ public class OkexApiResolver implements IApiResolver {
 
     @Override
     public Map<String, UserCurrency> accounts(String apiKey, String apiSecret, Integer userId) throws Exception {
+
+
+//        String respBody = okexApiClient.accounts(apiKey, apiSecret);
+//
+//        if (logger.isDebugEnabled()) {
+//            logger.debug(respBody);
+//        }
+//
+//        if (!StringUtils.isBlank(respBody)) {
+//
+//            //
+//        }
         throw new RuntimeException();
     }
 

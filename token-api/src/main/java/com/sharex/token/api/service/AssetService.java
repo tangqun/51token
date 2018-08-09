@@ -10,6 +10,7 @@ import com.sharex.token.api.entity.resp.AssetResp;
 import com.sharex.token.api.entity.resp.ExchangeResp;
 import com.sharex.token.api.entity.resp.UserCurrencyAssetResp;
 import com.sharex.token.api.entity.resp.UserExchangeAssetResp;
+import com.sharex.token.api.exception.AccountsSynException;
 import com.sharex.token.api.mapper.*;
 import com.sharex.token.api.util.ExchangeUtil;
 import org.apache.commons.logging.Log;
@@ -179,6 +180,9 @@ public class AssetService {
             }
 
             return RESTful.Success();
+        } catch (AccountsSynException e) {
+            logger.error(e.getMessage(), e);
+            return RESTful.Fail(CodeEnum.AuthFail);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

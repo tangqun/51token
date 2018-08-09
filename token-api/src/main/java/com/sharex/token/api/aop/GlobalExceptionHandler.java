@@ -2,7 +2,6 @@ package com.sharex.token.api.aop;
 
 import com.sharex.token.api.entity.RESTful;
 import com.sharex.token.api.entity.enums.CodeEnum;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -71,7 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public RESTful handleException(Exception e) {
 
-        logger.error(ExceptionUtils.getStackTrace(e));
+//        logger.error(ExceptionUtils.getStackTrace(e));
 
         return RESTful.Fail(CodeEnum.ParameterError);
     }

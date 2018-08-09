@@ -60,7 +60,9 @@ public enum CodeEnum {
     AssetInExchangeNotExistAnyCurrency(120032, "该交易所下无任务数字币资产"),
     AssetInExchangeNotExistThisCurrency(120033, "用户该交易所下不包含相应的数字币资产"),
 
-    ParameterError(120034, "参数错误")
+    ParameterError(120034, "参数错误"),
+    AuthFail(120035, "授权失败")
+
     ;
 
     CodeEnum(int code, String msg) {
