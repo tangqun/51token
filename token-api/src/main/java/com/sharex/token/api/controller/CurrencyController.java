@@ -106,7 +106,9 @@ public class CurrencyController {
     public RESTful editExchangeCurrencyCost(
             @NotBlank(message = "token不能为空")
             @Pattern(regexp = "^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$", message = "token格式错误")
-            @RequestHeader String token, @RequestBody ExchangeCurrencyCostEdit exchangeCurrencyCostEdit) {
+            @RequestHeader String token,
+            @Valid
+            @RequestBody ExchangeCurrencyCostEdit exchangeCurrencyCostEdit) {
 
         return currencyService.editExchangeCurrencyCost(token, exchangeCurrencyCostEdit);
     }
