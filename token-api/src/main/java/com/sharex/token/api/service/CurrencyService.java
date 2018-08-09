@@ -7,7 +7,7 @@ import com.sharex.token.api.entity.req.*;
 import com.sharex.token.api.entity.resp.UserCurrencyAssetResp;
 import com.sharex.token.api.exception.ParameterErrorException;
 import com.sharex.token.api.mapper.*;
-import com.sharex.token.api.util.SymbolUtil;
+import com.sharex.token.api.util.ExchangeUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +103,7 @@ public class CurrencyService {
                  */
                 Map<String, Object> map = new HashMap<>();
 
-                String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                 // 单币资产
                 UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, user.getId(), exchange.getName());
@@ -112,7 +112,7 @@ public class CurrencyService {
                 map.put("currency", userCurrencyAssetResp);
 
                 // k线
-                map.put("kline", remoteSynService.getKline(userCurrency.getExchangeName(), symbol, klineType));
+                map.put("kline", remoteSynService.getKline(userCurrency.getExchangeName(), symbol, ExchangeUtil.getKlineType(userCurrency.getExchangeName(), klineType)));
 
                 // 买盘/卖盘
                 Map<String, Object> tradesMap = new HashMap<>();
@@ -187,7 +187,7 @@ public class CurrencyService {
                  */
                 Map<String, Object> map = new HashMap<>();
 
-                String symbol = SymbolUtil.getSymbol(exchangeName, userCurrency.getCurrency());
+                String symbol = ExchangeUtil.getSymbol(exchangeName, userCurrency.getCurrency());
 
                 // 单币资产
                 UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, user.getId(), exchange.getName());
@@ -276,7 +276,7 @@ public class CurrencyService {
 
                     if (!"usdt".equals(userCurrency.getCurrency())) {
 
-                        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                        String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                         remoteSynService.synOpenOrders(
                                 userApi.getApiKey(),
@@ -337,7 +337,7 @@ public class CurrencyService {
 
                 if (!"usdt".equals(userCurrency.getCurrency())) {
 
-                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                    String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                     remoteSynService.synOpenOrders(
                             userApi.getApiKey(),
@@ -397,7 +397,7 @@ public class CurrencyService {
                 for (UserCurrency userCurrency:userCurrencyList) {
 
                     if (!"usdt".equals(userCurrency.getCurrency())) {
-                        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                        String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                         remoteSynService.synHistoryOrders(
                                 userApi.getApiKey(),
@@ -458,7 +458,7 @@ public class CurrencyService {
 
                 if (!"usdt".equals(userCurrency.getCurrency())) {
 
-                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                    String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                     remoteSynService.synHistoryOrders(
                             userApi.getApiKey(),
@@ -715,7 +715,7 @@ public class CurrencyService {
                 Date date = new Date();
 
                 // 提交交易所（创建委托交易 -- 限价交易），返回 订单编号
-                String symbol = SymbolUtil.getSymbol(currencyCancelOrder.getExchangeName(), currencyCancelOrder.getCurrency());
+                String symbol = ExchangeUtil.getSymbol(currencyCancelOrder.getExchangeName(), currencyCancelOrder.getCurrency());
 
                 RemotePost<String> remotePost = remoteSynService.cancelOrder(
                         userApi.getApiKey(),
@@ -779,7 +779,7 @@ public class CurrencyService {
                     return RESTful.Fail(CodeEnum.AssetInExchangeNotExistThisCurrency);
                 }
 
-                String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                 List<MyOpenOrders> myOpenOrdersList = remoteSynService.synOpenOrders(
                         userApi.getApiKey(),
@@ -836,7 +836,7 @@ public class CurrencyService {
                     return RESTful.Fail(CodeEnum.AssetInExchangeNotExistThisCurrency);
                 }
 
-                String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+                String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                 List<MyHistoryOrders> myHistoryOrdersList = remoteSynService.synHistoryOrders(
                         userApi.getApiKey(),
@@ -862,7 +862,7 @@ public class CurrencyService {
 
             Map<String, Object> map = new HashMap<>();
 
-            String symbol = SymbolUtil.getSymbol(exchangeName, currency);
+            String symbol = ExchangeUtil.getSymbol(exchangeName, currency);
             // 买盘/卖盘
             Map<String, Object> tradesMap = new HashMap<>();
             MyTrades myTrades = remoteSynService.getTrades(exchangeName, symbol);
@@ -884,7 +884,7 @@ public class CurrencyService {
 
             Map<String, Object> map = new HashMap<>();
 
-            String symbol = SymbolUtil.getSymbol(exchangeName, currency);
+            String symbol = ExchangeUtil.getSymbol(exchangeName, currency);
 
             List<MyKline> myKlineList = remoteSynService.getKline(exchangeName, symbol, klineType);
 
@@ -911,7 +911,7 @@ public class CurrencyService {
         // 冻结数量
         userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
 
-        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+        String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
         if ("usdt".equals(userCurrency.getCurrency())) {
 
             // 现价

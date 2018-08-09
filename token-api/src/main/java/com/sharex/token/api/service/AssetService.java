@@ -11,7 +11,7 @@ import com.sharex.token.api.entity.resp.ExchangeResp;
 import com.sharex.token.api.entity.resp.UserCurrencyAssetResp;
 import com.sharex.token.api.entity.resp.UserExchangeAssetResp;
 import com.sharex.token.api.mapper.*;
-import com.sharex.token.api.util.SymbolUtil;
+import com.sharex.token.api.util.ExchangeUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -447,7 +447,7 @@ public class AssetService {
         // 冻结数量
         userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
 
-        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+        String symbol = ExchangeUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
         if ("usdt".equals(userCurrency.getCurrency())) {
 
             // 现价
