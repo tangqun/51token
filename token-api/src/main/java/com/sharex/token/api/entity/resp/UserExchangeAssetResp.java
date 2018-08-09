@@ -8,6 +8,8 @@ public class UserExchangeAssetResp {
 
     private String nameDisplay;
 
+    private String logo;
+
     // 市值--新增20180808
     private String vol;
 
@@ -32,6 +34,14 @@ public class UserExchangeAssetResp {
 
     public String getNameDisplay() {
         return nameDisplay;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 
     public void setNameDisplay(String nameDisplay) {

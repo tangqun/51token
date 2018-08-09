@@ -367,13 +367,17 @@ public class AssetService {
         userExchangeAssetResp.setName(userApi.getExchangeName());
 
         String exchangeNameDisplay = null;
+        String exchangeLogo = null;
         Exchange exchange = exchangeMapper.selectEnabledByShortName(userApi.getExchangeName());
         if (null != exchange) {
             exchangeNameDisplay = exchange.getName();
+            exchangeLogo = exchange.getLogo();
         }
 
         // 交易所显示名称
         userExchangeAssetResp.setNameDisplay(exchangeNameDisplay);
+        // logo
+        userExchangeAssetResp.setLogo(exchangeLogo);
 
         Double exchangeVol = null;
         Double exchangeProfit = null;
