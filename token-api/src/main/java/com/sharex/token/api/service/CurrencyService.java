@@ -489,14 +489,18 @@ public class CurrencyService {
                 throw new ParameterErrorException("currencyCostEditList cannot be null");
             }
 
-            for (CurrencyCostEdit currencyCostEdit:currencyCostEditList) {
+            for (int i=0; i< currencyCostEditList.size(); i++) {
+                CurrencyCostEdit currencyCostEdit = currencyCostEditList.get(i);
                 // currency 币种类型无法验证
                 if (!"unit".equals(currencyCostEdit.getType()) && !"total".equals(currencyCostEdit.getType())) {
                     throw new ParameterErrorException("type must be unit/total one");
                 }
 
-                if (currencyCostEdit.getCost() <= 0d) {
-                    throw new ParameterErrorException("cost must gt 0");
+//                if (currencyCostEdit.getCost() <= 0d) {
+//                    throw new ParameterErrorException("cost must gt 0");
+//                }
+                if (null == currencyCostEdit.getCost()) {
+                    currencyCostEditList.remove(i);
                 }
             }
 
@@ -555,9 +559,9 @@ public class CurrencyService {
                     }
                 }
 
-                if (userCurrencyCostList.size() <= 0) {
-                    throw new ParameterErrorException("asset in exchange not exist the currency that you want insert into");
-                }
+//                if (userCurrencyCostList.size() <= 0) {
+//                    throw new ParameterErrorException("asset in exchange not exist the currency that you want insert into");
+//                }
 
                 for (UserCurrencyCost userCurrencyCost:userCurrencyCostList) {
                     userCurrencyCostMapper.insert(userCurrencyCost);
@@ -944,7 +948,7 @@ public class CurrencyService {
             userCurrencyCostMap.put("userId", userId);
             UserCurrencyCost userCurrencyCost = userCurrencyCostMapper.selectEntity(userCurrencyCostMap);
             if (userCurrencyCost != null) {
-                if ("unit".equals(userCurrencyCost.getCost())) {
+                if ("unit".equals(userCurrencyCost.getType())) {
                     costPrice = Double.valueOf(userCurrencyCost.getCost());
                 } else {
                     // 总价 / 数量

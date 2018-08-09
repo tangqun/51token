@@ -2,8 +2,6 @@ package com.sharex.token.api.entity.req;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.Min;
-
 public class CurrencyCostEdit {
 
     @NotBlank(message = "币种必填")
@@ -12,7 +10,7 @@ public class CurrencyCostEdit {
     // unit/total
     @NotBlank(message = "类型必填")
     private String type;
-    @Min(value = 0, message = "成本必填")
+
     private Double cost;
 
     public String getCurrency() {

@@ -486,7 +486,7 @@ public class AssetService {
             userCurrencyCostMap.put("userId", userId);
             UserCurrencyCost userCurrencyCost = userCurrencyCostMapper.selectEntity(userCurrencyCostMap);
             if (userCurrencyCost != null) {
-                if ("unit".equals(userCurrencyCost.getCost())) {
+                if ("unit".equals(userCurrencyCost.getType())) {
                     costPrice = Double.valueOf(userCurrencyCost.getCost());
                 } else {
                     // 总价 / 数量
