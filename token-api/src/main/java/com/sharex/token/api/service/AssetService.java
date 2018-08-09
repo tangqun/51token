@@ -128,15 +128,17 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (!user.getStatus().equals(0)) {
+            if (0 != user.getStatus()) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
-
             // exchangeName in db?
             Exchange exchange = exchangeMapper.selectEnabledByShortName(assetAuth.getExchangeName());
             if (exchange == null) {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
             }
+
+            // 判断 apiKey, apiSecret 是否有效
+            remoteSynService.testAccounts(assetAuth.getExchangeName(), assetAuth.getApiKey(), assetAuth.getApiSecret());
 
             // 当前时间
             Date date = new Date();
@@ -149,7 +151,7 @@ public class AssetService {
             UserApi userApi = userApiMapper.selectByType(typeMap);
             if (userApi != null) {
                 // 已授权过，判断状态
-                if (userApi.getStatus().equals(0)) {
+                if (0 == userApi.getStatus()) {
                     // 请勿重复授权
                     return RESTful.Fail(CodeEnum.RepeatAuthOfAsset);
                 } else {
@@ -565,22 +567,20 @@ public class AssetService {
             typeMapper.put("userId", user.getId());
             typeMapper.put("exchangeName", assetSyn.getExchangeName());
             UserApi userApi = userApiMapper.selectByType(typeMapper);
-            if (userApi == null) {
-                // 授权不存在
-                return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
-            }
-            if (!userApi.getStatus().equals(0)) {
-                return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
-            }
+            if (null != userApi && 0 == userApi.getStatus()) {
 
-            Map<String, UserCurrency> map = null;
+                Map<String, UserCurrency> map = null;
 
-            switch (assetSyn.getExchangeName()) {
-                case "huobi": remoteSynService.synAccounts("huobi", user.getId(), userApi.getApiKey(), userApi.getApiSecret()); break;
-                default: break;
+                switch (assetSyn.getExchangeName()) {
+                    case "huobi": remoteSynService.synAccounts("huobi", user.getId(), userApi.getApiKey(), userApi.getApiSecret()); break;
+                    default: break;
+                }
+
+                return RESTful.Success();
             }
 
-            return RESTful.Success();
+            return RESTful.Fail(CodeEnum.NotExistAuthOfExchange);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();

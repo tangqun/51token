@@ -158,6 +158,26 @@ public class HuoBiApiResolver implements IApiResolver {
         throw new NetworkException();
     }
 
+    public Boolean accounts(String apiKey, String apiSecret) throws Exception {
+        String respBody = huoBiApiClient.accounts(apiKey, apiSecret);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(respBody);
+        }
+
+        if (!StringUtils.isBlank(respBody)) {
+            ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+            if ("ok".equals(apiResp.getStatus())) {
+
+                return true;
+            }
+
+            throw new AccountsSynException(apiResp.getErrMsg());
+        }
+
+        throw new NetworkException();
+    }
+
     public Map<String, UserCurrency> accounts(String apiKey, String apiSecret, Integer userId) throws Exception {
 
 //        IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
@@ -208,7 +228,7 @@ public class HuoBiApiResolver implements IApiResolver {
                 return map;
             }
 
-            throw new TradesSynException(apiResp.getErrMsg());
+            throw new AccountsSynException(apiResp.getErrMsg());
         }
 
         throw new NetworkException();

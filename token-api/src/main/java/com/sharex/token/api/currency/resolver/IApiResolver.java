@@ -12,6 +12,8 @@ public interface IApiResolver {
 
     RemoteSyn getTrades(String symbol) throws Exception;
 
+    Boolean accounts(String apiKey, String apiSecret) throws Exception;
+
     Map<String, UserCurrency> accounts(String apiKey, String apiSecret, Integer userId) throws Exception;
 
     RemotePost<String> placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception;

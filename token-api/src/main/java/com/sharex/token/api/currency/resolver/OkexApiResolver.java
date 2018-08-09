@@ -134,27 +134,32 @@ public class OkexApiResolver implements IApiResolver {
     }
 
     @Override
+    public Boolean accounts(String apiKey, String apiSecret) throws Exception {
+        throw new RuntimeException();
+    }
+
+    @Override
     public Map<String, UserCurrency> accounts(String apiKey, String apiSecret, Integer userId) throws Exception {
-        return null;
+        throw new RuntimeException();
     }
 
     @Override
     public RemotePost<String> placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {
-        return null;
+        throw new RuntimeException();
     }
 
     @Override
     public RemotePost<String> cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
-        return null;
+        throw new RuntimeException();
     }
 
     @Override
     public RemoteSyn getOpenOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
-        return null;
+        throw new RuntimeException();
     }
 
     @Override
     public RemoteSyn getHistoryOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
-        return null;
+        throw new RuntimeException();
     }
 }

@@ -135,6 +135,13 @@ public class RemoteSynService {
         return remoteSyn.getData();
     }
 
+    public void testAccounts(String exchangeName, String apiKey, String apiSecret) throws Exception {
+
+        IApiResolver apiResolver = getApiResolver(exchangeName);
+
+        apiResolver.accounts(apiKey, apiSecret);
+    }
+
     public void synAccounts(String exchangeName, Integer userId, String apiKey, String apiSecret) throws Exception {
 
         IApiResolver apiResolver = getApiResolver(exchangeName);
