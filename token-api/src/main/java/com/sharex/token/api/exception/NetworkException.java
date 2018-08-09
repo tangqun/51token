@@ -1,6 +1,6 @@
 package com.sharex.token.api.exception;
 
-public class NetworkException extends Exception {
+public class NetworkException extends RuntimeException {
 
 
 }
