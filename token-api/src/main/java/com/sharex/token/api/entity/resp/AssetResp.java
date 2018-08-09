@@ -4,8 +4,11 @@ import java.util.List;
 
 public class AssetResp {
 
-    // 总资产
+    // 市值
     private String vol;
+
+    // 成本
+    private String cost;
 
     // 今日收益
     private String profit;
@@ -24,6 +27,14 @@ public class AssetResp {
 
     public void setVol(String vol) {
         this.vol = vol;
+    }
+
+    public String getCost() {
+        return cost;
+    }
+
+    public void setCost(String cost) {
+        this.cost = cost;
     }
 
     public String getProfit() {

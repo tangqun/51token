@@ -4,15 +4,24 @@ public class UserCurrencyAssetResp {
 
     // 交易所名称
     private String exchangeName;
+
     // 币种
     private String currency;
-    // trade: 交易余额，frozen: 冻结余额
+
+    // trade: 交易余额，
     private String free;
-    // 金额（数量）
+
+    // frozen: 冻结余额
     private String freezed;
 
-    // 现价 行情里的 close
-    private String price;
+    // 现价--最新价
+    private String closePrice;
+
+    // 开盘价
+    private String openPrice;
+
+    // 成本价
+    private String costPrice;
 
     // 市值
     private String vol;
@@ -20,11 +29,14 @@ public class UserCurrencyAssetResp {
     // 成本
     private String cost;
 
-    // 今日盈亏（单币）
+    // 当日收益（单币）
     private String profit;
 
-    // 今日盈亏率（单币）
+    // 当日收益率（单币）
     private String profitRate;
+
+    // 累计收益
+    private String cumulativeProfit;
 
     public String getExchangeName() {
         return exchangeName;
@@ -58,12 +70,28 @@ public class UserCurrencyAssetResp {
         this.freezed = freezed;
     }
 
-    public String getPrice() {
-        return price;
+    public String getClosePrice() {
+        return closePrice;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setClosePrice(String closePrice) {
+        this.closePrice = closePrice;
+    }
+
+    public String getOpenPrice() {
+        return openPrice;
+    }
+
+    public void setOpenPrice(String openPrice) {
+        this.openPrice = openPrice;
+    }
+
+    public String getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(String costPrice) {
+        this.costPrice = costPrice;
     }
 
     public String getVol() {
@@ -96,5 +124,13 @@ public class UserCurrencyAssetResp {
 
     public void setProfitRate(String profitRate) {
         this.profitRate = profitRate;
+    }
+
+    public String getCumulativeProfit() {
+        return cumulativeProfit;
+    }
+
+    public void setCumulativeProfit(String cumulativeProfit) {
+        this.cumulativeProfit = cumulativeProfit;
     }
 }

@@ -6,6 +6,8 @@ public class UserExchangeAssetResp {
 
     private String name;
 
+    private String nameDisplay;
+
     // 市值--新增20180808
     private String vol;
 
@@ -26,6 +28,14 @@ public class UserExchangeAssetResp {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNameDisplay() {
+        return nameDisplay;
+    }
+
+    public void setNameDisplay(String nameDisplay) {
+        this.nameDisplay = nameDisplay;
     }
 
     public String getVol() {

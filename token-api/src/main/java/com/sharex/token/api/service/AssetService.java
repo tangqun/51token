@@ -196,11 +196,10 @@ public class AssetService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (!user.getStatus().equals(0)) {
+            if (0 != user.getStatus()) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
-
-            // exchangeName in db?
+            // exchange in db?
             Exchange exchange = exchangeMapper.selectEnabledByShortName(assetRmAuth.getExchangeName());
             if (exchange == null) {
                 return RESTful.Fail(CodeEnum.ExchangeInvalid);
@@ -248,50 +247,47 @@ public class AssetService {
     //   ...
     //   trade_btcusdt_buy
     //   trade_btcusdt_sell
+
+    // {
+    //   code:
+    //   msg:
+    //   data: {
+    //       asset: [
+    //           { name: huobi, currencyCount: , profit: , cumulativeProfit: , userCurrencyAssetRespList: [
+    //              { exchangeName: , free: , freezed: , ... },
+    //              { exchangeName: , free: , freezed: , ... },
+    //              { exchangeName: , free: , freezed: , ... }]},
+    //           { name: okex, currencyCount: , profit: , cumulativeProfit: , userCurrencyAssetRespList: [
+    //              { exchangeName: , free: , freezed: , ... },
+    //              { exchangeName: , free: , freezed: , ... },
+    //              { exchangeName: , free: , freezed: , ... }]},
+    //           { name: binance, currencyCount: , profit: , cumulativeProfit: , userCurrencyAssetRespList: [
+    //              { exchangeName: , free: , freezed: , ... },
+    //              { exchangeName: , free: , freezed: , ... },
+    //              { exchangeName: , free: , freezed: , ... }]}
+    //       ]
+    //    }
+    // }
     public RESTful getAsset(String token) {
         try {
-
-            Double rate = 6.18d;
-            String rateStr = "￥";
 
             User user = userMapper.selectByToken(token);
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (!user.getStatus().equals(0)) {
+            if (0 != user.getStatus()) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
             // 返回
             Map<String, Object> map = new HashMap<>();
 
-            // {
-            //   code:
-            //   msg:
-            //   data: {
-            //       asset: [
-            //           { name: huobi, currencyCount: , profit: , cumulativeProfit: , userCurrencyAssetRespList: [
-            //              { exchangeName: , free: , freezed: , ... },
-            //              { exchangeName: , free: , freezed: , ... },
-            //              { exchangeName: , free: , freezed: , ... }]},
-            //           { name: okex, currencyCount: , profit: , cumulativeProfit: , userCurrencyAssetRespList: [
-            //              { exchangeName: , free: , freezed: , ... },
-            //              { exchangeName: , free: , freezed: , ... },
-            //              { exchangeName: , free: , freezed: , ... }]},
-            //           { name: binance, currencyCount: , profit: , cumulativeProfit: , userCurrencyAssetRespList: [
-            //              { exchangeName: , free: , freezed: , ... },
-            //              { exchangeName: , free: , freezed: , ... },
-            //              { exchangeName: , free: , freezed: , ... }]}
-            //       ]
-            //    }
-            // }
             AssetResp assetResp = new AssetResp();
 
             Double vol = null;
+            Double cost = null;
             Double profit = null;
             Double cumulativeProfit = null;
-            Double cost = null;
-
 
             // 交易所数据集合
             List<UserExchangeAssetResp> userExchangeAssetRespList = new ArrayList<>();
@@ -300,175 +296,49 @@ public class AssetService {
             List<UserApi> userApiList = userApiMapper.selectEnabledByUserId(user.getId());
             if (userApiList.size() > 0) {
                 vol = 0d;
+                cost = 0d;
                 profit = 0d;
                 cumulativeProfit = 0d;
-                cost = 0d;
 
                 for (UserApi userApi : userApiList) {
 
-                    // 单交易所数据
-                    UserExchangeAssetResp userExchangeAssetResp = new UserExchangeAssetResp();
-
-                    // 设置币种名称
-                    userExchangeAssetResp.setName(userApi.getExchangeName());
-
-                    Double exchangeVol = null;
-                    Double exchangeProfit = null;
-                    Double exchangeCumulativeProfit = null;
-                    Double exchangeCost = null;
-
-                    // 单交易所下的单币数据集合
-                    List<UserCurrencyAssetResp> userCurrencyAssetRespList = new ArrayList<>();
-
-                    Map<String, Object> userCurrencyMap = new HashMap<>();
-                    userCurrencyMap.put("exchangeName", userApi.getExchangeName());
-                    userCurrencyMap.put("userId", user.getId());
-                    List<UserCurrency> userCurrencyList = userCurrencyMapper.selectList(userCurrencyMap);
-                    if (userCurrencyList.size() > 0) {
-                        //
-                        exchangeVol = 0d;
-                        exchangeProfit = 0d;
-                        exchangeCumulativeProfit = 0d;
-                        exchangeCost = 0d;
-
-                        for (UserCurrency userCurrency : userCurrencyList) {
-
-                            // 单币数据
-                            UserCurrencyAssetResp userCurrencyAssetResp = new UserCurrencyAssetResp();
-                            // 交易所
-                            userCurrencyAssetResp.setExchangeName(userCurrency.getExchangeName());
-                            // 币种
-                            userCurrencyAssetResp.setCurrency(userCurrency.getCurrency());
-                            // 数量
-                            userCurrencyAssetResp.setFree(userCurrency.getFree());
-                            // 冻结数量
-                            userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
-
-                            String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
-                            if ("usdt".equals(userCurrency.getCurrency())) {
-
-                                // 市值
-                                userCurrencyAssetResp.setVol(userCurrency.getFree());
-                                // 现价
-                                userCurrencyAssetResp.setPrice(userCurrency.getFree());
-                                // 成本
-                                userCurrencyAssetResp.setCost(userCurrency.getFree());
-
-                                // 交易所累计市值
-                                exchangeVol += Double.valueOf(userCurrency.getFree());
-
-                                // 交易所累计成本
-                                exchangeCost += Double.valueOf(userCurrency.getFree());
-
-                            } else {
-                                // kline第一条作为行情
-                                List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
-                                MyKline myKline = myKlineList.get(0);
-
-                                // 市值
-                                Double currencyVol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
-                                userCurrencyAssetResp.setVol(currencyVol.toString());
-
-                                // 现价
-                                userCurrencyAssetResp.setPrice(myKline.getClose());
-
-                                // 成本价
-                                userCurrencyAssetResp.setCost(userCurrency.getCost());
-
-                                // 当日收益 (close - open) * free
-                                Double currencyProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(myKline.getOpen())) * Double.valueOf(userCurrency.getFree());
-                                userCurrencyAssetResp.setProfit(currencyProfit.toString());
-
-                                // 收益率 (当日收益 / 最新价) * 100
-                                Double currencyProfitRate = (currencyProfit / Double.valueOf(myKline.getClose())) * 100;
-
-                                userCurrencyAssetResp.setProfitRate(currencyProfitRate.toString());
-
-
-                                // 本地成本，如果存在配置成本，则修改
-//                            Map<String, Object> userCurrencyCostMap = new HashMap<>();
-//                            userCurrencyCostMap.put("exchangeName", userCurrency.getExchangeName());
-//                            userCurrencyCostMap.put("currency", userCurrency.getCurrency());
-//                            userCurrencyCostMap.put("userId", user.getId());
-//                            UserCurrencyCost userCurrencyCost = userCurrencyCostMapper.selectEntity(userCurrencyCostMap);
-//                            if (userCurrencyCost != null) {
-//
-//                            }
-
-
-                                // 交易所累计市值
-                                exchangeVol += currencyVol;
-
-                                Double currencyCost = Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
-                                // 交易所累计成本
-                                exchangeCost += currencyCost;
-
-                                // 交易所累计当日收益
-                                exchangeProfit += currencyProfit;
-
-                                // 累计收益 (close - cost) * free
-                                Double currencyCumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
-                                exchangeCumulativeProfit += currencyCumulativeProfit;
-
-                            }
-
-                            userCurrencyAssetRespList.add(userCurrencyAssetResp);
-                        }
-
-                        //
-                        vol += exchangeVol;
-                        profit += exchangeProfit;
-                        cumulativeProfit += exchangeCumulativeProfit;
-                        cost += exchangeCost;
+                    UserExchangeAssetResp userExchangeAssetResp = getUserExchangeAssetResp(userApi, user.getId());
+                    if (null != userExchangeAssetResp.getVol()) {
+                        vol += Double.valueOf(userExchangeAssetResp.getVol());
                     }
-
-                    // 设置单交易所市值
-                    if (null != exchangeVol) {
-                        userExchangeAssetResp.setVol(exchangeVol.toString());
+                    if (null != userExchangeAssetResp.getCost()) {
+                        cost += Double.valueOf(userExchangeAssetResp.getCost());
                     }
-
-                    // 设置单交易所今日收益
-                    if (null != exchangeProfit) {
-                        userExchangeAssetResp.setProfit(exchangeProfit.toString());
+                    if (null != userExchangeAssetResp.getProfit()) {
+                        profit += Double.valueOf(userExchangeAssetResp.getProfit());
                     }
-
-                    // 设置单交易所累计收益
-                    if (null != exchangeCumulativeProfit) {
-                        userExchangeAssetResp.setCumulativeProfit(exchangeCumulativeProfit.toString());
+                    if (null != userExchangeAssetResp.getCumulativeProfit()) {
+                        cumulativeProfit += Double.valueOf(userExchangeAssetResp.getCumulativeProfit());
                     }
-
-                    // 设置但交易所成本
-                    if (null != exchangeCost) {
-                        userExchangeAssetResp.setCost(exchangeCost.toString());
-                    }
-
-                    // 设置单交易所数字币数据集合
-                    userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
-
                     userExchangeAssetRespList.add(userExchangeAssetResp);
                 }
             }
 
-            // 总资产
+            // 市值
             if (null != vol) {
                 assetResp.setVol(vol.toString());
             }
-
+            // 成本
+            if (null != cost) {
+                assetResp.setCost(cost.toString());
+            }
             // 今日收益
             if (null != profit) {
                 assetResp.setProfit(profit.toString());
             }
-
             // 累计收益
             if (null != cumulativeProfit) {
                 assetResp.setCumulativeProfit(cumulativeProfit.toString());
             }
-
             // 收益率
             if (null != vol && null != cost) {
                 assetResp.setProfitRate(String.valueOf((vol - cost) / vol));
             }
-
             // 设置交易所数据集合
             assetResp.setUserExchangeAssetRespList(userExchangeAssetRespList);
 
@@ -481,6 +351,156 @@ public class AssetService {
             logger.error(e.getMessage(), e);
             return RESTful.SystemException();
         }
+    }
+
+    private UserExchangeAssetResp getUserExchangeAssetResp(UserApi userApi, Integer userId) throws Exception {
+        // 单交易所数据
+        UserExchangeAssetResp userExchangeAssetResp = new UserExchangeAssetResp();
+
+        // 设置币种名称
+        userExchangeAssetResp.setName(userApi.getExchangeName());
+
+        Exchange exchange = exchangeMapper.selectEnabledByShortName(userApi.getExchangeName());
+        if (null != exchange) {
+            userExchangeAssetResp.setNameDisplay(exchange.getName());
+        }
+
+        Double exchangeVol = null;
+        Double exchangeProfit = null;
+        Double exchangeCumulativeProfit = null;
+        Double exchangeCost = null;
+
+        // 单交易所下的单币数据集合
+        List<UserCurrencyAssetResp> userCurrencyAssetRespList = new ArrayList<>();
+
+        Map<String, Object> userCurrencyMap = new HashMap<>();
+        userCurrencyMap.put("exchangeName", userApi.getExchangeName());
+        userCurrencyMap.put("userId", userId);
+        List<UserCurrency> userCurrencyList = userCurrencyMapper.selectList(userCurrencyMap);
+        if (userCurrencyList.size() > 0) {
+            //
+            exchangeVol = 0d;
+            exchangeProfit = 0d;
+            exchangeCumulativeProfit = 0d;
+            exchangeCost = 0d;
+
+            for (UserCurrency userCurrency : userCurrencyList) {
+
+                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, userId);
+                if (null != userCurrencyAssetResp.getVol()) {
+                    // 交易所市值
+                    exchangeVol += Double.valueOf(userCurrencyAssetResp.getVol());
+                }
+                if (null != userCurrencyAssetResp.getCost()) {
+                    // 交易所成本
+                    exchangeCost += Double.valueOf(userCurrencyAssetResp.getCost());
+                }
+                if (null != userCurrencyAssetResp.getProfit()) {
+                    // 交易所当日收益
+                    exchangeProfit += Double.valueOf(userCurrencyAssetResp.getProfit());
+                }
+                if (null != userCurrencyAssetResp.getCumulativeProfit()) {
+                    // 交易所累计收益
+                    exchangeCumulativeProfit += Double.valueOf(userCurrencyAssetResp.getCumulativeProfit());
+                }
+                userCurrencyAssetRespList.add(userCurrencyAssetResp);
+            }
+        }
+
+        // 设置单交易所市值
+        if (null != exchangeVol) {
+            userExchangeAssetResp.setVol(exchangeVol.toString());
+        }
+        // 设置但交易所成本
+        if (null != exchangeCost) {
+            userExchangeAssetResp.setCost(exchangeCost.toString());
+        }
+        // 设置单交易所今日收益
+        if (null != exchangeProfit) {
+            userExchangeAssetResp.setProfit(exchangeProfit.toString());
+        }
+        // 设置单交易所累计收益
+        if (null != exchangeCumulativeProfit) {
+            userExchangeAssetResp.setCumulativeProfit(exchangeCumulativeProfit.toString());
+        }
+        // 设置单交易所数字币数据集合
+        userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
+
+        return userExchangeAssetResp;
+    }
+
+    private UserCurrencyAssetResp getUserCurrencyAssetResp(UserCurrency userCurrency, Integer userId) throws Exception {
+        // 单币数据
+        UserCurrencyAssetResp userCurrencyAssetResp = new UserCurrencyAssetResp();
+        // 交易所
+        userCurrencyAssetResp.setExchangeName(userCurrency.getExchangeName());
+        // 币种
+        userCurrencyAssetResp.setCurrency(userCurrency.getCurrency());
+        // 数量
+        userCurrencyAssetResp.setFree(userCurrency.getFree());
+        // 冻结数量
+        userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
+
+        String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
+        if ("usdt".equals(userCurrency.getCurrency())) {
+
+            // 现价
+            userCurrencyAssetResp.setClosePrice(userCurrency.getFree());
+            // 开盘价
+            userCurrencyAssetResp.setOpenPrice(userCurrency.getFree());
+            // 成本价
+            userCurrencyAssetResp.setCostPrice(userCurrency.getFree());
+            // 市值
+            userCurrencyAssetResp.setVol(userCurrency.getFree());
+            // 成本
+            userCurrencyAssetResp.setCost(userCurrency.getFree());
+
+        } else {
+            // kline第一条作为行情
+            List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
+            MyKline myKline = myKlineList.get(0);
+
+            // 现价
+            userCurrencyAssetResp.setClosePrice(myKline.getClose());
+            // 开盘价
+            userCurrencyAssetResp.setOpenPrice(myKline.getOpen());
+            // 成本--授权时设置（默认）
+            Double costPrice = Double.valueOf(userCurrency.getCost());
+
+            // 拉取配置成本
+            Map<String, Object> userCurrencyCostMap = new HashMap<>();
+            userCurrencyCostMap.put("exchangeName", userCurrency.getExchangeName());
+            userCurrencyCostMap.put("currency", userCurrency.getCurrency());
+            userCurrencyCostMap.put("userId", userId);
+            UserCurrencyCost userCurrencyCost = userCurrencyCostMapper.selectEntity(userCurrencyCostMap);
+            if (userCurrencyCost != null) {
+                if ("unit".equals(userCurrencyCost.getCost())) {
+                    costPrice = Double.valueOf(userCurrencyCost.getCost());
+                } else {
+                    // 总价 / 数量
+                    costPrice = Double.valueOf(userCurrencyCost.getCost()) / Double.valueOf(userCurrency.getFree());
+                }
+            }
+            // 成本价
+            userCurrencyAssetResp.setCostPrice(costPrice.toString());
+            // 市值
+            Double currencyVol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
+            userCurrencyAssetResp.setVol(currencyVol.toString());
+            // 成本
+            Double currencyCost = Double.valueOf(userCurrency.getFree()) * costPrice;
+            userCurrencyAssetResp.setCost(currencyCost.toString());
+            // 当日收益 (close - open) * free
+            Double currencyProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(myKline.getOpen())) * Double.valueOf(userCurrency.getFree());
+            userCurrencyAssetResp.setProfit(currencyProfit.toString());
+            // 收益率 (当日收益 / 最新价) * 100
+            Double currencyProfitRate = (currencyProfit / Double.valueOf(myKline.getClose())) * 100;
+            userCurrencyAssetResp.setProfitRate(currencyProfitRate.toString());
+            // 累计收益 (close - cost) * free
+            Double currencyCumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
+            userCurrencyAssetResp.setCumulativeProfit(currencyCumulativeProfit.toString());
+        }
+
+        return userCurrencyAssetResp;
     }
 
     public RESTful getExchangeAsset(String token, String exchangeName) {
@@ -500,103 +520,8 @@ public class AssetService {
             userExchangeMap.put("userId", user.getId());
             UserApi userApi = userApiMapper.selectEnabledEntity(userExchangeMap);
             if (userApi != null && 0 == userApi.getStatus()) {
-                // 单交易所数据
-                UserExchangeAssetResp userExchangeAssetResp = new UserExchangeAssetResp();
 
-                // 设置币种名称
-                userExchangeAssetResp.setName(userApi.getExchangeName());
-
-                Double exchangeProfit = 0d;
-                Double exchangeVol = 0d;
-                Double exchangeCumulativeProfit = 0d;
-                Double exchangeCost = 0d;
-
-                // 单交易所下的单币数据集合
-                List<UserCurrencyAssetResp> userCurrencyAssetRespList = new ArrayList<>();
-
-                Map<String, Object> userCurrencyMap = new HashMap<>();
-                userCurrencyMap.put("exchangeName", userApi.getExchangeName());
-                userCurrencyMap.put("userId", user.getId());
-                List<UserCurrency> userCurrencyList = userCurrencyMapper.selectList(userCurrencyMap);
-                for (UserCurrency userCurrency : userCurrencyList) {
-
-                    // 单币数据
-                    UserCurrencyAssetResp userCurrencyAssetResp = new UserCurrencyAssetResp();
-                    userCurrencyAssetResp.setExchangeName(userCurrency.getExchangeName());
-                    userCurrencyAssetResp.setCurrency(userCurrency.getCurrency());
-                    userCurrencyAssetResp.setFree(userCurrency.getFree());
-                    userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
-
-                    String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
-
-                    // 获取币种最新市值
-                    // huobi
-                    //   ticker_btcusdt 暂时不用，读取 kline_symbol_1min 第一条数据
-                    //   kline_btcusdt_1min
-                    //   kline_btcusdt_15min
-                    //   ...
-                    //   trade_btcusdt_buy
-                    //   trade_btcusdt_sell
-                    if ("usdt".equals(userCurrency.getCurrency())) {
-
-                        userCurrencyAssetResp.setPrice(userCurrency.getFree());
-
-                        userCurrencyAssetResp.setVol(userCurrency.getFree());
-
-                        //
-                        exchangeVol += Double.valueOf(userCurrency.getFree());
-
-                        userCurrencyAssetResp.setCost(userCurrency.getFree());
-
-                        //
-                        exchangeCost += Double.valueOf(userCurrency.getFree());
-
-                    } else {
-                        List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
-                        MyKline myKline = myKlineList.get(0);
-                        // 现价
-                        userCurrencyAssetResp.setPrice(myKline.getClose());
-
-                        // 市值
-                        Double currencyVol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
-                        userCurrencyAssetResp.setVol(currencyVol.toString());
-
-                        exchangeVol += currencyVol;
-
-                        // 成本
-                        Double cost = Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
-                        userCurrencyAssetResp.setCost(cost.toString());
-                        // 累计收益 = (最新价 - 成本价) * 数量
-                        Double currencyCumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
-
-                        exchangeCost += Double.valueOf(userCurrency.getFree()) * Double.valueOf(userCurrency.getCost());
-
-                        exchangeCumulativeProfit += currencyCumulativeProfit;
-
-                        // 当日收益
-                        Double currencyProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(myKline.getOpen())) * Double.valueOf(userCurrency.getFree());
-                        userCurrencyAssetResp.setProfit(currencyProfit.toString());
-
-                        exchangeProfit += currencyProfit;
-
-                        Double currencyProfitRate = (currencyProfit / Double.valueOf(myKline.getClose())) * 100;
-
-                        userCurrencyAssetResp.setProfitRate(currencyProfitRate.toString());
-                    }
-
-                    userCurrencyAssetRespList.add(userCurrencyAssetResp);
-                }
-
-                // 总市值
-                userExchangeAssetResp.setVol(exchangeVol.toString());
-
-                // 总成本
-                userExchangeAssetResp.setCost(exchangeCost.toString());
-
-                // 累计收益
-                userExchangeAssetResp.setCumulativeProfit(exchangeCumulativeProfit.toString());
-
-                userExchangeAssetResp.setUserCurrencyAssetRespList(userCurrencyAssetRespList);
+                UserExchangeAssetResp userExchangeAssetResp = getUserExchangeAssetResp(userApi, user.getId());
 
                 return RESTful.Success(userExchangeAssetResp);
             }
