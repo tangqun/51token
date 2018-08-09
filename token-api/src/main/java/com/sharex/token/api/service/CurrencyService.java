@@ -106,7 +106,7 @@ public class CurrencyService {
                 String symbol = SymbolUtil.getSymbol(userCurrency.getExchangeName(), userCurrency.getCurrency());
 
                 // 单币资产
-                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, user.getId());
+                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, user.getId(), exchange.getName());
 
                 // data: { currency: }
                 map.put("currency", userCurrencyAssetResp);
@@ -190,7 +190,7 @@ public class CurrencyService {
                 String symbol = SymbolUtil.getSymbol(exchangeName, userCurrency.getCurrency());
 
                 // 单币资产
-                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, user.getId());
+                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, user.getId(), exchange.getName());
 
                 // data: { currency: }
                 map.put("currency", userCurrencyAssetResp);
@@ -897,11 +897,13 @@ public class CurrencyService {
         }
     }
 
-    private UserCurrencyAssetResp getUserCurrencyAssetResp(UserCurrency userCurrency, Integer userId) throws Exception {
+    private UserCurrencyAssetResp getUserCurrencyAssetResp(UserCurrency userCurrency, Integer userId, String exchangeNameDisplay) throws Exception {
         // 单币数据
         UserCurrencyAssetResp userCurrencyAssetResp = new UserCurrencyAssetResp();
         // 交易所
         userCurrencyAssetResp.setExchangeName(userCurrency.getExchangeName());
+        // 交易所显示名称
+        userCurrencyAssetResp.setExchangeNameDisplay(exchangeNameDisplay);
         // 币种
         userCurrencyAssetResp.setCurrency(userCurrency.getCurrency());
         // 数量

@@ -5,6 +5,8 @@ public class UserCurrencyAssetResp {
     // 交易所名称
     private String exchangeName;
 
+    private String exchangeNameDisplay;
+
     // 币种
     private String currency;
 
@@ -44,6 +46,14 @@ public class UserCurrencyAssetResp {
 
     public void setExchangeName(String exchangeName) {
         this.exchangeName = exchangeName;
+    }
+
+    public String getExchangeNameDisplay() {
+        return exchangeNameDisplay;
+    }
+
+    public void setExchangeNameDisplay(String exchangeNameDisplay) {
+        this.exchangeNameDisplay = exchangeNameDisplay;
     }
 
     public String getCurrency() {

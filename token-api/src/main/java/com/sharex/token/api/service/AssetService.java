@@ -360,10 +360,14 @@ public class AssetService {
         // 设置币种名称
         userExchangeAssetResp.setName(userApi.getExchangeName());
 
+        String exchangeNameDisplay = null;
         Exchange exchange = exchangeMapper.selectEnabledByShortName(userApi.getExchangeName());
         if (null != exchange) {
-            userExchangeAssetResp.setNameDisplay(exchange.getName());
+            exchangeNameDisplay = exchange.getName();
         }
+
+        // 交易所显示名称
+        userExchangeAssetResp.setNameDisplay(exchangeNameDisplay);
 
         Double exchangeVol = null;
         Double exchangeProfit = null;
@@ -386,7 +390,7 @@ public class AssetService {
 
             for (UserCurrency userCurrency : userCurrencyList) {
 
-                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, userId);
+                UserCurrencyAssetResp userCurrencyAssetResp = getUserCurrencyAssetResp(userCurrency, userId, exchangeNameDisplay);
                 if (null != userCurrencyAssetResp.getVol()) {
                     // 交易所市值
                     exchangeVol += Double.valueOf(userCurrencyAssetResp.getVol());
@@ -429,11 +433,13 @@ public class AssetService {
         return userExchangeAssetResp;
     }
 
-    private UserCurrencyAssetResp getUserCurrencyAssetResp(UserCurrency userCurrency, Integer userId) throws Exception {
+    private UserCurrencyAssetResp getUserCurrencyAssetResp(UserCurrency userCurrency, Integer userId, String exchangeNameDisplay) throws Exception {
         // 单币数据
         UserCurrencyAssetResp userCurrencyAssetResp = new UserCurrencyAssetResp();
         // 交易所
         userCurrencyAssetResp.setExchangeName(userCurrency.getExchangeName());
+        // 交易所显示名称
+        userCurrencyAssetResp.setExchangeNameDisplay(exchangeNameDisplay);
         // 币种
         userCurrencyAssetResp.setCurrency(userCurrency.getCurrency());
         // 数量
