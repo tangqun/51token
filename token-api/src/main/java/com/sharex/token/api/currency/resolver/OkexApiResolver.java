@@ -240,16 +240,22 @@ public class OkexApiResolver implements IApiResolver {
 
         if (!StringUtils.isBlank(respBody)) {
             PlaceOrderResp placeOrderResp = objectMapper.readValue(respBody, PlaceOrderResp.class);
+
+            RemotePost<String> remotePost = new RemotePost<>();
+
             if (true == placeOrderResp.getResult()) {
 
-                RemotePost<String> remotePost = new RemotePost<>();
                 remotePost.setStatus("ok");
                 remotePost.setData(placeOrderResp.getOrderId());
+            } else {
 
-                return remotePost;
+                remotePost.setStatus("error");
+                remotePost.setData("");
             }
 
-            throw new PlaceOrderPostException("okex place order exception");
+            return remotePost;
+
+//            throw new PlaceOrderPostException("okex place order exception");
         }
 
         throw new NetworkException();
@@ -267,16 +273,25 @@ public class OkexApiResolver implements IApiResolver {
 
         if (!StringUtils.isBlank(respBody)) {
             PlaceOrderResp placeOrderResp = objectMapper.readValue(respBody, PlaceOrderResp.class);
+
+            RemotePost<String> remotePost = new RemotePost<>();
+
             if (true == placeOrderResp.getResult()) {
 
-                RemotePost<String> remotePost = new RemotePost<>();
+
                 remotePost.setStatus("ok");
                 remotePost.setData(placeOrderResp.getOrderId());
 
-                return remotePost;
+//                return remotePost;
+            } else {
+
+                remotePost.setStatus("error");
+                remotePost.setData("");
             }
 
-            throw new CancelOrderPostException("okex cancel order exception");
+            return remotePost;
+
+//            throw new CancelOrderPostException("okex cancel order exception");
         }
 
         throw new NetworkException();

@@ -398,8 +398,6 @@ public class HuoBiApiResolver implements IApiResolver {
     @Override
     public RemoteSyn getHistoryOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
 
-//        IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
-
         Long ts = System.currentTimeMillis();
 
         // 分析数据 100条内 肯定存在 大于 10条的买 和 大于 10条的卖
