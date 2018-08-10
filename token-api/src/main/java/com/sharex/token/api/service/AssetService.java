@@ -294,6 +294,7 @@ public class AssetService {
             Double cost = null;
             Double profit = null;
             Double cumulativeProfit = null;
+            Double profitRate = null;
 
             // 交易所数据集合
             List<UserExchangeAssetResp> userExchangeAssetRespList = new ArrayList<>();
@@ -305,6 +306,7 @@ public class AssetService {
                 cost = 0d;
                 profit = 0d;
                 cumulativeProfit = 0d;
+                profitRate = 0d;
 
                 for (UserApi userApi : userApiList) {
 
@@ -345,7 +347,9 @@ public class AssetService {
             if (null != vol && null != cost && vol > 0 && cost > 0) {
                 assetResp.setProfitRate(String.valueOf((vol - cost) / vol));
             } else {
-                assetResp.setProfitRate("0.0");
+                if (null != profitRate) {
+                    assetResp.setProfitRate(profitRate.toString());
+                }
             }
             // 设置交易所数据集合
             assetResp.setUserExchangeAssetRespList(userExchangeAssetRespList);
