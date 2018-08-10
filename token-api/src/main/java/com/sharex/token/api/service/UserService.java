@@ -35,7 +35,7 @@ public class UserService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (user.getStatus().equals(0)) {
+            if (0 != user.getStatus()) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 
@@ -61,7 +61,7 @@ public class UserService {
             if (user == null) {
                 return RESTful.Fail(CodeEnum.TokenInvalid);
             }
-            if (!user.getStatus().equals(0)) {
+            if (0 != user.getStatus()) {
                 return RESTful.Fail(CodeEnum.AccountHasBeenFrozen);
             }
 

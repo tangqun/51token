@@ -2,12 +2,8 @@ package com.sharex.token.api.currency.resolver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sharex.token.api.currency.huobi.resp.OpenOrders;
 import com.sharex.token.api.currency.okex.OkexApiClient;
-import com.sharex.token.api.currency.okex.resp.AccountsFree;
-import com.sharex.token.api.currency.okex.resp.AccountsResp;
-import com.sharex.token.api.currency.okex.resp.PlaceOrderResp;
-import com.sharex.token.api.currency.okex.resp.Trade;
+import com.sharex.token.api.currency.okex.resp.*;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.exception.*;
 import com.sharex.token.api.service.RemoteSynService;
@@ -300,7 +296,85 @@ public class OkexApiResolver implements IApiResolver {
         // 解析
         if (!StringUtils.isBlank(respBody)) {
 
+            //{
+            //    "result": true,
+            //    "total": 1,
+            //    "currency_page": 1,
+            //    "page_length": 100,
+            //    "orders": [{
+            //        "amount": 0.001,
+            //        "avg_price": 0,
+            //        "create_date": 1533182057000,
+            //        "deal_amount": 0,
+            //        "order_id": 659903844,
+            //        "orders_id": 659903844,
+            //        "price": 422.9,
+            //        "status": 0,
+            //        "symbol": "eth_usdt",
+            //        "type": "sell"
+            //    }]
+            //}
+            HistoryOrdersResp historyOrdersResp = objectMapper.readValue(respBody, HistoryOrdersResp.class);
+            if (true == historyOrdersResp.getResult()) {
 
+                RemoteSyn<List<MyOpenOrders>> remoteSyn = new RemoteSyn<>();
+
+                remoteSyn.setTs(ts);
+
+                List<MyOpenOrders> myOpenOrdersList = new LinkedList<>();
+
+                for (OrdersInfo ordersInfo:historyOrdersResp.getOrders()) {
+
+                    if (0 == ordersInfo.getStatus() || 3 == ordersInfo.getStatus()) {
+                        MyOpenOrders myOpenOrders = new MyOpenOrders();
+                        myOpenOrders.setSymbol(ordersInfo.getSymbol());
+                        myOpenOrders.setAmount(ordersInfo.getAmount().toString());
+                        myOpenOrders.setCreatedAt(ordersInfo.getCreateDate());
+                        myOpenOrders.setCreatedAtDisplay(new Date(ordersInfo.getCreateDate()));
+                        myOpenOrders.setPrice(ordersInfo.getPrice().toString());
+                        myOpenOrders.setId(ordersInfo.getOrderId());
+
+                        myOpenOrders.setState(ordersInfo.getStatus().toString());
+                        Integer myState = 0;
+                        String stateDisplay = "";
+                        switch (ordersInfo.getStatus()) {
+                            case 0:
+                                stateDisplay = "撤销";
+                                break;
+                            case 3:
+                                stateDisplay = "撤单中";
+                                myState = 1;
+                                break;
+                        }
+                        myOpenOrders.setMyState(myState);
+                        myOpenOrders.setStateDisplay(stateDisplay);
+
+                        myOpenOrders.setType(ordersInfo.getType());
+                        String typeDisplay = "";
+                        switch (ordersInfo.getType()) {
+                            case "buy-market":
+                                typeDisplay = "买入";
+                                break;
+                            case "sell-market":
+                                typeDisplay = "卖出";
+                                break;
+                            case "buy":
+                                typeDisplay = "买入";
+                                break;
+                            case "sell":
+                                typeDisplay = "卖出";
+                                break;
+                        }
+                        myOpenOrders.setTypeDisplay(typeDisplay);
+
+                        myOpenOrdersList.add(myOpenOrders);
+                    }
+                }
+
+                remoteSyn.setData(myOpenOrdersList);
+
+                return remoteSyn;
+            }
 
             throw new OpenOrdersSynException("syn okex open orders exception");
         }
@@ -310,6 +384,87 @@ public class OkexApiResolver implements IApiResolver {
 
     @Override
     public RemoteSyn getHistoryOrders(String apiKey, String apiSecret, String accountId, String symbol, Integer status, Integer size) throws Exception {
-        throw new RuntimeException();
+        Long ts = System.currentTimeMillis();
+
+        String respBody = okexApiClient.historyOrders(apiKey, apiSecret, accountId, symbol, 1, 100);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(respBody);
+        }
+
+        // 解析
+        if (!StringUtils.isBlank(respBody)) {
+
+            //{
+            //    "result": true,
+            //    "total": 1,
+            //    "currency_page": 1,
+            //    "page_length": 100,
+            //    "orders": [{
+            //        "amount": 0.001,
+            //        "avg_price": 0,
+            //        "create_date": 1533182057000,
+            //        "deal_amount": 0,
+            //        "order_id": 659903844,
+            //        "orders_id": 659903844,
+            //        "price": 422.9,
+            //        "status": 0,
+            //        "symbol": "eth_usdt",
+            //        "type": "sell"
+            //    }]
+            //}
+            HistoryOrdersResp historyOrdersResp = objectMapper.readValue(respBody, HistoryOrdersResp.class);
+            if (true == historyOrdersResp.getResult()) {
+
+                RemoteSyn<List<MyHistoryOrders>> remoteSyn = new RemoteSyn<>();
+
+                remoteSyn.setTs(ts);
+
+                List<MyHistoryOrders> myHistoryOrdersList = new LinkedList<>();
+
+                for (OrdersInfo ordersInfo:historyOrdersResp.getOrders()) {
+
+                    if (-1 == ordersInfo.getStatus() || 1 == ordersInfo.getStatus() ||
+                            2 == ordersInfo.getStatus()) {
+                        MyHistoryOrders myHistoryOrders = new MyHistoryOrders();
+                        myHistoryOrders.setOrderId(ordersInfo.getOrderId());
+                        myHistoryOrders.setSymbol(ordersInfo.getSymbol());
+
+                        myHistoryOrders.setType(ordersInfo.getType());
+                        String typeDisplay = "";
+                        switch (ordersInfo.getType()) {
+                            case "buy-market":
+                                typeDisplay = "买入";
+                                break;
+                            case "sell-market":
+                                typeDisplay = "卖出";
+                                break;
+                            case "buy":
+                                typeDisplay = "买入";
+                                break;
+                            case "sell":
+                                typeDisplay = "卖出";
+                                break;
+                        }
+                        myHistoryOrders.setTypeDisplay(typeDisplay);
+
+                        myHistoryOrders.setPrice(ordersInfo.getPrice().toString());
+                        myHistoryOrders.setAmount(ordersInfo.getAmount().toString());
+                        myHistoryOrders.setCreatedAt(ordersInfo.getCreateDate());
+                        myHistoryOrders.setCreateAtDisplay(new Date(ordersInfo.getCreateDate()));
+
+                        myHistoryOrdersList.add(myHistoryOrders);
+                    }
+                }
+
+                remoteSyn.setData(myHistoryOrdersList);
+
+                return remoteSyn;
+            }
+
+            throw new HistoryOrdersSynException("syn okex history orders exception");
+        }
+
+        throw new NetworkException();
     }
 }

@@ -70,7 +70,7 @@ public class OkexApiClientTest {
 
         IApiClient apiClient = new OkexApiClient();
 
-        String respBody = apiClient.historyOrders(apiKey_okex, apiSecret_okex, null,"eth_usdt", 1, 100);
+        String respBody = apiClient.historyOrders(apiKey_okex, apiSecret_okex, null,"eth_usdt", 0, 100);
 
         System.out.println(respBody);
     }
