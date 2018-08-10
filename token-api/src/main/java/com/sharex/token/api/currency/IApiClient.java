@@ -1,9 +1,5 @@
 package com.sharex.token.api.currency;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 public interface IApiClient {
 
     /**
@@ -34,7 +30,7 @@ public interface IApiClient {
      * @param size
      * @return
      */
-    String kline(String symbol, String type, Integer size) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException, Exception;
+    String kline(String symbol, String type, Integer size) throws Exception;
 
     /************************************************* 币币交易 ****************************************************/
 

@@ -1,5 +1,6 @@
 package com.sharex.token.api.currency.huobi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.currency.IApiClient;
@@ -186,7 +187,7 @@ public class HuoBiApiClient implements IApiClient {
     }
 
     @Override
-    public String placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws Exception {
+    public String placeOrder(String apiKey, String apiSecret, String accountId, String symbol, String price, String amount, String type) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
 
         Map<String, String> map = new HashMap<>();
         map.put("account-id", accountId);
@@ -203,7 +204,7 @@ public class HuoBiApiClient implements IApiClient {
     }
 
     @Override
-    public String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
+    public String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
 
         String uri = String.format(CancelOrder_URL, orderId);
         String queryString = toQueryString(apiKey, apiSecret, "POST", API_HOST, uri, new HashMap<>());

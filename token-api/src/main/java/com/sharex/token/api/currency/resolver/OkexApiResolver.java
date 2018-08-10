@@ -276,7 +276,7 @@ public class OkexApiResolver implements IApiResolver {
                 return remotePost;
             }
 
-            throw new PlaceOrderPostException("okex cancel order exception");
+            throw new CancelOrderPostException("okex cancel order exception");
         }
 
         throw new NetworkException();

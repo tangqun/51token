@@ -15,6 +15,7 @@ public class MyOpenOrders {
     private Integer myState;
     private String stateDisplay;
     private String type;
+
     private String typeDisplay;
 
     public String getSource() {

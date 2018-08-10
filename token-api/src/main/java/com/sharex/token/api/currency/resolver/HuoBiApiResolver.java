@@ -248,16 +248,24 @@ public class HuoBiApiResolver implements IApiResolver {
 
         if (!StringUtils.isBlank(respBody)) {
             ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+
+            RemotePost<String> remotePost = new RemotePost<>();
+
             if ("ok".equals(apiResp.getStatus())) {
 
-                RemotePost<String> remotePost = new RemotePost<>();
+
                 remotePost.setStatus(apiResp.getStatus());
                 remotePost.setData(apiResp.getData().toString());
 
-                return remotePost;
+//                return remotePost;
+            } else {
+
+                remotePost.setStatus(apiResp.getStatus());
+                remotePost.setData(apiResp.getErrMsg());
             }
 
-            throw new PlaceOrderPostException(apiResp.getErrMsg());
+            return remotePost;
+//            throw new PlaceOrderPostException(apiResp.getErrMsg());
         }
 
         throw new NetworkException();
@@ -275,16 +283,24 @@ public class HuoBiApiResolver implements IApiResolver {
 
         if (!StringUtils.isBlank(respBody)) {
             ApiResp apiResp = objectMapper.readValue(respBody, ApiResp.class);
+
+            RemotePost<String> remotePost = new RemotePost<>();
+
             if ("ok".equals(apiResp.getStatus())) {
 
-                RemotePost<String> remotePost = new RemotePost<>();
+
                 remotePost.setStatus(apiResp.getStatus());
                 remotePost.setData(apiResp.getData().toString());
 
-                return remotePost;
+//                return remotePost;
+            } else {
+
+                remotePost.setStatus(apiResp.getStatus());
+                remotePost.setData(apiResp.getErrMsg());
             }
 
-            throw new CancelOrderPostException(apiResp.getErrMsg());
+            return remotePost;
+//            throw new CancelOrderPostException(apiResp.getErrMsg());
         }
 
         throw new NetworkException();

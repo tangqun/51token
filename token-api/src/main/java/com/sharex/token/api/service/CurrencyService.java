@@ -657,11 +657,12 @@ public class CurrencyService {
                 // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志），删除msg_id
                 orderMsgMapper.delete(currencyPlaceOrder.getMsgId());
 
-//                if ("ok".equals(remotePost.getStatus())) {
-//
-//                    // 订单记录数据库
-//
-//                }
+                if (!"ok".equals(remotePost.getStatus())) {
+
+                    // 强制回滚
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return RESTful.Fail(CodeEnum.PlaceOrderError);
+                }
 
                 // 只有ok状态，非ok直接抛出异常，回滚数据库
 
@@ -728,10 +729,10 @@ public class CurrencyService {
 
                 // insert order_id（订单虽然记录了数据库，但是不会作为任何凭证，相当于日志）
 
-//                if ("ok".equals(remotePost.getStatus())) {
-//
-//                    // 订单记录数据库
-//                }
+                if (!"ok".equals(remotePost.getStatus())) {
+
+                    return RESTful.Fail(CodeEnum.CancelOrderError);
+                }
 
                 return RESTful.Success();
             } else {
@@ -740,7 +741,6 @@ public class CurrencyService {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return RESTful.SystemException();
         }
     }
