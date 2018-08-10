@@ -66,7 +66,7 @@ public class RemoteSynService {
             RemoteSyn<List<MyKline>> remoteSyn_redis = objectMapper.readValue(redisBody, new TypeReference<RemoteSyn<List<MyKline>>>() {});
 
             // redis 数据有效，直接返回
-            if (System.currentTimeMillis() - remoteSyn_redis.getTs() <= 5000) {
+            if (System.currentTimeMillis() - remoteSyn_redis.getTs() <= 10000) {
 
                 return remoteSyn_redis.getData();
             }
@@ -120,7 +120,7 @@ public class RemoteSynService {
             RemoteSyn<MyTrades> remoteSyn_redis = objectMapper.readValue(redisBody, new TypeReference<RemoteSyn<MyTrades>>() {});
 
             // redis 数据有效，直接返回
-            if (System.currentTimeMillis() - remoteSyn_redis.getTs() <= 5000) {
+            if (System.currentTimeMillis() - remoteSyn_redis.getTs() <= 10000) {
 
                 return remoteSyn_redis.getData();
             }
