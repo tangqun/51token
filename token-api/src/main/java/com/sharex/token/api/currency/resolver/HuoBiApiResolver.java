@@ -180,8 +180,6 @@ public class HuoBiApiResolver implements IApiResolver {
 
     public Map<String, UserCurrency> accounts(String apiKey, String apiSecret, Integer userId) throws Exception {
 
-//        IApiClient apiClient = new HuoBiApiClient(apiKey, apiSecret);
-
         Date date = new Date();
 
         // 获取用户信息，保存数据库
@@ -203,26 +201,29 @@ public class HuoBiApiResolver implements IApiResolver {
                     if (Double.valueOf(balance.getBalance()) > 0) {
                         // 根据币种判断 map 是否含有对象
                         UserCurrency userCurrency = map.get(balance.getCurrency());
-                        if (userCurrency == null) {
+                        if (userCurrency == null && "trade".equals(balance.getType())) {
                             userCurrency = new UserCurrency();
-                            userCurrency.setFree("0");
+//                            userCurrency.setFree("0");
                             userCurrency.setFreezed("0");
-                        }
-                        userCurrency.setExchangeName("huobi");
-                        userCurrency.setCurrency(balance.getCurrency());
-                        if ("trade".equals(balance.getType())) {
-                            userCurrency.setFree(balance.getBalance());
-                        }else {
-                            // "frozen"
-                            userCurrency.setFreezed(balance.getBalance());
-                        }
-                        userCurrency.setUserId(userId);
-                        userCurrency.setApiKey(apiKey);
-                        userCurrency.setApiSecret(apiSecret);
-                        userCurrency.setAccountId(account.getId().toString());
-                        userCurrency.setCreateTime(date);
 
-                        map.put(balance.getCurrency(), userCurrency);
+                            userCurrency.setExchangeName("huobi");
+                            userCurrency.setCurrency(balance.getCurrency());
+//                            if ("trade".equals(balance.getType())) {
+//                                userCurrency.setFree(balance.getBalance());
+//                            }else {
+//                                // "frozen"
+//                                userCurrency.setFreezed(balance.getBalance());
+//                            }
+
+                            userCurrency.setFree(balance.getBalance());
+                            userCurrency.setUserId(userId);
+                            userCurrency.setApiKey(apiKey);
+                            userCurrency.setApiSecret(apiSecret);
+                            userCurrency.setAccountId(account.getId().toString());
+                            userCurrency.setCreateTime(date);
+
+                            map.put(balance.getCurrency(), userCurrency);
+                        }
                     }
                 }
                 return map;
