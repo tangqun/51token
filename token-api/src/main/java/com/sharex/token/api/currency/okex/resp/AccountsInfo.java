@@ -2,13 +2,13 @@ package com.sharex.token.api.currency.okex.resp;
 
 public class AccountsInfo {
 
-    private AccountsFunds accountsFunds;
+    private AccountsFunds funds;
 
-    public AccountsFunds getAccountsFunds() {
-        return accountsFunds;
+    public AccountsFunds getFunds() {
+        return funds;
     }
 
-    public void setAccountsFunds(AccountsFunds accountsFunds) {
-        this.accountsFunds = accountsFunds;
+    public void setFunds(AccountsFunds funds) {
+        this.funds = funds;
     }
 }

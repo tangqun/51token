@@ -373,7 +373,7 @@ public class HuoBiApiResolver implements IApiResolver {
                 return remoteSyn;
             }
 
-            throw new TradesSynException(apiResp.getErrMsg());
+            throw new OpenOrdersSynException(apiResp.getErrMsg());
         }
 
         throw new NetworkException();

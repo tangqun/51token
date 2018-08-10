@@ -1,6 +1,8 @@
 package com.sharex.token.api.currency;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharex.token.api.currency.okex.OkexApiClient;
+import com.sharex.token.api.currency.okex.resp.AccountsResp;
 import org.junit.Test;
 
 public class OkexApiClientTest {
@@ -46,6 +48,11 @@ public class OkexApiClientTest {
         String respBody = apiClient.accounts(apiKey_okex, apiSecret_okex);
 
         System.out.println(respBody);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        AccountsResp accountsResp = objectMapper.readValue(respBody, AccountsResp.class);
+
+        accountsResp.getResult();
     }
 
     @Test

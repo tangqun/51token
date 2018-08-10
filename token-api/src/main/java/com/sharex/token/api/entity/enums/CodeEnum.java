@@ -62,7 +62,6 @@ public enum CodeEnum {
 
     ParameterError(120034, "参数错误"),
     AuthFail(120035, "授权失败")
-
     ;
 
     CodeEnum(int code, String msg) {

@@ -1,5 +1,8 @@
 package com.sharex.token.api.currency.okex.resp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountsResp {
 
     private Boolean result;

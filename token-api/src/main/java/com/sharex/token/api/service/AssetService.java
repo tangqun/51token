@@ -342,8 +342,10 @@ public class AssetService {
                 assetResp.setCumulativeProfit(cumulativeProfit.toString());
             }
             // 收益率
-            if (null != vol && null != cost) {
+            if (null != vol && null != cost && vol > 0 && cost > 0) {
                 assetResp.setProfitRate(String.valueOf((vol - cost) / vol));
+            } else {
+                assetResp.setProfitRate("0.0");
             }
             // 设置交易所数据集合
             assetResp.setUserExchangeAssetRespList(userExchangeAssetRespList);
@@ -580,8 +582,9 @@ public class AssetService {
                 Map<String, UserCurrency> map = null;
 
                 switch (assetSyn.getExchangeName()) {
-                    case "huobi": remoteSynService.synAccounts("huobi", user.getId(), userApi.getApiKey(), userApi.getApiSecret()); break;
-                    default: break;
+                    case "huobi":
+                    case "okex": remoteSynService.synAccounts(assetSyn.getExchangeName(), user.getId(), userApi.getApiKey(), userApi.getApiSecret()); break;
+                    default: return RESTful.Fail(CodeEnum.ExchangeInDBNotConfig);
                 }
 
                 return RESTful.Success();

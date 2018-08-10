@@ -1,6 +1,7 @@
 package com.sharex.token.api.currency.okex;
 
 import com.sharex.token.api.currency.IApiClient;
+import com.sharex.token.api.exception.ApiNotExistException;
 import com.sharex.token.api.util.CryptoUtil;
 import com.sharex.token.api.util.HttpUtil;
 import com.sharex.token.api.util.StringUtil;
@@ -39,6 +40,8 @@ public class OkexApiClient implements IApiClient {
 
     // 下单
     private static final String PlaceOrder_URL = "/api/v1/trade.do?";
+
+    private static final String Cancel_URL = "/api/v1/cancel_order";
 
 //    public OkexApiClient(String apiKey, String apiSecret) {
 //        this.apiKey = apiKey;
@@ -161,7 +164,7 @@ public class OkexApiClient implements IApiClient {
         params.put("symbol", symbol);
         params.put("status", status.toString());
         params.put("current_page", "1");
-        params.put("page_length", "100");
+        params.put("page_length", size.toString());
         String sign = CryptoUtil.md5(StringUtil.toQueryString(params) + "&secret_key=" + apiSecret);
         params.put("sign", sign);
 
@@ -175,7 +178,7 @@ public class OkexApiClient implements IApiClient {
     @Override
     public String entrustOrders(String apiKey, String apiSecret, String symbol) throws Exception {
 
-        return null;
+        throw new ApiNotExistException("okex entrust orders interface not exist, please see history orders");
     }
 
     /**
@@ -217,6 +220,22 @@ public class OkexApiClient implements IApiClient {
 
     @Override
     public String cancelOrder(String apiKey, String apiSecret, String symbol, String orderId) throws Exception {
-        return null;
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("api_key", apiKey);
+        if(!StringUtils.isEmpty(symbol)){
+            params.put("symbol", symbol);
+        }
+        if(!StringUtils.isEmpty(orderId)){
+            params.put("order_id", orderId);
+        }
+        String sign = CryptoUtil.md5(StringUtil.toQueryString(params) + "&secret_key=" + apiSecret);
+        params.put("sign", sign);
+
+        // 发送post请求
+        String respBody = HttpUtil.post(API_URL + this.Cancel_URL,
+                StringUtil.toQueryString(params), "application/x-www-form-urlencoded");
+
+        return respBody;
     }
 }

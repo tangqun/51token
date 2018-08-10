@@ -633,18 +633,16 @@ public class CurrencyService {
                 orderMsgMapper.insert(orderMsg);
 
                 // 提交交易所（创建委托交易 -- 限价交易），返回 订单编号
-                String symbol = null;
+                String symbol = ExchangeUtil.getSymbol(currencyPlaceOrder.getExchangeName(), currencyPlaceOrder.getCurrency());
 
                 switch (currencyPlaceOrder.getExchangeName()) {
                     case "huobi":
-                        symbol = currencyPlaceOrder.getCurrency() + "usdt";
                         switch (type) {
                             case "buy": type = "buy-limit"; break;
                             case "sell": type = "sell-limit"; break;
                         }
                         break;
                     case "okex":
-                        symbol = currencyPlaceOrder.getCurrency() + "_usdt";
                         break;
                 }
 

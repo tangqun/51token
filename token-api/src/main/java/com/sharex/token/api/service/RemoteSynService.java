@@ -8,6 +8,7 @@ import com.sharex.token.api.currency.resolver.OkexApiResolver;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.exception.NetworkException;
 import com.sharex.token.api.mapper.UserCurrencyMapper;
+import com.sharex.token.api.util.ExchangeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,8 +46,7 @@ public class RemoteSynService {
         IApiResolver apiResolver = null;
         switch (exchangeName) {
             case "huobi": apiResolver = huoBiApiResolver; break;
-
-//            case "okex": return new
+            case "okex": apiResolver = okexApiResolver; break;
         }
         return apiResolver;
     }
@@ -152,13 +152,8 @@ public class RemoteSynService {
 
             if (!"usdt".equals(entry.getKey())) {
 
-                String symbol = "";
-                switch (exchangeName) {
-                    case "huobi": symbol = entry.getKey() + "usdt"; break;
-                    case "okex": symbol = entry.getKey() + "_usdt"; break;
-                }
-
-
+                // 最新行情
+                String symbol = ExchangeUtil.getSymbol(exchangeName, entry.getKey());
                 List<MyKline> myKlineList = getKline(exchangeName, symbol, "1min");
                 MyKline myKline = myKlineList.get(0);
 
