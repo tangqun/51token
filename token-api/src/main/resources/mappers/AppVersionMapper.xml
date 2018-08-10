@@ -33,6 +33,7 @@
         <result column="id" property="id" />
         <result column="platform_name" property="platformName" />
         <result column="version" property="version" />
+        <result column="version_code" property="versionCode" />
         <result column="status" property="status" />
         <result column="download_url" property="downloadUrl" />
         <result column="create_time" property="createTime" />
@@ -45,7 +46,7 @@
         keyColumn：（仅对insert和update有用）通过生成的键值设置表中的列名，这个设置仅对某些数据库（像PostgreSQL）是必须的，当主键列不是表中的第一列时需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
     -->
     <select id="selectList" resultMap="appVersionMap">
-        SELECT `id`, `platform_name`, `version`, `status`, `download_url`, `create_time`, `update_time`
+        SELECT `id`, `platform_name`, `version`, `version_code`, `status`, `download_url`, `create_time`, `update_time`
         FROM `app_version`
         WHERE `status` = 0;
     </select>

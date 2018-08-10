@@ -7,6 +7,7 @@ public class AppVersion {
     private Integer id;
     private String platformName;
     private String version;
+    private Integer versionCode;
     private Integer status;
     private String downloadUrl;
     private Date createTime;
@@ -34,6 +35,14 @@ public class AppVersion {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public Integer getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(Integer versionCode) {
+        this.versionCode = versionCode;
     }
 
     public Integer getStatus() {

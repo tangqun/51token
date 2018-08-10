@@ -67,6 +67,7 @@ public class MiscService {
                 AppVersionResp appVersionResp = new AppVersionResp();
                 appVersionResp.setPlatformName(appVersion.getPlatformName());
                 appVersionResp.setVersion(appVersion.getVersion());
+                appVersionResp.setVersionCode(appVersion.getVersionCode());
                 appVersionResp.setDownloadUrl(appVersion.getDownloadUrl());
 
                 appVersionRespList.add(appVersionResp);
