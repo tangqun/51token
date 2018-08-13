@@ -39,6 +39,9 @@ public class CurrencyService {
 
     @Autowired
     private UserCurrencyCostMapper userCurrencyCostMapper;
+    
+    @Autowired
+    private ExchangeCurrencyMapper exchangeCurrencyMapper;
 
     @Autowired
     private RemoteSynService remoteSynService;
@@ -908,7 +911,14 @@ public class CurrencyService {
         userCurrencyAssetResp.setExchangeNameDisplay(exchangeNameDisplay);
         // 币种
         userCurrencyAssetResp.setCurrency(userCurrency.getCurrency());
-        // 数量
+
+
+
+
+        // 总数量 = 余额数量 + 冻结数量
+        Double free = (Double.valueOf(userCurrency.getFree()) + Double.valueOf(userCurrency.getFreezed()));
+
+        // 数量--临时修改为 总数量
         userCurrencyAssetResp.setFree(userCurrency.getFree());
         // 冻结数量
         userCurrencyAssetResp.setFreezed(userCurrency.getFreezed());
@@ -917,59 +927,76 @@ public class CurrencyService {
         if ("usdt".equals(userCurrency.getCurrency())) {
 
             // 现价
-            userCurrencyAssetResp.setClosePrice(userCurrency.getFree());
+            userCurrencyAssetResp.setClosePrice(free.toString());
             // 开盘价
-            userCurrencyAssetResp.setOpenPrice(userCurrency.getFree());
+            userCurrencyAssetResp.setOpenPrice(free.toString());
             // 成本价
-            userCurrencyAssetResp.setCostPrice(userCurrency.getFree());
+            userCurrencyAssetResp.setCostPrice(free.toString());
             // 市值
-            userCurrencyAssetResp.setVol(userCurrency.getFree());
+            userCurrencyAssetResp.setVol(free.toString());
             // 成本
-            userCurrencyAssetResp.setCost(userCurrency.getFree());
+            userCurrencyAssetResp.setCost(free.toString());
 
         } else {
-            // kline第一条作为行情
-            List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
-            MyKline myKline = myKlineList.get(0);
 
-            // 现价
-            userCurrencyAssetResp.setClosePrice(myKline.getClose());
-            // 开盘价
-            userCurrencyAssetResp.setOpenPrice(myKline.getOpen());
-            // 成本--授权时设置（默认）
-            Double costPrice = Double.valueOf(userCurrency.getCost());
+            List<ExchangeCurrency> exchangeCurrencyList = exchangeCurrencyMapper.selectList(userCurrency.getExchangeName());
+            if (exchangeCurrencyList.stream().anyMatch(ec -> ec.getCurrency().equals(userCurrency.getCurrency()))) {
 
-            // 拉取配置成本
-            Map<String, Object> userCurrencyCostMap = new HashMap<>();
-            userCurrencyCostMap.put("exchangeName", userCurrency.getExchangeName());
-            userCurrencyCostMap.put("currency", userCurrency.getCurrency());
-            userCurrencyCostMap.put("userId", userId);
-            UserCurrencyCost userCurrencyCost = userCurrencyCostMapper.selectEntity(userCurrencyCostMap);
-            if (userCurrencyCost != null) {
-                if ("unit".equals(userCurrencyCost.getType())) {
-                    costPrice = Double.valueOf(userCurrencyCost.getCost());
-                } else {
-                    // 总价 / 数量
-                    costPrice = Double.valueOf(userCurrencyCost.getCost()) / Double.valueOf(userCurrency.getFree());
+                // kline第一条作为行情
+                List<MyKline> myKlineList = remoteSynService.getKline(userCurrency.getExchangeName(), symbol, "1min");
+                MyKline myKline = myKlineList.get(0);
+
+                // 现价
+                userCurrencyAssetResp.setClosePrice(myKline.getClose());
+                // 开盘价
+                userCurrencyAssetResp.setOpenPrice(myKline.getOpen());
+                // 成本价--授权时设置（默认）
+                Double costPrice = Double.valueOf(userCurrency.getCost());
+
+                // 拉取配置成本
+                Map<String, Object> userCurrencyCostMap = new HashMap<>();
+                userCurrencyCostMap.put("exchangeName", userCurrency.getExchangeName());
+                userCurrencyCostMap.put("currency", userCurrency.getCurrency());
+                userCurrencyCostMap.put("userId", userId);
+                UserCurrencyCost userCurrencyCost = userCurrencyCostMapper.selectEntity(userCurrencyCostMap);
+                if (userCurrencyCost != null) {
+                    if ("unit".equals(userCurrencyCost.getType())) {
+                        costPrice = Double.valueOf(userCurrencyCost.getCost());
+                    } else {
+                        // 总价 / 数量
+                        costPrice = Double.valueOf(userCurrencyCost.getCost()) / free;
+                    }
                 }
+                // 成本价
+                userCurrencyAssetResp.setCostPrice(costPrice.toString());
+                // 市值
+                Double currencyVol = free * Double.valueOf(myKline.getClose());
+                userCurrencyAssetResp.setVol(currencyVol.toString());
+                // 成本
+                Double currencyCost = free * costPrice;
+                userCurrencyAssetResp.setCost(currencyCost.toString());
+                // 当日收益 (close - open) * free
+                Double currencyProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(myKline.getOpen())) * Double.valueOf(userCurrency.getFree());
+                userCurrencyAssetResp.setProfit(currencyProfit.toString());
+                // 收益率 (当日收益 / 最新价) * 100
+                Double currencyProfitRate = (currencyProfit / Double.valueOf(myKline.getClose())) * 100;
+                userCurrencyAssetResp.setProfitRate(currencyProfitRate.toString());
+                // 累计收益 (close - cost) * free
+                Double currencyCumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
+                userCurrencyAssetResp.setCumulativeProfit(currencyCumulativeProfit.toString());
+            } else {
+
+                // 现价
+                userCurrencyAssetResp.setClosePrice("0.0");
+                // 开盘价
+                userCurrencyAssetResp.setOpenPrice("0.0");
+                // 成本价
+                userCurrencyAssetResp.setCostPrice("0.0");
+                // 市值
+                userCurrencyAssetResp.setVol("0.0");
+                // 成本
+                userCurrencyAssetResp.setCost("0.0");
             }
-            // 成本价
-            userCurrencyAssetResp.setCostPrice(costPrice.toString());
-            // 市值
-            Double currencyVol = Double.valueOf(userCurrency.getFree()) * Double.valueOf(myKline.getClose());
-            userCurrencyAssetResp.setVol(currencyVol.toString());
-            // 成本
-            Double currencyCost = Double.valueOf(userCurrency.getFree()) * costPrice;
-            userCurrencyAssetResp.setCost(currencyCost.toString());
-            // 当日收益 (close - open) * free
-            Double currencyProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(myKline.getOpen())) * Double.valueOf(userCurrency.getFree());
-            userCurrencyAssetResp.setProfit(currencyProfit.toString());
-            // 收益率 (当日收益 / 最新价) * 100
-            Double currencyProfitRate = (currencyProfit / Double.valueOf(myKline.getClose())) * 100;
-            userCurrencyAssetResp.setProfitRate(currencyProfitRate.toString());
-            // 累计收益 (close - cost) * free
-            Double currencyCumulativeProfit = (Double.valueOf(myKline.getClose()) - Double.valueOf(userCurrency.getCost())) * Double.valueOf(userCurrency.getFree());
-            userCurrencyAssetResp.setCumulativeProfit(currencyCumulativeProfit.toString());
         }
 
         return userCurrencyAssetResp;
