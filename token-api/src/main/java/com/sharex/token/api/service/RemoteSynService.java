@@ -7,6 +7,7 @@ import com.sharex.token.api.currency.resolver.IApiResolver;
 import com.sharex.token.api.currency.resolver.OkexApiResolver;
 import com.sharex.token.api.entity.*;
 import com.sharex.token.api.exception.NetworkException;
+import com.sharex.token.api.mapper.ExchangeCurrencyMapper;
 import com.sharex.token.api.mapper.UserCurrencyMapper;
 import com.sharex.token.api.util.ExchangeUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,9 @@ public class RemoteSynService {
 
     @Autowired
     private UserCurrencyMapper userCurrencyMapper;
+
+    @Autowired
+    private ExchangeCurrencyMapper exchangeCurrencyMapper;
 
     @Autowired
     private HuoBiApiResolver huoBiApiResolver;
@@ -146,25 +150,38 @@ public class RemoteSynService {
 
         IApiResolver apiResolver = getApiResolver(exchangeName);
 
-        Map<String, UserCurrency> map = apiResolver.accounts(apiKey, apiSecret, userId);
+        List<ExchangeCurrency> exchangeCurrencyList = exchangeCurrencyMapper.selectList(exchangeName);
+        if (exchangeCurrencyList.size() > 0) {
 
-        for (Map.Entry<String, UserCurrency> entry:map.entrySet()) {
+            Map<String, UserCurrency> map = apiResolver.accounts(apiKey, apiSecret, userId);
 
-            if (!"usdt".equals(entry.getKey())) {
+            for (Map.Entry<String, UserCurrency> entry:map.entrySet()) {
 
-                // 最新行情
-                String symbol = ExchangeUtil.getSymbol(exchangeName, entry.getKey());
-                List<MyKline> myKlineList = getKline(exchangeName, symbol, "1min");
-                MyKline myKline = myKlineList.get(0);
+                if (!"usdt".equals(entry.getKey())) {
 
-                entry.getValue().setCost(myKline.getClose());
-            } else {
+                    if (exchangeCurrencyList.stream().anyMatch(ec -> ec.getCurrency().equals(entry.getKey()))) {
 
-                entry.getValue().setCost(entry.getValue().getFree());
+                        // 最新行情
+                        String symbol = ExchangeUtil.getSymbol(exchangeName, entry.getKey());
+                        List<MyKline> myKlineList = getKline(exchangeName, symbol, "1min");
+                        MyKline myKline = myKlineList.get(0);
+
+                        entry.getValue().setCost(myKline.getClose());
+                    } else {
+
+                        entry.getValue().setCost("0");
+                    }
+
+                } else {
+
+                    // usdt
+                    entry.getValue().setCost(entry.getValue().getFree());
+                }
             }
-        }
 
-        saveUserAsset(exchangeName, userId, map);
+            // save
+            saveUserAsset(exchangeName, userId, map);
+        }
     }
 
     public List<MyOpenOrders> synOpenOrders(String apiKey, String apiSecret, String accountId, Integer userId, String exchangeName, String symbol) throws Exception {
